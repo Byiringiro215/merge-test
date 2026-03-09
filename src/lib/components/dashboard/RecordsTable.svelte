@@ -1,37 +1,16 @@
 <script lang="ts">
-	import { Card, CardContent } from "$lib/components/ui/card";
-	import {
-		Table,
-		TableHeader,
-		TableBody,
-		TableRow,
-		TableHead,
-		TableCell,
-	} from "$lib/components/ui/table";
+	import DataTable from "$lib/components/data-table/data-table.svelte";
+	import { Button } from "$lib/components/ui/button/index.js";
+	import { renderSnippet } from "$lib/components/ui/data-table/index.js";
+	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { Input } from "$lib/components/ui/input";
-	import {
-		Search,
-		ExternalLink,
-		MoreHorizontal,
-		ChevronLeft,
-		ChevronRight,
-		Eye,
-		Pencil,
-		Trash2,
-	} from "@lucide/svelte";
+	import { Edit, Eye, Search, Trash } from "@lucide/svelte";
+	import EllipsisIcon from "@lucide/svelte/icons/ellipsis";
+	import { type ColumnDef } from "@tanstack/table-core";
+	import { createRawSnippet } from "svelte";
+	import type { SchoolRecord } from "./types.js";
 
-	interface SchoolRecord {
-		id: number;
-		name: string;
-		district: string;
-		faculty: string;
-		facultyColor: string;
-		activeStudents: number;
-		successRate: number;
-		status: "High" | "Stable" | "Action Required";
-	}
-
-	const records: SchoolRecord[] = [
+	const allRecords: SchoolRecord[] = [
 		{
 			id: 1,
 			name: "Kicukiro Tech High",
@@ -94,70 +73,12 @@
 		},
 	];
 
-	const statusColors = {
-		High: "text-green-600",
-		Stable: "text-blue-600",
-		"Action Required": "text-red-600",
-	};
-
-	const statusDotColors = {
-		High: "bg-green-500",
-		Stable: "bg-blue-500",
-		"Action Required": "bg-red-500",
-	};
-
 	let searchQuery = $state("");
-	let currentPage = $state(1);
-	let openDropdown = $state<number | null>(null);
-	const totalResults = 51;
-	const perPage = 6;
-	const totalPages = Math.ceil(totalResults / perPage);
-
-	function goToPage(page: number) {
-		if (page >= 1 && page <= totalPages) {
-			currentPage = page;
-		}
-	}
-
-	function toggleDropdown(id: number) {
-		openDropdown = openDropdown === id ? null : id;
-	}
-
-	function closeDropdown() {
-		openDropdown = null;
-	}
-
-	function handleAction(action: string, record: SchoolRecord) {
-		console.log(`${action} action for:`, record.name);
-		closeDropdown();
-		// You can add actual navigation or modal logic here
-	}
-
-	function handleView(record: SchoolRecord) {
-		console.log("Viewing:", record.name);
-		// Navigate to school detail page
-	}
-
-	// Close dropdown when clicking outside
-	function handleClickOutside(event: MouseEvent) {
-		const target = event.target as HTMLElement;
-		if (!target.closest("[data-dropdown]")) {
-			closeDropdown();
-		}
-	}
-
-	$effect(() => {
-		if (openDropdown !== null) {
-			document.addEventListener("click", handleClickOutside);
-			return () =>
-				document.removeEventListener("click", handleClickOutside);
-		}
-	});
 
 	// Filter records based on search
 	let filteredRecords = $derived(
 		searchQuery
-			? records.filter(
+			? allRecords.filter(
 					(r) =>
 						r.name
 							.toLowerCase()
@@ -169,8 +90,91 @@
 							.toLowerCase()
 							.includes(searchQuery.toLowerCase()),
 				)
-			: records,
+			: allRecords,
 	);
+
+	const columns: ColumnDef<SchoolRecord>[] = [
+		{
+			id: "school name",
+			accessorKey: "name",
+			header: "High School Name",
+		},
+		{
+			accessorKey: "district",
+			header: "District",
+			cell: ({ row }) => row.original.district,
+		},
+		{
+			accessorKey: "faculty",
+			header: "Primary Faculty",
+			cell: ({ row }) => {
+				const snippet = createRawSnippet(() => {
+					return {
+						render: () =>
+							`<span class="inline-flex items-center rounded-full px-1 py-0.5 text-xs font-normal bg-[#9bc3e8]/20 text-[#205fad] border border-[#8db9e2]">${row.original.faculty}</span>`,
+					};
+				});
+				return renderSnippet(snippet);
+			},
+		},
+		{
+			accessorKey: "activeStudents",
+			header: "Active Students",
+			cell: ({ row }) => row.original.activeStudents,
+		},
+		{
+			id: "successRate",
+			accessorKey: "successRate",
+			header: "Success Rate",
+			cell: ({ row }) => {
+				const snippet = createRawSnippet(() => {
+					return {
+						render: () =>
+							`<span class="font-medium text-green-600">${row.original.successRate}%</span>`,
+					};
+				});
+				return renderSnippet(snippet);
+			},
+		},
+		{
+			accessorKey: "status",
+			header: "Performance Status",
+			cell: ({ row }) => {
+				const statusColors: Record<string, string> = {
+					High: "text-green-600",
+					Stable: "text-blue-600",
+					"Action Required": "text-red-600",
+				};
+
+				const statusDotColors: Record<string, string> = {
+					High: "bg-green-500",
+					Stable: "bg-blue-500",
+					"Action Required": "bg-red-500",
+				};
+				const snippet = createRawSnippet(() => {
+					return {
+						render: () =>
+							`<div class="flex items-center gap-2">
+							<span class="h-2 w-2 rounded-full ${statusDotColors[row.original.status]}"></span>
+							<span class=${statusColors[row.original.status]}>${row.original.status}</span>
+						</div>
+                `,
+					};
+				});
+				return renderSnippet(snippet);
+			},
+		},
+		{
+			id: "actions",
+			header: "Actions",
+			cell: ({ row }) =>
+				renderSnippet(rowAction, { record: row.original }),
+		},
+	];
+
+	function handleRowClick(record: SchoolRecord) {
+		console.log("Row clicked:", record.name);
+	}
 </script>
 
 <div
@@ -198,177 +202,47 @@
 	</div>
 </div>
 
-<Card>
-	<CardContent class="p-0">
-		<div class="overflow-x-auto">
-			<Table>
-				<TableHeader>
-					<TableRow class="border-gray-200 hover:bg-transparent">
-						<TableHead>High School Name</TableHead>
-						<TableHead>District</TableHead>
-						<TableHead>Primary Faculty</TableHead>
-						<TableHead class="text-center"
-							>Active Students</TableHead
-						>
-						<TableHead class="text-center">Success Rate</TableHead>
-						<TableHead>Performance Status</TableHead>
-						<TableHead class="text-center">Actions</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{#each filteredRecords as record, i (i)}
-						<TableRow class="group">
-							<TableCell class="font-medium">
-								<button
-									onclick={() => handleView(record)}
-									class="text-left transition-colors hover:text-blue-600"
-								>
-									{record.name}
-								</button>
-							</TableCell>
-							<TableCell class="text-gray-600"
-								>{record.district}</TableCell
-							>
-							<TableCell>
-								<span
-									class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-[#9bc3e8]/20 text-[#205fad] border border-[#8db9e2]"
-								>
-									{record.faculty}
-								</span>
-							</TableCell>
-							<TableCell class="text-center"
-								>{record.activeStudents}</TableCell
-							>
-							<TableCell class="text-center">
-								<span class="font-medium text-green-600"
-									>{record.successRate}%</span
-								>
-							</TableCell>
-							<TableCell>
-								<div class="flex items-center gap-2">
-									<span
-										class="h-2 w-2 rounded-full {statusDotColors[
-											record.status
-										]}"
-									></span>
-									<span class={statusColors[record.status]}
-										>{record.status}</span
-									>
-								</div>
-							</TableCell>
-							<TableCell>
-								<div
-									class="flex items-center justify-center gap-1"
-								>
-									<button
-										onclick={() => handleView(record)}
-										class="rounded p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
-										title="View details"
-									>
-										<ExternalLink class="h-4 w-4" />
-									</button>
-									<div class="relative" data-dropdown>
-										<button
-											onclick={(e) => {
-												e.stopPropagation();
-												toggleDropdown(record.id);
-											}}
-											class="rounded p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 {openDropdown ===
-											record.id
-												? 'bg-gray-100 text-gray-600'
-												: ''}"
-											title="More options"
-										>
-											<MoreHorizontal class="h-4 w-4" />
-										</button>
+<div class="rounded-lg border border-gray-200 bg-white overflow-hidden">
+	<DataTable
+		{columns}
+		data={filteredRecords}
+		tableRowClick={handleRowClick}
+	/>
+</div>
 
-										{#if openDropdown === record.id}
-											<div
-												class="absolute right-0 top-full z-50 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
-												onclick={(e) =>
-													e.stopPropagation()}
-											>
-												<button
-													onclick={() =>
-														handleAction(
-															"view",
-															record,
-														)}
-													class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
-												>
-													<Eye class="h-4 w-4" />
-													View Details
-												</button>
-												<button
-													onclick={() =>
-														handleAction(
-															"edit",
-															record,
-														)}
-													class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
-												>
-													<Pencil class="h-4 w-4" />
-													Edit Record
-												</button>
-												<hr
-													class="my-1 border-gray-100"
-												/>
-												<button
-													onclick={() =>
-														handleAction(
-															"delete",
-															record,
-														)}
-													class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50"
-												>
-													<Trash2 class="h-4 w-4" />
-													Delete
-												</button>
-											</div>
-										{/if}
-									</div>
-								</div>
-							</TableCell>
-						</TableRow>
-					{/each}
-				</TableBody>
-			</Table>
-		</div>
-
-		<!-- Pagination -->
-		<div
-			class="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-100 px-6 py-4"
-		>
-			<p class="text-sm text-gray-500">
-				Showing 1 to {perPage} of {totalResults} results
-			</p>
-			<div class="flex items-center gap-1">
-				<button
-					onclick={() => goToPage(currentPage - 1)}
-					disabled={currentPage === 1}
-					class="flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+{#snippet rowAction()}
+	<DropdownMenu.Root>
+		<DropdownMenu.Trigger>
+			{#snippet child({ props })}
+				<Button
+					{...props}
+					variant="ghost"
+					size="icon"
+					class="relative size-8 p-0"
 				>
-					<ChevronLeft class="h-4 w-4" />
-				</button>
-				{#each Array(Math.min(3, totalPages)) as _, i (i)}
-					<button
-						onclick={() => goToPage(i + 1)}
-						class="flex h-8 w-8 items-center justify-center rounded border text-sm font-medium transition-colors {currentPage ===
-						i + 1
-							? 'border-blue-600 bg-blue-600 text-white'
-							: 'border-gray-200 text-gray-700 hover:bg-gray-50'}"
-					>
-						{i + 1}
-					</button>
-				{/each}
-				<button
-					onclick={() => goToPage(currentPage + 1)}
-					disabled={currentPage === totalPages}
-					class="flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-				>
-					<ChevronRight class="h-4 w-4" />
-				</button>
-			</div>
-		</div>
-	</CardContent>
-</Card>
+					<span class="sr-only">Open menu</span>
+					<EllipsisIcon />
+				</Button>
+			{/snippet}
+		</DropdownMenu.Trigger>
+		<DropdownMenu.Content>
+			<DropdownMenu.Group>
+				<DropdownMenu.Label>Actions</DropdownMenu.Label>
+				<DropdownMenu.Item>
+					<Eye class="mr-2 h-4 w-4" />
+					View details
+				</DropdownMenu.Item>
+			</DropdownMenu.Group>
+			<DropdownMenu.Item>
+				<Edit class="mr-2 h-4 w-4" />
+				Edit details
+			</DropdownMenu.Item>
+			<DropdownMenu.Item class="text-red-600 group cursor-pointer">
+				<Trash
+					class="mr-2 h-4 w-4 text-red-600 group-hover:text-black!"
+				/>
+				Delete
+			</DropdownMenu.Item>
+		</DropdownMenu.Content>
+	</DropdownMenu.Root>
+{/snippet}
