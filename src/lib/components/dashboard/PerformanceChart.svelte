@@ -19,9 +19,9 @@
 	const data: DataPoint[] = [
 		{ month: "Jan", students: 450, avgScore: 68 },
 		{ month: "Feb", students: 520, avgScore: 71 },
-		{ month: "Mar", students: 580, avgScore: 70 },
+		{ month: "Mar", students: 980, avgScore: 99 },
 		{ month: "Apr", students: 650, avgScore: 75 },
-		{ month: "May", students: 720, avgScore: 82 },
+		{ month: "May", students: 800, avgScore: 82 },
 		{ month: "Jun", students: 780, avgScore: 85 },
 	];
 
