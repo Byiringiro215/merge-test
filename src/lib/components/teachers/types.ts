@@ -16,7 +16,7 @@ export interface Teacher {
 export interface TeacherFiltersState {
 	districts: District[];
 	faculties: Faculty[];
-	successThreshold: number;
+	successThreshold: [number, number];
 }
 
 export interface HeatmapCell {

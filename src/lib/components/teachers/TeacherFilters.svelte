@@ -1,7 +1,6 @@
 <script lang="ts">
 	import FilterIcon from "@lucide/svelte/icons/filter";
 	import MapPinIcon from "@lucide/svelte/icons/map-pin";
-	import DownloadIcon from "@lucide/svelte/icons/download";
 	import TargetIcon from "@lucide/svelte/icons/target";
 	import { Button } from "$lib/components/ui/button";
 	import { Checkbox } from "$lib/components/ui/checkbox";
@@ -26,6 +25,11 @@
 	let { filters, onFiltersChange, onApplyFilters, onExportReports }: Props =
 		$props();
 
+	// Extract successThreshold as typed tuple to avoid TS indexing errors
+	let successThreshold = $derived(
+		filters.successThreshold as unknown as [number, number],
+	);
+
 	function toggleDistrict(district: District) {
 		const newDistricts = filters.districts.includes(district)
 			? filters.districts.filter((d) => d !== district)
@@ -41,8 +45,15 @@
 	}
 
 	function handleThresholdChange(value: number[]) {
-		if (value[0] !== filters.successThreshold) {
-			onFiltersChange({ ...filters, successThreshold: value[0] });
+		if (
+			value[0] !== successThreshold[0] ||
+			value[1] !== successThreshold[1]
+		) {
+			onFiltersChange({
+				districts: filters.districts,
+				faculties: filters.faculties,
+				successThreshold: [value[0], value[1]] as [number, number],
+			});
 		}
 	}
 </script>
@@ -131,7 +142,7 @@
 		<Sidebar.GroupContent class="pt-3 px-1">
 			<Slider
 				type="multiple"
-				value={[filters.successThreshold]}
+				bind:value={successThreshold}
 				onValueChange={handleThresholdChange}
 				min={0}
 				max={100}
@@ -141,7 +152,7 @@
 			<div class="mt-3 flex justify-between text-xs text-gray-500">
 				<span>0%</span>
 				<span class="text-primary font-medium"
-					>Min: {filters.successThreshold}%</span
+					>{successThreshold[0]}% - {successThreshold[1]}%</span
 				>
 				<span>100%</span>
 			</div>

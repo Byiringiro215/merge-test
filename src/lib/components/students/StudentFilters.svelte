@@ -1,8 +1,6 @@
 <script lang="ts">
 	import FilterIcon from "@lucide/svelte/icons/filter";
 	import Building2Icon from "@lucide/svelte/icons/building-2";
-	import DownloadIcon from "@lucide/svelte/icons/download";
-	import { Button } from "$lib/components/ui/button";
 	import { Checkbox } from "$lib/components/ui/checkbox";
 	import { Slider } from "$lib/components/ui/slider";
 	import { Label } from "$lib/components/ui/label";
@@ -19,10 +17,15 @@
 	interface Props {
 		filters: StudentFiltersState;
 		onFiltersChange: (filters: StudentFiltersState) => void;
-		onExportReports?: () => void;
+		onExportReports: () => void;
 	}
 
 	let { filters, onFiltersChange, onExportReports }: Props = $props();
+
+	// Extract levelRange as typed tuple to avoid TS indexing errors
+	let levelRange = $derived(
+		filters.levelRange as unknown as [number, number],
+	);
 
 	function toggleDistrict(district: District) {
 		const newDistricts = filters.districts.includes(district)
@@ -39,8 +42,13 @@
 	}
 
 	function handleLevelChange(value: number[]) {
-		if (value[0] !== filters.levelRange) {
-			onFiltersChange({ ...filters, levelRange: value[0] });
+		if (value[0] !== levelRange[0] || value[1] !== levelRange[1]) {
+			onFiltersChange({
+				districts: filters.districts,
+				faculties: filters.faculties,
+				levelRange: [value[0], value[1]] as [number, number],
+				schoolType: filters.schoolType,
+			});
 		}
 	}
 
@@ -124,7 +132,7 @@
 		<Sidebar.GroupContent class="pt-2 px-1">
 			<Slider
 				type="multiple"
-				value={[filters.levelRange]}
+				bind:value={levelRange}
 				onValueChange={handleLevelChange}
 				min={1}
 				max={5}
@@ -133,9 +141,10 @@
 			/>
 			<div class="mt-3 flex justify-between text-xs text-gray-500">
 				{#each LEVELS as level, index (index)}
+					{@const levelNum = parseInt(level.replace("L", ""))}
 					<span
-						class={filters.levelRange >=
-						parseInt(level.replace("L", ""))
+						class={levelNum >= levelRange[0] &&
+						levelNum <= levelRange[1]
 							? "text-primary font-medium"
 							: ""}
 					>
