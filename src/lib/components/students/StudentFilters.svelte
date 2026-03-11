@@ -73,7 +73,6 @@
 			{#each DISTRICTS as district, index (index)}
 				<div class="flex items-center gap-2">
 					<Checkbox
-						class="bg-secondary!"
 						id="district-{district}"
 						checked={filters.districts.includes(district)}
 						onCheckedChange={() => toggleDistrict(district)}
@@ -101,7 +100,6 @@
 				<div class="flex items-center gap-2">
 					<Checkbox
 						id="faculty-{index}"
-						class="bg-secondary!"
 						checked={filters.faculties.includes(faculty)}
 						onCheckedChange={() => toggleFaculty(faculty)}
 					/>

@@ -203,7 +203,7 @@
 	<Sidebar.Provider>
 		<Sidebar.Root
 			side="left"
-			class="border-r border-r-gray-200 bg-[#fafafb]! mt-16"
+			class="border-r border-r-gray-200 bg-[#fafafb]! mt-16 h-[calc(100vh-4rem-3.5rem)]"
 		>
 			<StudentFilters
 				{filters}
