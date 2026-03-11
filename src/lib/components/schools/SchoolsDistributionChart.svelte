@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import * as d3 from "d3";
 	import BarChart3Icon from "@lucide/svelte/icons/bar-chart-3";
+	import * as d3 from "d3";
+	import { onMount } from "svelte";
 	import type { DistributionData } from "./types.js";
-	import { DISTRICTS, CHART_COLORS } from "./types.js";
+	import { CHART_COLORS } from "./types.js";
 
 	interface Props {
 		data?: DistributionData[];
@@ -57,7 +57,10 @@
 			.range([0, innerWidth])
 			.padding(0.35);
 
-		const yScale = d3.scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
+		const yScale = d3
+			.scaleLinear()
+			.domain([0, yMax])
+			.range([innerHeight, 0]);
 
 		// Y-axis grid lines
 		const yTickValues = [0, 4, 8, 12, 16];
@@ -94,35 +97,47 @@
 			.duration(800)
 			.delay((_: DistributionData, i: number) => i * 100)
 			.attr("y", (d: DistributionData) => yScale(d.active))
-			.attr("height", (d: DistributionData) => innerHeight - yScale(d.active));
+			.attr(
+				"height",
+				(d: DistributionData) => innerHeight - yScale(d.active),
+			);
 
-		// Draw inactive bars (top - red/pink)
+		// Draw inactive bars (top - red/pink) with only top rounded corners
+		const barWidth = xScale.bandwidth();
+		const cornerRadius = 4;
+
 		const inactiveBars = g
-			.selectAll<SVGRectElement, DistributionData>(".bar-inactive")
+			.selectAll<SVGPathElement, DistributionData>(".bar-inactive")
 			.data(data)
 			.enter()
-			.append("rect")
+			.append("path")
 			.attr("class", "bar-inactive")
-			.attr("x", (d: DistributionData) => xScale(d.district) || 0)
-			.attr("y", innerHeight)
-			.attr("width", xScale.bandwidth())
-			.attr("height", 0)
 			.attr("fill", CHART_COLORS.inactive)
-			.attr("rx", 4)
-			.style("cursor", "pointer");
+			.style("cursor", "pointer")
+			.attr("d", (d: DistributionData) => {
+				const x = xScale(d.district) || 0;
+				// Start with zero height (for animation)
+				return `M${x},${innerHeight} L${x},${innerHeight} L${x + barWidth},${innerHeight} L${x + barWidth},${innerHeight} Z`;
+			});
 
 		inactiveBars
 			.transition()
 			.duration(800)
 			.delay((_: DistributionData, i: number) => i * 100 + 200)
-			.attr(
-				"y",
-				(d: DistributionData) => yScale(d.active + d.inactive),
-			)
-			.attr(
-				"height",
-				(d: DistributionData) => yScale(d.active) - yScale(d.active + d.inactive),
-			);
+			.attr("d", (d: DistributionData) => {
+				const x = xScale(d.district) || 0;
+				const y = yScale(d.active + d.inactive);
+				const h = yScale(d.active) - yScale(d.active + d.inactive);
+				const bottomY = y + h;
+				const r = Math.min(cornerRadius, h / 2, barWidth / 2);
+				// Path with rounded top corners only, flat bottom
+				return `M${x},${bottomY}
+						L${x},${y + r}
+						Q${x},${y} ${x + r},${y}
+						L${x + barWidth - r},${y}
+						Q${x + barWidth},${y} ${x + barWidth},${y + r}
+						L${x + barWidth},${bottomY} Z`;
+			});
 
 		// Hover effects for active bars
 		activeBars
@@ -137,7 +152,10 @@
 						.transition()
 						.duration(200)
 						.attr("fill", CHART_COLORS.activeHover);
-					showTooltip(event, `${d.district}: ${d.active} Active Schools`);
+					showTooltip(
+						event,
+						`${d.district}: ${d.active} Active Schools`,
+					);
 				},
 			)
 			.on(
@@ -147,7 +165,10 @@
 					event: MouseEvent,
 					d: DistributionData,
 				) {
-					showTooltip(event, `${d.district}: ${d.active} Active Schools`);
+					showTooltip(
+						event,
+						`${d.district}: ${d.active} Active Schools`,
+					);
 				},
 			)
 			.on("mouseleave", function (this: SVGRectElement) {
@@ -163,7 +184,7 @@
 			.on(
 				"mouseenter",
 				function (
-					this: SVGRectElement,
+					this: SVGPathElement,
 					event: MouseEvent,
 					d: DistributionData,
 				) {
@@ -171,20 +192,26 @@
 						.transition()
 						.duration(200)
 						.attr("fill", CHART_COLORS.inactiveHover);
-					showTooltip(event, `${d.district}: ${d.inactive} Inactive Schools`);
+					showTooltip(
+						event,
+						`${d.district}: ${d.inactive} Inactive Schools`,
+					);
 				},
 			)
 			.on(
 				"mousemove",
 				function (
-					this: SVGRectElement,
+					this: SVGPathElement,
 					event: MouseEvent,
 					d: DistributionData,
 				) {
-					showTooltip(event, `${d.district}: ${d.inactive} Inactive Schools`);
+					showTooltip(
+						event,
+						`${d.district}: ${d.inactive} Inactive Schools`,
+					);
 				},
 			)
-			.on("mouseleave", function (this: SVGRectElement) {
+			.on("mouseleave", function (this: SVGPathElement) {
 				d3.select(this)
 					.transition()
 					.duration(200)
@@ -201,7 +228,7 @@
 		xAxis.select(".domain").remove();
 		xAxis
 			.selectAll("text")
-			.attr("fill", "#6b7280")
+			.attr("fill", "#171A1F")
 			.attr("font-size", "12px")
 			.attr("dy", "1em");
 
@@ -217,7 +244,7 @@
 		yAxis.select(".domain").remove();
 		yAxis
 			.selectAll("text")
-			.attr("fill", "#6b7280")
+			.attr("fill", "#171A1F")
 			.attr("font-size", "12px")
 			.attr("dx", "-0.5em");
 	}
@@ -258,7 +285,9 @@
 <div class="flex flex-col h-full">
 	<div class="flex items-center gap-2 mb-4">
 		<BarChart3Icon class="h-5 w-5 text-primary" />
-		<h3 class="text-base font-semibold text-gray-900">Schools Distribution by District</h3>
+		<h3 class="text-base font-semibold text-gray-900">
+			Schools Distribution by District
+		</h3>
 	</div>
 
 	<div class="relative flex-1">
@@ -271,21 +300,31 @@
 		<!-- Tooltip -->
 		<div
 			class="pointer-events-none absolute z-20 rounded-md bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg transition-opacity duration-150"
-			style="opacity: {tooltipVisible ? 1 : 0}; left: {tooltipX}px; top: {tooltipY}px; transform: translate(0, -100%);"
+			style="opacity: {tooltipVisible
+				? 1
+				: 0}; left: {tooltipX}px; top: {tooltipY}px; transform: translate(0, -100%);"
 		>
 			{tooltipText}
-			<div class="absolute left-2 top-full border-4 border-transparent border-t-gray-900"></div>
+			<div
+				class="absolute left-2 top-full border-4 border-transparent border-t-gray-900"
+			></div>
 		</div>
 	</div>
 
 	<!-- Legend -->
 	<div class="flex items-center justify-center gap-6 mt-4">
 		<div class="flex items-center gap-2">
-			<div class="h-3 w-3 rounded-full" style="background-color: {CHART_COLORS.active}"></div>
+			<div
+				class="h-3 w-3 rounded-full"
+				style="background-color: {CHART_COLORS.active}"
+			></div>
 			<span class="text-sm text-gray-600">Active Schools</span>
 		</div>
 		<div class="flex items-center gap-2">
-			<div class="h-3 w-3 rounded-full" style="background-color: {CHART_COLORS.inactive}"></div>
+			<div
+				class="h-3 w-3 rounded-full"
+				style="background-color: {CHART_COLORS.inactive}"
+			></div>
 			<span class="text-sm text-gray-600">Inactive Schools</span>
 		</div>
 	</div>
