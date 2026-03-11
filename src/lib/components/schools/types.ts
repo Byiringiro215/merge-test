@@ -26,10 +26,10 @@ export interface EnrollmentData {
 export const DISTRICTS: District[] = ['Kicukiro', 'Nyamagabe', 'Rubavu', 'Ngororero', 'Gasabo'];
 
 export const CHART_COLORS = {
-	active: '#3b82f6',      // blue
-	inactive: '#ef4444',    // red/pink
-	enrollment: '#22c55e',  // green
-	activeHover: '#2563eb',
-	inactiveHover: '#dc2626',
-	enrollmentHover: '#16a34a',
+	active: '#205FAD',      // blue
+	inactive: '#DD3C57',    // red/pink
+	enrollment: '#67E491',  // green
+	activeHover: '#205fade8',
+	inactiveHover: '#dc2626d3',
+	enrollmentHover: '#67e491ee',
 };
