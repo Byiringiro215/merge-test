@@ -50,7 +50,7 @@
 			cell: ({ row }) => {
 				const snippet = createRawSnippet(() => ({
 					render: () =>
-						`<span class="font-medium text-gray-900">${row.original.name}</span>`,
+						`<span class="font-normal text-sm text-black">${row.original.name}</span>`,
 				}));
 				return renderSnippet(snippet);
 			},
@@ -61,7 +61,7 @@
 			cell: ({ row }) => {
 				const snippet = createRawSnippet(() => ({
 					render: () =>
-						`<span class="inline-flex items-center rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-xs font-medium text-gray-700">${row.original.district}</span>`,
+						`<span class="inline-flex items-center rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-xs font-normal text-black">${row.original.district}</span>`,
 				}));
 				return renderSnippet(snippet);
 			},
@@ -69,7 +69,13 @@
 		{
 			accessorKey: "faculty",
 			header: "Faculty",
-			cell: ({ row }) => row.original.faculty,
+			cell: ({ row }) => {
+				const snippet = createRawSnippet(() => ({
+					render: () =>
+						`<span class="text-xs font-medium text-gray-700">${row.original.faculty}</span>`,
+				}));
+				return renderSnippet(snippet);
+			},
 		},
 		{
 			accessorKey: "level",
