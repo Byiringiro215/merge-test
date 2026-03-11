@@ -25,7 +25,7 @@ export interface Student {
 export interface StudentFiltersState {
 	districts: District[];
 	faculties: Faculty[];
-	levelRange: number;
+	levelRange: [number, number];
 	schoolType: 'all' | 'highSchool';
 }
 

@@ -4,6 +4,7 @@
 	import { renderSnippet } from "$lib/components/ui/data-table/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { Input } from "$lib/components/ui/input";
+	import Pagination from "$lib/components/ui/pagination/pagination.svelte";
 	import {
 		Card,
 		CardHeader,
@@ -19,11 +20,14 @@
 
 	interface Props {
 		students: Student[];
+		totalCount?: number;
 	}
 
-	let { students }: Props = $props();
+	let { students, totalCount }: Props = $props();
 
 	let searchQuery = $state("");
+	let currentPage = $state(1);
+	const pageSize = 10;
 
 	let filteredStudents = $derived(
 		searchQuery
@@ -41,6 +45,22 @@
 				)
 			: students,
 	);
+
+	let totalPages = $derived(Math.ceil(filteredStudents.length / pageSize));
+
+	let paginatedStudents = $derived(
+		filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+	);
+
+	// Reset to page 1 when search changes
+	$effect(() => {
+		searchQuery;
+		currentPage = 1;
+	});
+
+	function handlePageChange(page: number) {
+		currentPage = page;
+	}
 
 	const columns: ColumnDef<Student>[] = [
 		{
@@ -204,9 +224,22 @@
 		<div class="overflow-x-auto">
 			<DataTable
 				{columns}
-				data={filteredStudents}
+				data={paginatedStudents}
 				tableRowClick={handleRowClick}
 			/>
+		</div>
+		<!-- Pagination -->
+		<div class="flex items-center justify-between border-t border-gray-200 px-4 py-3 lg:px-6">
+			<p class="text-sm text-gray-500">
+				Showing <span class="font-medium text-gray-900">{paginatedStudents.length}</span> of <span class="font-medium text-gray-900">{totalCount ?? filteredStudents.length}</span> students
+			</p>
+			{#if totalPages > 1}
+				<Pagination
+					{currentPage}
+					{totalPages}
+					onPageChange={handlePageChange}
+				/>
+			{/if}
 		</div>
 	</CardContent>
 </Card>

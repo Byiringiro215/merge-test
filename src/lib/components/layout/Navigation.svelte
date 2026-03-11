@@ -12,6 +12,8 @@
 		X,
 	} from "@lucide/svelte";
 	import { page } from "$app/state";
+	import { slide } from "svelte/transition";
+	import { cubicOut } from "svelte/easing";
 
 	const navItems = [
 		{ label: "General", href: "/", icon: LayoutGrid },
@@ -31,9 +33,17 @@
 	function closeMobileMenu() {
 		mobileMenuOpen = false;
 	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === "Escape" && mobileMenuOpen) {
+			closeMobileMenu();
+		}
+	}
 </script>
 
-<nav class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white">
+<svelte:window onkeydown={handleKeydown} />
+
+<nav class="sticky top-0 z-60 w-full border-b border-gray-200 bg-white">
 	<div class="flex h-16 items-center justify-between px-6 lg:px-8">
 		<!-- Logo -->
 		<div class="flex items-center">
@@ -129,7 +139,10 @@
 
 	<!-- Mobile Navigation Menu -->
 	{#if mobileMenuOpen}
-		<div class="border-t border-gray-200 bg-white md:hidden">
+		<div
+			transition:slide={{ duration: 300, easing: cubicOut }}
+			class="absolute inset-x-0 top-full z-[60] border-t border-gray-200 bg-white md:hidden overflow-hidden shadow-lg"
+		>
 			<!-- Mobile Search -->
 			<div class="px-4 py-3">
 				<div class="relative">

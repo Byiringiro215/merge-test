@@ -29,7 +29,7 @@
 			"Electrical engineering",
 			"Road construction",
 		],
-		successThreshold: 75,
+		successThreshold: [0, 100],
 	});
 
 	function handleFiltersChange(newFilters: TeacherFiltersState) {
@@ -137,12 +137,85 @@
 			students: 105,
 			successRate: 79,
 		},
+		{
+			id: 6,
+			name: "Claudine Mukamana",
+			registeredSince: "2020",
+			primaryFaculty: "Software development",
+			assignedSchool: "Gasabo Technical",
+			district: "Gasabo",
+			students: 98,
+			successRate: 92,
+		},
+		{
+			id: 7,
+			name: "Patrick Niyonzima",
+			registeredSince: "2022",
+			primaryFaculty: "Automobile",
+			assignedSchool: "Kicukiro Vocational",
+			district: "Kicukiro",
+			students: 75,
+			successRate: 85,
+		},
+		{
+			id: 8,
+			name: "Grace Uwimana",
+			registeredSince: "2020",
+			primaryFaculty: "Tourism",
+			assignedSchool: "Nyamagabe High School",
+			district: "Nyamagabe",
+			students: 130,
+			successRate: 90,
+		},
+		{
+			id: 9,
+			name: "Felix Ndayisaba",
+			registeredSince: "2021",
+			primaryFaculty: "Mechanics",
+			assignedSchool: "Rubavu Technical",
+			district: "Rubavu",
+			students: 88,
+			successRate: 77,
+		},
+		{
+			id: 10,
+			name: "Sandra Ingabire",
+			registeredSince: "2019",
+			primaryFaculty: "Electrical engineering",
+			assignedSchool: "Ngororero Vocational",
+			district: "Ngororero",
+			students: 112,
+			successRate: 86,
+		},
+		{
+			id: 11,
+			name: "Eric Mugabo",
+			registeredSince: "2022",
+			primaryFaculty: "Road construction",
+			assignedSchool: "Kicukiro Technical",
+			district: "Kicukiro",
+			students: 92,
+			successRate: 81,
+		},
+		{
+			id: 12,
+			name: "Rose Mukeshimana",
+			registeredSince: "2020",
+			primaryFaculty: "Software development",
+			assignedSchool: "Rubavu High School",
+			district: "Rubavu",
+			students: 105,
+			successRate: 93,
+		},
 	];
 </script>
 
 <div class="w-full max-w-[100vw] overflow-x-hidden">
 	<Sidebar.Provider>
-		<Sidebar.Root side="left" class="border-r border-r-gray-200 bg-[#fafafb]! mt-16 h-[calc(100vh-4rem-3.5rem)]">
+		<Sidebar.Root
+			side="left"
+			class="border-r border-r-gray-200 bg-[#fafafb]! mt-16 h-[calc(100vh-4rem-3.5rem)]"
+		>
 			<TeacherFilters
 				{filters}
 				onFiltersChange={handleFiltersChange}
@@ -223,7 +296,10 @@
 
 				<!-- Teacher Registry Table -->
 				<div class="min-w-0 overflow-hidden">
-					<TeacherRegistryTable {teachers} totalCount={1248} />
+					<TeacherRegistryTable
+						{teachers}
+						totalCount={teachers.length}
+					/>
 				</div>
 			</div>
 		</Sidebar.Inset>

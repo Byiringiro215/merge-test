@@ -11,6 +11,7 @@
 	import { renderSnippet } from "$lib/components/ui/data-table/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { Input } from "$lib/components/ui/input";
+	import Pagination from "$lib/components/ui/pagination/pagination.svelte";
 	import { Edit, Eye, Search, Trash } from "@lucide/svelte";
 	import EllipsisIcon from "@lucide/svelte/icons/ellipsis";
 	import { type ColumnDef } from "@tanstack/table-core";
@@ -25,6 +26,8 @@
 	let { teachers, totalCount = 1248 }: Props = $props();
 
 	let searchQuery = $state("");
+	let currentPage = $state(1);
+	const pageSize = 10;
 
 	let filteredTeachers = $derived(
 		searchQuery
@@ -42,6 +45,22 @@
 				)
 			: teachers,
 	);
+
+	let totalPages = $derived(Math.ceil(filteredTeachers.length / pageSize));
+
+	let paginatedTeachers = $derived(
+		filteredTeachers.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+	);
+
+	// Reset to page 1 when search changes
+	$effect(() => {
+		searchQuery;
+		currentPage = 1;
+	});
+
+	function handlePageChange(page: number) {
+		currentPage = page;
+	}
 
 	function getSuccessRateColor(rate: number): string {
 		if (rate >= 90) return "#22c55e"; // green-500
@@ -70,8 +89,8 @@
 				const snippet = createRawSnippet(() => ({
 					render: () => `
 						<div class="flex items-center gap-3">
-							<div class="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white font-medium text-sm shrink-0">
-								${teacher.avatar ? `<img src="${teacher.avatar}" alt="${teacher.name}" class="h-10 w-10 rounded-full object-cover" />` : initials}
+							<div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white font-medium text-sm shrink-0">
+								${teacher.avatar ? `<img src="${teacher.avatar}" alt="${teacher.name}" class="h-8 w-8 rounded-full object-cover" />` : initials}
 							</div>
 							<div>
 								<div class="font-normal text-sm text-black">${teacher.name}</div>
@@ -223,23 +242,24 @@
 		<div class="overflow-x-auto">
 			<DataTable
 				{columns}
-				data={filteredTeachers}
+				data={paginatedTeachers}
 				tableRowClick={handleRowClick}
 			/>
 		</div>
-		<!-- Pagination info -->
+		<!-- Pagination -->
 		<div
 			class="flex items-center justify-between border-t border-gray-200 px-4 py-3 lg:px-6"
 		>
 			<p class="text-sm text-gray-500">
-				Showing <span class="font-medium text-gray-900"
-					>{filteredTeachers.length}</span
-				>
-				of
-				<span class="font-medium text-gray-900"
-					>{totalCount.toLocaleString()}</span
-				> teachers across all districts
+				Showing <span class="font-medium text-gray-900">{paginatedTeachers.length}</span> of <span class="font-medium text-gray-900">{totalCount.toLocaleString()}</span> teachers
 			</p>
+			{#if totalPages > 1}
+				<Pagination
+					{currentPage}
+					{totalPages}
+					onPageChange={handlePageChange}
+				/>
+			{/if}
 		</div>
 	</CardContent>
 </Card>
