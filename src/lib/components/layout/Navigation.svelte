@@ -14,6 +14,7 @@
 	import { page } from "$app/state";
 	import { slide } from "svelte/transition";
 	import { cubicOut } from "svelte/easing";
+	import { resolve } from "$app/paths";
 
 	const navItems = [
 		{ label: "General", href: "/", icon: LayoutGrid },
@@ -21,7 +22,7 @@
 		{ label: "Teachers", href: "/teachers", icon: GraduationCap },
 		{ label: "Schools", href: "/schools", icon: Building2 },
 		{ label: "Curricula", href: "/curricula", icon: BookOpen },
-	];
+	] as const;
 
 	let searchQuery = $state("");
 	let mobileMenuOpen = $state(false);
@@ -64,10 +65,10 @@
 			{#each navItems as item, i (i)}
 				{@const isActive = page.url.pathname === item.href}
 				<a
-					href={item.href}
-					class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors {isActive
+					href={resolve(item.href)}
+					class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-normal leading-6 transition-colors {isActive
 						? 'bg-blue-50 text-primary'
-						: 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}"
+						: 'text-[#565D6D] hover:bg-gray-100 hover:text-gray-900'}"
 				>
 					<item.icon class="h-4 w-4" />
 					{item.label}
@@ -113,7 +114,7 @@
 			<!-- User Avatar -->
 			<button
 				type="button"
-				class="h-9 w-9 overflow-hidden rounded-full bg-gradient-to-br from-blue-500 to-blue-600"
+				class="h-9 w-9 overflow-hidden rounded-full bg-linear-to-br from-blue-500 to-blue-600"
 			>
 				<span
 					class="flex h-full w-full items-center justify-center text-sm font-medium text-white"
@@ -141,7 +142,7 @@
 	{#if mobileMenuOpen}
 		<div
 			transition:slide={{ duration: 300, easing: cubicOut }}
-			class="absolute inset-x-0 top-full z-[60] border-t border-gray-200 bg-white md:hidden overflow-hidden shadow-lg"
+			class="absolute inset-x-0 top-full z-60 border-t border-gray-200 bg-white md:hidden overflow-hidden shadow-lg"
 		>
 			<!-- Mobile Search -->
 			<div class="px-4 py-3">
@@ -163,11 +164,11 @@
 				{#each navItems as item, i (i)}
 					{@const isActive = page.url.pathname === item.href}
 					<a
-						href={item.href}
+						href={resolve(item.href)}
 						onclick={closeMobileMenu}
 						class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors {isActive
 							? 'bg-blue-50 text-primary'
-							: 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}"
+							: 'text-[#565D6D] hover:bg-gray-100 hover:text-gray-900'}"
 					>
 						<item.icon class="h-5 w-5" />
 						{item.label}

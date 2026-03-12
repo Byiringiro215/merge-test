@@ -49,7 +49,10 @@
 	let totalPages = $derived(Math.ceil(filteredTeachers.length / pageSize));
 
 	let paginatedTeachers = $derived(
-		filteredTeachers.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+		filteredTeachers.slice(
+			(currentPage - 1) * pageSize,
+			currentPage * pageSize,
+		),
 	);
 
 	// Reset to page 1 when search changes
@@ -163,7 +166,7 @@
 		},
 		{
 			id: "actions",
-			header: "",
+			header: "Actions",
 			cell: ({ row }) =>
 				renderSnippet(rowAction, { teacher: row.original }),
 		},
@@ -251,7 +254,13 @@
 			class="flex items-center justify-between border-t border-gray-200 px-4 py-3 lg:px-6"
 		>
 			<p class="text-sm text-gray-500">
-				Showing <span class="font-medium text-gray-900">{paginatedTeachers.length}</span> of <span class="font-medium text-gray-900">{totalCount.toLocaleString()}</span> teachers
+				Showing <span class="font-medium text-gray-900"
+					>{paginatedTeachers.length}</span
+				>
+				of
+				<span class="font-medium text-gray-900"
+					>{totalCount.toLocaleString()}</span
+				> teachers
 			</p>
 			{#if totalPages > 1}
 				<Pagination

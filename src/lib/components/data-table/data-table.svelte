@@ -133,7 +133,7 @@
 	>
 		{#each table.getRowModel().rows as row (row.id)}
 			<Table.Row
-				class="h-12 border border-[#0000000a] text-gray-900 font-normal"
+				class="h-18 border border-[#DEE1E6] text-primary-black font-normal"
 				data-state={row.getIsSelected() && "selected"}
 				onclick={() => {
 					if (
