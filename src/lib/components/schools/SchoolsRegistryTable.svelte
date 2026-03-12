@@ -117,7 +117,7 @@
 			header: () => {
 				const snippet = createRawSnippet(() => ({
 					render: () =>
-						`<div class=" text-sm leading-7  h-[48px] font-semibold text-[#171A1F]">Status</div>`,
+						`<div class="text-sm leading-7  h-[48px] font-semibold text-[#171A1F]">Status</div>`,
 				}));
 				return renderSnippet(snippet);
 			},
