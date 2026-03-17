@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import * as d3 from "d3";
+	import {
+		select,
+		scaleBand,
+		scaleLinear,
+		easeQuadOut,
+		axisBottom,
+		axisLeft,
+	} from "d3";
 	import {
 		Card,
 		CardHeader,
@@ -36,14 +43,13 @@
 	function createChart() {
 		if (!chartContainer || width === 0) return;
 
-		d3.select(chartContainer).selectAll("*").remove();
+		select(chartContainer).selectAll("*").remove();
 
 		const margin = { top: 10, right: 20, left: 40, bottom: 30 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = d3
-			.select(chartContainer)
+		const svg = select(chartContainer)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -53,8 +59,7 @@
 			.attr("transform", `translate(${margin.left},${margin.top})`);
 
 		// Scales
-		const xScale = d3
-			.scaleBand()
+		const xScale = scaleBand()
 			.domain(data.map((d) => d.range))
 			.range([0, innerWidth])
 			.padding(0.4);
@@ -62,10 +67,7 @@
 		const yMax = 4800;
 		const yTickValues = [0, 1200, 2400, 3600, 4800];
 
-		const yScale = d3
-			.scaleLinear()
-			.domain([0, yMax])
-			.range([innerHeight, 0]);
+		const yScale = scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
 
 		// Grid lines
 		g.append("g")
@@ -123,10 +125,10 @@
 				event: MouseEvent,
 				d: ScoreDistribution,
 			) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
+					.ease(easeQuadOut)
 					.attr("fill", "#1a4d8c")
 					.attr("opacity", 0.9);
 
@@ -150,10 +152,10 @@
 				},
 			)
 			.on("mouseleave", function (this: SVGPathElement) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
+					.ease(easeQuadOut)
 					.attr("fill", "#205fad")
 					.attr("opacity", 1);
 
@@ -164,7 +166,7 @@
 		const xAxis = g
 			.append("g")
 			.attr("transform", `translate(0,${innerHeight})`)
-			.call(d3.axisBottom(xScale).tickSize(0));
+			.call(axisBottom(xScale).tickSize(0));
 
 		xAxis.select(".domain").remove();
 		xAxis

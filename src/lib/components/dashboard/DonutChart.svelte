@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import * as d3 from "d3";
+	import { select, pie, arc, easeQuadOut, interpolate } from "d3";
+	import type { PieArcDatum } from "d3";
 	import {
 		Card,
 		CardHeader,
@@ -8,10 +9,11 @@
 		CardDescription,
 		CardContent,
 	} from "$lib/components/ui/card";
+	import { cn } from "$lib/utils";
 
 	const data = [
-		{ label: "Pass Rate", value: 86.7, color: "#10b981" },
-		{ label: "Failure", value: 13.3, color: "#ef4444" },
+		{ label: "Pass Rate", value: 86.7, color: "#67E491" },
+		{ label: "Failure", value: 15.3, color: "#DD3C57" },
 	];
 
 	let chartWrapper: HTMLDivElement;
@@ -23,17 +25,16 @@
 	let tooltipLeft = $state("0px");
 	let tooltipTop = $state("0px");
 
-	const chartSize = 190;
-	const radius = chartSize / 2;
-	const innerRadius = radius * 0.6;
+	const chartSize = 200;
+	const radius = chartSize / 2 - 20;
+	const innerRadius = radius * 0.64;
 
 	function createChart() {
 		if (!chartContainer || !mounted) return;
 
-		d3.select(chartContainer).selectAll("*").remove();
+		select(chartContainer).selectAll("*").remove();
 
-		const svg = d3
-			.select(chartContainer)
+		const svg = select(chartContainer)
 			.append("svg")
 			.attr("width", chartSize)
 			.attr("height", chartSize)
@@ -44,66 +45,75 @@
 			.attr("transform", `translate(${chartSize / 2},${chartSize / 2})`);
 
 		type ChartData = (typeof data)[0];
-		type PieArcData = d3.PieArcDatum<ChartData>;
+		type PieArcData = PieArcDatum<ChartData>;
 
-		const pie = d3
-			.pie<ChartData>()
+		const pieGenerator = pie<ChartData>()
 			.value((d: ChartData) => d.value)
 			.sort(null)
 			.startAngle(-Math.PI / 2)
 			.endAngle(Math.PI * 1.5);
 
-		const arc = d3
-			.arc<PieArcData>()
+		const arcGenerator = arc<PieArcData>()
 			.innerRadius(innerRadius)
 			.outerRadius(radius)
-			.cornerRadius(6)
-			.padAngle(0.03);
+			.cornerRadius(0)
+			.padAngle(0.07);
 
 		// Draw arcs with animation
 		const arcs = g
 			.selectAll<SVGPathElement, PieArcData>("path")
-			.data(pie(data))
+			.data(pieGenerator(data))
 			.enter()
 			.append("path")
 			.attr("fill", (d: PieArcData) => d.data.color)
-			.attr("d", arc)
+			.attr("d", arcGenerator)
 			.style("cursor", "pointer");
 
 		// Animate in
 		arcs.each(function (this: SVGPathElement, d: PieArcData) {
-			const path = d3.select(this);
+			const path = select(this);
 			const startAngle = d.startAngle;
-			path.attr("d", arc({ ...d, endAngle: startAngle } as PieArcData));
+			path.attr("d", arcGenerator({ ...d, endAngle: startAngle } as PieArcData));
 		});
 
 		arcs.transition()
 			.duration(800)
 			.delay((_: PieArcData, i: number) => i * 200)
 			.attrTween("d", function (d: PieArcData) {
-				const interpolate = d3.interpolate(d.startAngle, d.endAngle);
-				return (t: number) => arc({ ...d, endAngle: interpolate(t) } as PieArcData) || "";
+				const angleInterpolate = interpolate(d.startAngle, d.endAngle);
+				return (t: number) =>
+					arcGenerator({ ...d, endAngle: angleInterpolate(t) } as PieArcData) || "";
 			});
 
 		// Hover effects - smooth opacity transition with slight scale
-		arcs.on("mouseenter", function (this: SVGPathElement, event: MouseEvent, d: PieArcData) {
-			d3.select(this)
-				.transition()
-				.duration(200)
-				.ease(d3.easeQuadOut)
-				.attr("opacity", 0.85)
-				.attr("transform", "scale(1.02)");
-
-			showTooltip(event, `${d.data.label}: ${d.data.value}%`);
-		})
-			.on("mousemove", function (this: SVGPathElement, event: MouseEvent, d: PieArcData) {
-				showTooltip(event, `${d.data.label}: ${d.data.value}%`);
-			})
-			.on("mouseleave", function (this: SVGPathElement) {
-				d3.select(this)
+		arcs.on(
+			"mouseenter",
+			function (this: SVGPathElement, event: MouseEvent, d: PieArcData) {
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
+					.ease(easeQuadOut)
+					.attr("opacity", 0.85)
+					.attr("transform", "scale(1.02)");
+
+				showTooltip(event, `${d.data.label}: ${d.data.value}%`);
+			},
+		)
+			.on(
+				"mousemove",
+				function (
+					this: SVGPathElement,
+					event: MouseEvent,
+					d: PieArcData,
+				) {
+					showTooltip(event, `${d.data.label}: ${d.data.value}%`);
+				},
+			)
+			.on("mouseleave", function (this: SVGPathElement) {
+				select(this)
+					.transition()
+					.duration(200)
+					.ease(easeQuadOut)
 					.attr("opacity", 1)
 					.attr("transform", "scale(1)");
 
@@ -162,41 +172,52 @@
 	});
 </script>
 
-<Card class="h-full">
+<Card class="h-130">
 	<CardHeader class="p-4 lg:p-6">
-		<CardTitle class="text-base">Global Success Distribution</CardTitle>
-		<CardDescription
+		<CardTitle
+			class="text-[18px] font-semibold leading-7 text-primary-black -tracking-[0.45px]"
+			>Global Success Distribution</CardTitle
+		>
+		<CardDescription class="text-[#565D6D] max-w-100"
 			>Comparing passed vs. failed outcomes across all High Schools.</CardDescription
 		>
 	</CardHeader>
-	<CardContent class="flex flex-col mt-10 items-center">
-		<div
-			bind:this={chartWrapper}
-			class="relative flex w-full items-center justify-center"
-			style="height: {chartSize}px;"
-		>
+	<CardContent class="flex flex-col items-center ">
+		<div class="w-full flex items-center justify-center h-75!">
 			<div
-				bind:this={chartContainer}
-				style="width: {chartSize}px; height: {chartSize}px; "
-			></div>
-			<div
-				bind:this={tooltipEl}
-				class="pointer-events-none absolute z-10 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity"
-				style="opacity: {tooltipOpacity}; left: {tooltipLeft}; top: {tooltipTop};"
+				bind:this={chartWrapper}
+				class="relative flex w-full items-center justify-center"
+				style="height: {chartSize}px;"
 			>
-				{tooltipText}
+				<div
+					bind:this={chartContainer}
+					style="width: {chartSize}px; height: {chartSize}px; "
+				></div>
+				<div
+					bind:this={tooltipEl}
+					class="pointer-events-none absolute z-10 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity"
+					style="opacity: {tooltipOpacity}; left: {tooltipLeft}; top: {tooltipTop};"
+				>
+					{tooltipText}
+				</div>
 			</div>
 		</div>
 
-		<div class="mt-10 grid w-full grid-cols-2 gap-4">
+		<div class=" grid w-full grid-cols-2 gap-4">
 			{#each data as item, i (i)}
 				<div
 					class="flex flex-col items-center rounded-lg border border-gray-100 p-3 transition-colors bg-gray-50"
 				>
-					<span class="text-2xl font-bold" style="color: {item.color}"
-						>{item.value}%</span
+					<span
+						class={cn(
+							"text-2xl font-inter font-bold",
+							item.label === "Pass Rate"
+								? "text-[#16A34A]"
+								: "text-[#DD3C57]",
+						)}>{item.value}%</span
 					>
-					<span class="text-xs uppercase tracking-wide text-gray-500"
+					<span
+						class="text-xs uppercase tracking-[0.6px] font-normal text-[#565D6D]"
 						>{item.label === "Pass Rate"
 							? "PASS RATE"
 							: "FAILURE"}</span

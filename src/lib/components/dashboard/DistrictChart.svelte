@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import * as d3 from "d3";
 	import {
 		Card,
+		CardContent,
+		CardDescription,
 		CardHeader,
 		CardTitle,
-		CardDescription,
-		CardContent,
 	} from "$lib/components/ui/card";
+	import { scaleBand, scaleLinear, select, easeQuadOut, axisLeft } from "d3";
+	import { onMount } from "svelte";
 
 	interface DistrictData {
 		district: string;
@@ -30,35 +30,34 @@
 	let tooltipX = $state(0);
 	let tooltipY = $state(0);
 	let tooltipVisible = $state(false);
-	const height = 220;
+	const height = 300;
 
 	function createChart() {
 		if (!chartContainer || width === 0) return;
 
-		d3.select(chartContainer).selectAll("*").remove();
+		select(chartContainer).selectAll("*").remove();
 
 		const margin = { top: 10, right: 30, left: 80, bottom: 20 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = d3
-			.select(chartContainer)
+		const svg = select(chartContainer)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
 
 		const g = svg
 			.append("g")
-			.attr("transform", `translate(${margin.left},${margin.top})`);
+			.attr("transform", `translate(${margin.left},${margin.top})`)
+			.attr("class", "chart-group");
 
 		// Scales
-		const yScale = d3
-			.scaleBand()
+		const yScale = scaleBand()
 			.domain(data.map((d) => d.district))
 			.range([0, innerHeight])
-			.padding(0.35);
+			.padding(0.4);
 
-		const xScale = d3.scaleLinear().domain([0, 100]).range([0, innerWidth]);
+		const xScale = scaleLinear().domain([0, 100]).range([0, innerWidth]);
 
 		const barHeight = yScale.bandwidth() / 2 - 2;
 
@@ -73,7 +72,7 @@
 			.attr("y", (d: DistrictData) => yScale(d.district) || 0)
 			.attr("width", 0)
 			.attr("height", barHeight)
-			.attr("fill", "#fb923c")
+			.attr("fill", "#EB8B47")
 			.attr("rx", 3)
 			.style("cursor", "pointer");
 
@@ -85,31 +84,45 @@
 
 		// Success bar hover with smooth animation
 		successBars
-			.on("mouseenter", function (this: SVGRectElement, event: MouseEvent, d: DistrictData) {
-				d3.select(this)
-					.transition()
-					.duration(200)
-					.ease(d3.easeQuadOut)
-					.attr("fill", "#f97316")
-					.attr("opacity", 0.9);
+			.on(
+				"mouseenter",
+				function (
+					this: SVGRectElement,
+					event: MouseEvent,
+					d: DistrictData,
+				) {
+					select(this)
+						.transition()
+						.duration(200)
+						.ease(easeQuadOut)
+						.attr("fill", "#f97316")
+						.attr("opacity", 0.9);
 
-				showTooltip(
-					event,
-					`${d.district} Success Rate: ${d.successRate}%`,
-				);
-			})
-			.on("mousemove", function (this: SVGRectElement, event: MouseEvent, d: DistrictData) {
-				showTooltip(
-					event,
-					`${d.district} Success Rate: ${d.successRate}%`,
-				);
-			})
+					showTooltip(
+						event,
+						`${d.district} Success Rate: ${d.successRate}%`,
+					);
+				},
+			)
+			.on(
+				"mousemove",
+				function (
+					this: SVGRectElement,
+					event: MouseEvent,
+					d: DistrictData,
+				) {
+					showTooltip(
+						event,
+						`${d.district} Success Rate: ${d.successRate}%`,
+					);
+				},
+			)
 			.on("mouseleave", function (this: SVGRectElement) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
-					.attr("fill", "#fb923c")
+					.ease(easeQuadOut)
+					.attr("fill", "#EB8B47")
 					.attr("opacity", 1);
 
 				hideTooltip();
@@ -123,10 +136,13 @@
 			.append("rect")
 			.attr("class", "bar-schools")
 			.attr("x", 0)
-			.attr("y", (d: DistrictData) => (yScale(d.district) || 0) + barHeight + 4)
+			.attr(
+				"y",
+				(d: DistrictData) => (yScale(d.district) || 0) + barHeight + 4,
+			)
 			.attr("width", 0)
 			.attr("height", barHeight)
-			.attr("fill", "#60a5fa")
+			.attr("fill", "#205FAD")
 			.attr("rx", 3)
 			.style("cursor", "pointer");
 
@@ -138,38 +154,52 @@
 
 		// School bar hover with smooth animation
 		schoolBars
-			.on("mouseenter", function (this: SVGRectElement, event: MouseEvent, d: DistrictData) {
-				d3.select(this)
-					.transition()
-					.duration(200)
-					.ease(d3.easeQuadOut)
-					.attr("fill", "#3b82f6")
-					.attr("opacity", 0.9);
+			.on(
+				"mouseenter",
+				function (
+					this: SVGRectElement,
+					event: MouseEvent,
+					d: DistrictData,
+				) {
+					select(this)
+						.transition()
+						.duration(200)
+						.ease(easeQuadOut)
+						.attr("fill", "#205FAD")
+						.attr("opacity", 0.9);
 
-				showTooltip(
-					event,
-					`${d.district} Active Schools: ${d.activeSchools}`,
-				);
-			})
-			.on("mousemove", function (this: SVGRectElement, event: MouseEvent, d: DistrictData) {
-				showTooltip(
-					event,
-					`${d.district} Active Schools: ${d.activeSchools}`,
-				);
-			})
+					showTooltip(
+						event,
+						`${d.district} Active Schools: ${d.activeSchools}`,
+					);
+				},
+			)
+			.on(
+				"mousemove",
+				function (
+					this: SVGRectElement,
+					event: MouseEvent,
+					d: DistrictData,
+				) {
+					showTooltip(
+						event,
+						`${d.district} Active Schools: ${d.activeSchools}`,
+					);
+				},
+			)
 			.on("mouseleave", function (this: SVGRectElement) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
-					.attr("fill", "#60a5fa")
+					.ease(easeQuadOut)
+					.attr("fill", "#205FAD")
 					.attr("opacity", 1);
 
 				hideTooltip();
 			});
 
 		// Y Axis (district names)
-		const yAxis = g.append("g").call(d3.axisLeft(yScale).tickSize(0));
+		const yAxis = g.append("g").call(axisLeft(yScale).tickSize(0));
 
 		yAxis.select(".domain").remove();
 		yAxis
@@ -214,7 +244,10 @@
 
 <Card class="py-6">
 	<CardHeader>
-		<CardTitle class="text-base">District Contributions</CardTitle>
+		<CardTitle
+			class="text-[18px] font-semibold leading-7 text-primary-black -tracking-[0.45px]"
+			>District Contributions</CardTitle
+		>
 		<CardDescription
 			>High School count and performance levels by district.</CardDescription
 		>

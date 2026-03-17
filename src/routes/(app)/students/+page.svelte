@@ -287,12 +287,12 @@
 						<Sidebar.Trigger class="md:hidden" />
 						<div>
 							<h1
-								class="text-xl font-bold text-gray-900 sm:text-2xl"
+								class="text-xl font-inter font-bold text-gray-900 sm:text-3xl"
 							>
 								Students Analytics
 							</h1>
 							<p
-								class="mt-0.5 text-xs text-gray-500 sm:mt-1 sm:text-sm"
+								class="mt-0.5 text-xs text-primary-gray sm:mt-1 sm:text-sm"
 							>
 								Deep dive into academic performance and faculty
 								trends.

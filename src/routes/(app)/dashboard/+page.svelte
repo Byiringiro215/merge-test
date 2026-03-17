@@ -62,14 +62,16 @@
     ];
 </script>
 
-<div class="mx-auto max-w-400 px-4 py-6 sm:px-6">
+<div class="mx-auto max-w-375 px-4 py-6 sm:px-6">
     <!-- Header Section -->
     <div
         class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
     >
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">General Overview</h1>
-            <p class="mt-1 text-sm text-gray-500">
+            <h1 class="text-xl font-inter font-bold text-gray-900 sm:text-3xl">
+                General Overview
+            </h1>
+            <p class="mt-0.5 text-xs text-primary-gray sm:mt-1 sm:text-sm">
                 Real-time performance metrics for High Schools across Rwanda's
                 key districts.
             </p>

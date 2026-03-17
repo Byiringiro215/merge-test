@@ -171,14 +171,10 @@
 				renderSnippet(rowAction, { record: row.original }),
 		},
 	];
-
-	function handleRowClick(record: SchoolRecord) {
-		console.log("Row clicked:", record.name);
-	}
 </script>
 
 <div
-	class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+	class="mb-4 mt-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
 >
 	<div>
 		<h2 class="text-2xl font-medium text-gray-900">
@@ -189,7 +185,7 @@
 			schools.
 		</p>
 	</div>
-	<div class="relative w-full sm:w-72">
+	<div class="relative w-full sm:w-83.75">
 		<Search
 			class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
 		/>
@@ -197,17 +193,13 @@
 			type="text"
 			placeholder="Search high schools or districts..."
 			bind:value={searchQuery}
-			class="pl-9"
+			class="pl-9 bg-white rounded-[6px] placeholder:font-normal text-sm "
 		/>
 	</div>
 </div>
 
 <div class="rounded-lg border border-gray-200 bg-white overflow-hidden">
-	<DataTable
-		{columns}
-		data={filteredRecords}
-		tableRowClick={handleRowClick}
-	/>
+	<DataTable {columns} data={filteredRecords} />
 </div>
 
 {#snippet rowAction()}

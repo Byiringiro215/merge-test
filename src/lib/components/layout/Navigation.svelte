@@ -17,7 +17,7 @@
 	import { resolve } from "$app/paths";
 
 	const navItems = [
-		{ label: "General", href: "/", icon: LayoutGrid },
+		{ label: "General", href: "/dashboard", icon: LayoutGrid },
 		{ label: "Students", href: "/students", icon: Users },
 		{ label: "Teachers", href: "/teachers", icon: GraduationCap },
 		{ label: "Schools", href: "/schools", icon: Building2 },

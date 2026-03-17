@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import * as d3 from "d3";
+	import {
+		select,
+		scaleBand,
+		scaleLinear,
+		easeQuadOut,
+		axisBottom,
+		axisLeft,
+	} from "d3";
 	import TrendingUpIcon from "@lucide/svelte/icons/trending-up";
 	import type { EnrollmentData } from "./types.js";
 	import { CHART_COLORS } from "./types.js";
@@ -30,14 +37,13 @@
 	function createChart() {
 		if (!chartContainer || width === 0) return;
 
-		d3.select(chartContainer).selectAll("*").remove();
+		select(chartContainer).selectAll("*").remove();
 
 		const margin = { top: 20, right: 20, left: 45, bottom: 40 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = d3
-			.select(chartContainer)
+		const svg = select(chartContainer)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -50,13 +56,12 @@
 		const yTickValues = [0, 1500, 3000, 4500, 6000];
 
 		// Scales
-		const xScale = d3
-			.scaleBand()
+		const xScale = scaleBand()
 			.domain(data.map((d) => d.district))
 			.range([0, innerWidth])
 			.padding(0.4);
 
-		const yScale = d3.scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
+		const yScale = scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
 
 		// Y-axis grid lines
 		g.append("g")
@@ -114,10 +119,10 @@
 				event: MouseEvent,
 				d: EnrollmentData,
 			) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
+					.ease(easeQuadOut)
 					.attr("fill", CHART_COLORS.enrollmentHover)
 					.attr("opacity", 0.9);
 
@@ -141,10 +146,10 @@
 				},
 			)
 			.on("mouseleave", function (this: SVGPathElement) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
+					.ease(easeQuadOut)
 					.attr("fill", CHART_COLORS.enrollment)
 					.attr("opacity", 1);
 
@@ -155,7 +160,7 @@
 		const xAxis = g
 			.append("g")
 			.attr("transform", `translate(0,${innerHeight})`)
-			.call(d3.axisBottom(xScale).tickSize(0));
+			.call(axisBottom(xScale).tickSize(0));
 
 		xAxis.select(".domain").remove();
 		xAxis
@@ -217,7 +222,9 @@
 <div class="flex flex-col h-full">
 	<div class="flex items-center gap-2 mb-4">
 		<TrendingUpIcon class="h-5 w-5 text-primary" />
-		<h3 class="text-base font-semibold text-gray-900">Student Enrollment Trend per District</h3>
+		<h3 class="text-base font-semibold text-gray-900">
+			Student Enrollment Trend per District
+		</h3>
 	</div>
 
 	<div class="relative flex-1">
@@ -230,10 +237,14 @@
 		<!-- Tooltip -->
 		<div
 			class="pointer-events-none absolute z-20 rounded-md bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg transition-opacity duration-150"
-			style="opacity: {tooltipVisible ? 1 : 0}; left: {tooltipX}px; top: {tooltipY}px; transform: translate(0, -100%);"
+			style="opacity: {tooltipVisible
+				? 1
+				: 0}; left: {tooltipX}px; top: {tooltipY}px; transform: translate(0, -100%);"
 		>
 			{tooltipText}
-			<div class="absolute left-2 top-full border-4 border-transparent border-t-gray-900"></div>
+			<div
+				class="absolute left-2 top-full border-4 border-transparent border-t-gray-900"
+			></div>
 		</div>
 	</div>
 </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import * as d3 from "d3";
+	import { select, pie, arc, easeQuadOut, interpolate } from "d3";
+	import type { PieArcDatum } from "d3";
 	import {
 		Card,
 		CardHeader,
@@ -62,10 +63,9 @@
 	function createChart() {
 		if (!chartContainer || !mounted) return;
 
-		d3.select(chartContainer).selectAll("*").remove();
+		select(chartContainer).selectAll("*").remove();
 
-		const svg = d3
-			.select(chartContainer)
+		const svg = select(chartContainer)
 			.append("svg")
 			.attr("width", chartSize)
 			.attr("height", chartSize)
@@ -76,17 +76,15 @@
 			.attr("transform", `translate(${chartSize / 2},${chartSize / 2})`);
 
 		type ChartData = (typeof data)[0];
-		type PieArcData = d3.PieArcDatum<ChartData>;
+		type PieArcData = PieArcDatum<ChartData>;
 
-		const pie = d3
-			.pie<ChartData>()
+		const pieGenerator = pie<ChartData>()
 			.value((d: ChartData) => d.count)
 			.sort(null)
 			.startAngle(-Math.PI / 2)
 			.endAngle(Math.PI * 1.5);
 
-		const arc = d3
-			.arc<PieArcData>()
+		const arcGenerator = arc<PieArcData>()
 			.innerRadius(innerRadius)
 			.outerRadius(radius)
 			.cornerRadius(4)
@@ -95,37 +93,40 @@
 		// Draw arcs with animation
 		const arcs = g
 			.selectAll<SVGPathElement, PieArcData>("path")
-			.data(pie(data))
+			.data(pieGenerator(data))
 			.enter()
 			.append("path")
 			.attr("fill", (d: PieArcData) => d.data.color)
-			.attr("d", arc)
+			.attr("d", arcGenerator)
 			.style("cursor", "pointer");
 
 		// Animate in
 		arcs.each(function (this: SVGPathElement, d: PieArcData) {
-			const path = d3.select(this);
+			const path = select(this);
 			const startAngle = d.startAngle;
-			path.attr("d", arc({ ...d, endAngle: startAngle } as PieArcData));
+			path.attr("d", arcGenerator({ ...d, endAngle: startAngle } as PieArcData));
 		});
 
 		arcs.transition()
 			.duration(800)
 			.delay((_: PieArcData, i: number) => i * 100)
 			.attrTween("d", function (d: PieArcData) {
-				const interpolate = d3.interpolate(d.startAngle, d.endAngle);
+				const angleInterpolate = interpolate(d.startAngle, d.endAngle);
 				return (t: number) =>
-					arc({ ...d, endAngle: interpolate(t) } as PieArcData) || "";
+					arcGenerator({
+						...d,
+						endAngle: angleInterpolate(t),
+					} as PieArcData) || "";
 			});
 
 		// Hover effects - using opacity only to avoid overflow issues
 		arcs.on(
 			"mouseenter",
 			function (this: SVGPathElement, event: MouseEvent, d: PieArcData) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
+					.ease(easeQuadOut)
 					.attr("opacity", 0.75);
 
 				const total = data.reduce((sum, item) => sum + item.count, 0);
@@ -155,10 +156,10 @@
 				},
 			)
 			.on("mouseleave", function (this: SVGPathElement) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
+					.ease(easeQuadOut)
 					.attr("opacity", 1);
 
 				hideTooltip();

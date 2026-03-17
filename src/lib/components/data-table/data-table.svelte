@@ -105,12 +105,12 @@
 </script>
 
 <Table.Root>
-	<Table.Header class="h-11.5 border border-[#0000000a]">
+	<Table.Header class="h-12 border border-[#0000000a] ">
 		{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
-			<Table.Row class=" bg-gray-50">
+			<Table.Row class=" bg-gray-50  ">
 				{#each headerGroup.headers as header (header.id)}
 					<Table.Head
-						class="text-gray-600  font-normal py-2 text-xs  leading-snug wrap-break-word whitespace-normal [&:has([role=checkbox])]:pl-3"
+						class="text-[#565D6D] font-normal py-2 text-sm  leading-snug wrap-break-word whitespace-normal [&:has([role=checkbox])]:pl-3"
 						style={(
 							header.column.columnDef.meta as { width: string }
 						)?.width
@@ -129,11 +129,11 @@
 		{/each}
 	</Table.Header>
 	<Table.Body
-		class="border-collapse border border-[#0000000a] text-xs font-medium wrap-break-word"
+		class="border-collapse border border-[#DEE1E6] text-xs font-medium wrap-break-word"
 	>
 		{#each table.getRowModel().rows as row (row.id)}
 			<Table.Row
-				class="h-18 border border-[#DEE1E6] text-primary-black font-normal"
+				class="h-16 leading-5 border border-[#DEE1E6] text-primary-black font-normal"
 				data-state={row.getIsSelected() && "selected"}
 				onclick={() => {
 					if (
