@@ -1,6 +1,6 @@
 <script lang="ts">
 	import BarChart3Icon from "@lucide/svelte/icons/bar-chart-3";
-	import * as d3 from "d3";
+	import { select, scaleBand, scaleLinear, axisBottom, axisLeft } from "d3";
 	import { onMount } from "svelte";
 	import type { DistributionData } from "./types.js";
 	import { CHART_COLORS } from "./types.js";
@@ -30,14 +30,13 @@
 	function createChart() {
 		if (!chartContainer || width === 0) return;
 
-		d3.select(chartContainer).selectAll("*").remove();
+		select(chartContainer).selectAll("*").remove();
 
 		const margin = { top: 20, right: 20, left: 35, bottom: 40 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = d3
-			.select(chartContainer)
+		const svg = select(chartContainer)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -51,16 +50,12 @@
 		const yMax = Math.ceil(maxValue / 4) * 4 + 4; // Round up to nearest 4
 
 		// Scales
-		const xScale = d3
-			.scaleBand()
+		const xScale = scaleBand()
 			.domain(data.map((d) => d.district))
 			.range([0, innerWidth])
 			.padding(0.35);
 
-		const yScale = d3
-			.scaleLinear()
-			.domain([0, yMax])
-			.range([innerHeight, 0]);
+		const yScale = scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
 
 		// Y-axis grid lines
 		const yTickValues = [0, 4, 8, 12, 16];
@@ -148,7 +143,7 @@
 					event: MouseEvent,
 					d: DistributionData,
 				) {
-					d3.select(this)
+					select(this)
 						.transition()
 						.duration(200)
 						.attr("fill", CHART_COLORS.activeHover);
@@ -172,7 +167,7 @@
 				},
 			)
 			.on("mouseleave", function (this: SVGRectElement) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
 					.attr("fill", CHART_COLORS.active);
@@ -188,7 +183,7 @@
 					event: MouseEvent,
 					d: DistributionData,
 				) {
-					d3.select(this)
+					select(this)
 						.transition()
 						.duration(200)
 						.attr("fill", CHART_COLORS.inactiveHover);
@@ -212,7 +207,7 @@
 				},
 			)
 			.on("mouseleave", function (this: SVGPathElement) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
 					.attr("fill", CHART_COLORS.inactive);
@@ -223,7 +218,7 @@
 		const xAxis = g
 			.append("g")
 			.attr("transform", `translate(0,${innerHeight})`)
-			.call(d3.axisBottom(xScale).tickSize(0));
+			.call(axisBottom(xScale).tickSize(0));
 
 		xAxis.select(".domain").remove();
 		xAxis

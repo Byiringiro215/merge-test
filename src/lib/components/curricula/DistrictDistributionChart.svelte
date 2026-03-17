@@ -1,5 +1,6 @@
 <script lang="ts">
-	import * as d3 from "d3";
+	import { select, pie, arc, interpolate } from "d3";
+	import type { PieArcDatum } from "d3";
 	import { onMount } from "svelte";
 	import type { DistrictDistributionData } from "./types.js";
 	import { DISTRICT_COLORS } from "./types.js";
@@ -55,7 +56,7 @@
 		if (!chartContainer || containerWidth === 0 || containerHeight === 0)
 			return;
 
-		d3.select(chartContainer).selectAll("*").remove();
+		select(chartContainer).selectAll("*").remove();
 
 		// Limit the max size of the donut chart
 		const maxRadius = 100;
@@ -63,8 +64,7 @@
 		const radius = Math.min(chartSize / 2, maxRadius);
 		const innerRadius = radius * 0.78;
 
-		const svg = d3
-			.select(chartContainer)
+		const svg = select(chartContainer)
 			.append("svg")
 			.attr("width", containerWidth)
 			.attr("height", containerHeight);
@@ -77,21 +77,18 @@
 			);
 
 		// Create pie generator
-		const pie = d3
-			.pie<DistrictDistributionData>()
+		const pieGenerator = pie<DistrictDistributionData>()
 			.value((d) => d.value)
 			.sort(null)
 			.padAngle(0.05);
 
 		// Create arc generator
-		const arc = d3
-			.arc<d3.PieArcDatum<DistrictDistributionData>>()
+		const arcGenerator = arc<PieArcDatum<DistrictDistributionData>>()
 			.innerRadius(innerRadius)
 			.outerRadius(radius);
 
 		// Create hover arc (slightly larger)
-		const hoverArc = d3
-			.arc<d3.PieArcDatum<DistrictDistributionData>>()
+		const hoverArc = arc<PieArcDatum<DistrictDistributionData>>()
 			.innerRadius(innerRadius)
 			.outerRadius(radius + 8); // 8px larger on hover
 
@@ -99,26 +96,26 @@
 		const arcs = g
 			.selectAll<
 				SVGPathElement,
-				d3.PieArcDatum<DistrictDistributionData>
+				PieArcDatum<DistrictDistributionData>
 			>(".arc")
-			.data(pie(data))
+			.data(pieGenerator(data))
 			.enter()
 			.append("path")
 			.attr("class", "arc")
 			.attr("fill", (d) => d.data.color)
 			.style("cursor", "pointer")
-			.attr("d", arc);
+			.attr("d", arcGenerator);
 
 		// Animate arcs
 		arcs.transition()
 			.duration(800)
 			.attrTween("d", function (d) {
-				const interpolate = d3.interpolate(
+				const angleInterpolate = interpolate(
 					{ startAngle: 0, endAngle: 0 },
 					d,
 				);
 				return function (t) {
-					return arc(interpolate(t)) || "";
+					return arcGenerator(angleInterpolate(t)) || "";
 				};
 			});
 
@@ -128,9 +125,9 @@
 			function (
 				this: SVGPathElement,
 				event: MouseEvent,
-				d: d3.PieArcDatum<DistrictDistributionData>,
+				d: PieArcDatum<DistrictDistributionData>,
 			) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
 					.attr("d", hoverArc as unknown as string);
@@ -146,7 +143,7 @@
 				function (
 					this: SVGPathElement,
 					event: MouseEvent,
-					d: d3.PieArcDatum<DistrictDistributionData>,
+					d: PieArcDatum<DistrictDistributionData>,
 				) {
 					showTooltip(
 						event,
@@ -155,10 +152,10 @@
 				},
 			)
 			.on("mouseleave", function (this: SVGPathElement) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.attr("d", arc as unknown as string);
+					.attr("d", arcGenerator as unknown as string);
 
 				hideTooltip();
 			});

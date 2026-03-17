@@ -1,6 +1,19 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import * as d3 from "d3";
+	import {
+		select,
+		scalePoint,
+		scaleLinear,
+		area,
+		curveMonotoneX,
+		line,
+		easeElasticOut,
+		easeQuadOut,
+		axisBottom,
+		axisLeft,
+		axisRight,
+	} from "d3";
+	import type { NumberValue } from "d3";
 	import {
 		Card,
 		CardHeader,
@@ -37,14 +50,13 @@
 	function createChart() {
 		if (!chartContainer || width === 0) return;
 
-		d3.select(chartContainer).selectAll("*").remove();
+		select(chartContainer).selectAll("*").remove();
 
 		const margin = { top: 20, right: 50, left: 40, bottom: 50 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = d3
-			.select(chartContainer)
+		const svg = select(chartContainer)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -76,19 +88,16 @@
 			.attr("transform", `translate(${margin.left},${margin.top})`);
 
 		// Scales - X scale with padding to extend area to edges
-		const xScale = d3
-			.scalePoint()
+		const xScale = scalePoint()
 			.domain(data.map((d) => d.month))
 			.range([0, innerWidth])
 			.padding(0);
 
-		const yScaleStudents = d3
-			.scaleLinear()
+		const yScaleStudents = scaleLinear()
 			.domain([0, 1000])
 			.range([innerHeight, 0]);
 
-		const yScaleScore = d3
-			.scaleLinear()
+		const yScaleScore = scaleLinear()
 			.domain([0, 100])
 			.range([innerHeight, 0]);
 
@@ -108,18 +117,17 @@
 			.attr("stroke-width", 1);
 
 		// Draw area for students (mint green gradient)
-		const area = d3
-			.area<DataPoint>()
+		const areaGenerator = area<DataPoint>()
 			.x((d) => xScale(d.month) || 0)
 			.y0(innerHeight)
 			.y1((d) => yScaleStudents(d.students))
-			.curve(d3.curveMonotoneX);
+			.curve(curveMonotoneX);
 
 		const areaPath = g
 			.append("path")
 			.datum(data)
 			.attr("fill", "url(#areaGradient)")
-			.attr("d", area)
+			.attr("d", areaGenerator)
 			.attr("opacity", 0)
 			.style("cursor", "pointer")
 			.style("transition", "opacity 0.15s ease");
@@ -130,18 +138,17 @@
 		// Area hover effect
 		areaPath
 			.on("mouseenter", function () {
-				d3.select(this).attr("opacity", 0.85);
+				select(this).attr("opacity", 0.85);
 			})
 			.on("mouseleave", function () {
-				d3.select(this).attr("opacity", 1);
+				select(this).attr("opacity", 1);
 			});
 
 		// Draw line for avg score (blue)
-		const line = d3
-			.line<DataPoint>()
+		const lineGenerator = line<DataPoint>()
 			.x((d) => xScale(d.month) || 0)
 			.y((d) => yScaleScore(d.avgScore))
-			.curve(d3.curveMonotoneX);
+			.curve(curveMonotoneX);
 
 		const linePath = g
 			.append("path")
@@ -149,7 +156,7 @@
 			.attr("fill", "none")
 			.attr("stroke", "#3b82f6")
 			.attr("stroke-width", 2.5)
-			.attr("d", line)
+			.attr("d", lineGenerator)
 			.style("transition", "stroke-width 0.15s ease");
 
 		// Animate line
@@ -165,10 +172,10 @@
 		// Line hover effect
 		linePath
 			.on("mouseenter", function () {
-				d3.select(this).attr("stroke-width", 3.5);
+				select(this).attr("stroke-width", 3.5);
 			})
 			.on("mouseleave", function () {
-				d3.select(this).attr("stroke-width", 2.5);
+				select(this).attr("stroke-width", 2.5);
 			});
 
 		// Draw interactive dots for score line
@@ -196,10 +203,10 @@
 		dots.on(
 			"mouseenter",
 			function (this: SVGCircleElement, event: MouseEvent, d: DataPoint) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeElasticOut.amplitude(1).period(0.5))
+					.ease(easeElasticOut.amplitude(1).period(0.5))
 					.attr("r", 9)
 					.attr("fill", "#2563eb");
 
@@ -209,10 +216,10 @@
 				);
 			},
 		).on("mouseleave", function (this: SVGCircleElement) {
-			d3.select(this)
+			select(this)
 				.transition()
 				.duration(200)
-				.ease(d3.easeQuadOut)
+				.ease(easeQuadOut)
 				.attr("r", 6)
 				.attr("fill", "#3b82f6");
 
@@ -223,7 +230,7 @@
 		const xAxis = g
 			.append("g")
 			.attr("transform", `translate(0,${innerHeight})`)
-			.call(d3.axisBottom(xScale).tickSize(0));
+			.call(axisBottom(xScale).tickSize(0));
 
 		xAxis.select(".domain").remove();
 		xAxis
@@ -234,11 +241,10 @@
 
 		// Left Y Axis (Score %)
 		const yAxisLeft = g.append("g").call(
-			d3
-				.axisLeft(yScaleScore)
+			axisLeft(yScaleScore)
 				.tickValues([0, 25, 50, 75, 100])
 				.tickSize(0)
-				.tickFormat((d: d3.NumberValue) => `${d}`),
+				.tickFormat((d: NumberValue) => `${d}`),
 		);
 
 		yAxisLeft.select(".domain").remove();
@@ -253,8 +259,7 @@
 			.append("g")
 			.attr("transform", `translate(${innerWidth},0)`)
 			.call(
-				d3
-					.axisRight(yScaleStudents)
+				axisRight(yScaleStudents)
 					.tickValues([0, 250, 500, 750, 1000])
 					.tickSize(0),
 			);
@@ -300,11 +305,13 @@
 	});
 </script>
 
-<Card class="">
+<Card class="h-130">
 	<CardHeader class=" p-4 lg:p-6">
-		<CardTitle class="text-base">Overall Performance & Enrollment</CardTitle
+		<CardTitle
+			class="text-[18px] font-semibold leading-7 text-primary-black -tracking-[0.45px]"
+			>Overall Performance & Enrollment</CardTitle
 		>
-		<CardDescription
+		<CardDescription class="text-[#565D6D]"
 			>Visualizing student growth and average grades across all faculties.</CardDescription
 		>
 	</CardHeader>

@@ -1,5 +1,12 @@
 <script lang="ts">
-	import * as d3 from "d3";
+	import {
+		select,
+		scaleBand,
+		scaleLinear,
+		easeQuadOut,
+		axisBottom,
+		axisLeft,
+	} from "d3";
 	import { onMount } from "svelte";
 	import type { EnrollmentByTradeData } from "./types.js";
 	import { TRADE_COLORS } from "./types.js";
@@ -11,10 +18,22 @@
 	const defaultData: EnrollmentByTradeData[] = [
 		{ trade: "Software", enrollment: 480, color: TRADE_COLORS.Software },
 		{ trade: "Mechanics", enrollment: 380, color: TRADE_COLORS.Mechanics },
-		{ trade: "Automobile", enrollment: 320, color: TRADE_COLORS.Automobile },
+		{
+			trade: "Automobile",
+			enrollment: 320,
+			color: TRADE_COLORS.Automobile,
+		},
 		{ trade: "Tourism", enrollment: 520, color: TRADE_COLORS.Tourism },
-		{ trade: "Electrical", enrollment: 420, color: TRADE_COLORS.Electrical },
-		{ trade: "Road Construction", enrollment: 280, color: TRADE_COLORS["Road Construction"] },
+		{
+			trade: "Electrical",
+			enrollment: 420,
+			color: TRADE_COLORS.Electrical,
+		},
+		{
+			trade: "Road Construction",
+			enrollment: 280,
+			color: TRADE_COLORS["Road Construction"],
+		},
 	];
 
 	let { data = defaultData }: Props = $props();
@@ -30,7 +49,7 @@
 	function createChart() {
 		if (!chartContainer || width === 0 || height === 0) return;
 
-		d3.select(chartContainer).selectAll("*").remove();
+		select(chartContainer).selectAll("*").remove();
 
 		// Responsive margins and padding
 		const isMobile = width < 400;
@@ -39,13 +58,12 @@
 			top: 10,
 			right: isMobile ? 10 : 20,
 			left: isMobile ? 30 : 40,
-			bottom: isMobile ? 60 : 50
+			bottom: isMobile ? 60 : 50,
 		};
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = d3
-			.select(chartContainer)
+		const svg = select(chartContainer)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -61,12 +79,12 @@
 		const getLabel = (trade: string) => {
 			if (isMobile) {
 				const abbrevMap: Record<string, string> = {
-					"Software": "Soft.",
-					"Mechanics": "Mech.",
-					"Automobile": "Auto.",
-					"Tourism": "Tour.",
-					"Electrical": "Elec.",
-					"Road Construction": "Road C."
+					Software: "Soft.",
+					Mechanics: "Mech.",
+					Automobile: "Auto.",
+					Tourism: "Tour.",
+					Electrical: "Elec.",
+					"Road Construction": "Road C.",
 				};
 				return abbrevMap[trade] || trade;
 			}
@@ -75,13 +93,12 @@
 
 		// Scales - increase padding on smaller screens
 		const padding = isMobile ? 0.5 : isSmall ? 0.4 : 0.3;
-		const xScale = d3
-			.scaleBand()
+		const xScale = scaleBand()
 			.domain(data.map((d) => getLabel(d.trade)))
 			.range([0, innerWidth])
 			.padding(padding);
 
-		const yScale = d3.scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
+		const yScale = scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
 
 		// Y-axis grid lines
 		g.append("g")
@@ -143,10 +160,10 @@
 				event: MouseEvent,
 				d: EnrollmentByTradeData,
 			) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
+					.ease(easeQuadOut)
 					.attr("opacity", 0.8);
 
 				showTooltip(
@@ -169,10 +186,10 @@
 				},
 			)
 			.on("mouseleave", function (this: SVGPathElement) {
-				d3.select(this)
+				select(this)
 					.transition()
 					.duration(200)
-					.ease(d3.easeQuadOut)
+					.ease(easeQuadOut)
 					.attr("opacity", 1);
 
 				hideTooltip();
@@ -182,7 +199,7 @@
 		const xAxis = g
 			.append("g")
 			.attr("transform", `translate(0,${innerHeight})`)
-			.call(d3.axisBottom(xScale).tickSize(0));
+			.call(axisBottom(xScale).tickSize(0));
 
 		xAxis.select(".domain").remove();
 
@@ -257,15 +274,16 @@
 
 <div class="flex flex-col h-full">
 	<div class="mb-4">
-		<h3 class="text-lg font-semibold text-primary-black">Enrollment by Trade</h3>
-		<p class="text-sm text-gray-500 mt-1">Aggregate student count per technical specialization.</p>
+		<h3 class="text-lg font-semibold text-primary-black">
+			Enrollment by Trade
+		</h3>
+		<p class="text-sm text-gray-500 mt-1">
+			Aggregate student count per technical specialization.
+		</p>
 	</div>
 
 	<div class="relative flex-1">
-		<div
-			bind:this={chartContainer}
-			class="w-full h-full"
-		></div>
+		<div bind:this={chartContainer} class="w-full h-full"></div>
 
 		<!-- Tooltip -->
 		<div

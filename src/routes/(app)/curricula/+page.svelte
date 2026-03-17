@@ -289,14 +289,14 @@
 		class="mb-4 grid grid-cols-1 gap-4 overflow-hidden sm:mb-7 sm:gap-6 lg:grid-cols-[60fr_40fr]"
 	>
 		<Card
-			class="p-5 lg:p-6 border border-gray-200 rounded-xl shadow-sm h-[464px]"
+			class="p-5 lg:p-6 border border-gray-200 rounded-xl shadow-sm h-116"
 		>
 			<CardContent class="p-0 h-full">
 				<EnrollmentByTradeChart data={enrollmentByTradeData} />
 			</CardContent>
 		</Card>
 		<Card
-			class="p-5 lg:p-6 border border-gray-200 rounded-xl shadow-sm h-[464px]"
+			class="p-5 lg:p-6 border border-gray-200 rounded-xl shadow-sm h-116"
 		>
 			<CardContent class="p-0 h-full">
 				<DistrictDistributionChart data={districtDistributionData} />

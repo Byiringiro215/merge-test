@@ -214,8 +214,8 @@
 	</DropdownMenu.Root>
 {/snippet}
 
-<Card>
-	<CardHeader class="p-4 lg:p-6">
+<Card class="border-none! ">
+	<CardHeader class="p-4 lg:p-6 ">
 		<div
 			class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
 		>
