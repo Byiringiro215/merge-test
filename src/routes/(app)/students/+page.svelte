@@ -1,25 +1,32 @@
 <script lang="ts">
-	import UsersIcon from "@lucide/svelte/icons/users";
-	import CircleCheckIcon from "@lucide/svelte/icons/circle-check";
-	import CircleXIcon from "@lucide/svelte/icons/circle-x";
-	import TrendingUpIcon from "@lucide/svelte/icons/trending-up";
-	import Building2Icon from "@lucide/svelte/icons/building-2";
-	import FileTextIcon from "@lucide/svelte/icons/file-text";
-	import UserPlusIcon from "@lucide/svelte/icons/user-plus";
-	import { Button } from "$lib/components/ui/button";
-	import * as Sidebar from "$lib/components/ui/sidebar";
 	import StatsCard from "$lib/components/dashboard/StatsCard.svelte";
-	import StudentFilters from "$lib/components/students/StudentFilters.svelte";
-	import ScoreDistributionChart from "$lib/components/students/ScoreDistributionChart.svelte";
 	import FacultyEnrollmentChart from "$lib/components/students/FacultyEnrollmentChart.svelte";
+	import ScoreDistributionChart from "$lib/components/students/ScoreDistributionChart.svelte";
+	import StudentFilters from "$lib/components/students/StudentFilters.svelte";
 	import StudentRegistryTable from "$lib/components/students/StudentRegistryTable.svelte";
 	import type {
-		Student,
-		StudentFiltersState,
-		ScoreDistribution,
 		FacultyEnrollment,
+		ScoreDistribution,
+		StudentFiltersState,
 	} from "$lib/components/students/types.js";
 	import { FACULTY_COLORS } from "$lib/components/students/types.js";
+	import { Button } from "$lib/components/ui/button";
+	import * as Sidebar from "$lib/components/ui/sidebar";
+	import { customFetcher } from "$lib/customFetcher";
+	import type { StudentSummary } from "$lib/datamodel/student";
+	import {
+		createPaginatedResponseSchema,
+		studentSummary,
+		type Meta,
+	} from "$lib/types/zod-schemas-api";
+	import Building2Icon from "@lucide/svelte/icons/building-2";
+	import CircleCheckIcon from "@lucide/svelte/icons/circle-check";
+	import CircleXIcon from "@lucide/svelte/icons/circle-x";
+	import FileTextIcon from "@lucide/svelte/icons/file-text";
+	import TrendingUpIcon from "@lucide/svelte/icons/trending-up";
+	import UserPlusIcon from "@lucide/svelte/icons/user-plus";
+	import UsersIcon from "@lucide/svelte/icons/users";
+	import { onMount } from "svelte";
 
 	// Filter state
 	let filters = $state<StudentFiltersState>({
@@ -122,144 +129,56 @@
 		},
 	];
 
-	// Sample student data
-	const students: Student[] = [
-		{
-			id: 1,
-			name: "Uwase Alice",
-			district: "Kicukiro",
-			faculty: "Software development",
-			level: "L4",
-			score: 88,
-			status: "Succeeded",
-		},
-		{
-			id: 2,
-			name: "Habimana Jean",
-			district: "Gasabo",
-			faculty: "Mechanics",
-			level: "L5",
-			score: 72,
-			status: "Succeeded",
-		},
-		{
-			id: 3,
-			name: "Mugisha Eric",
-			district: "Rubavu",
-			faculty: "Automobile",
-			level: "L3",
-			score: 45,
-			status: "Failed",
-		},
-		{
-			id: 4,
-			name: "Iradukunda Marie",
-			district: "Nyamagabe",
-			faculty: "Tourism",
-			level: "L4",
-			score: 94,
-			status: "Succeeded",
-		},
-		{
-			id: 5,
-			name: "Nsanzimana Paul",
-			district: "Ngororero",
-			faculty: "Electrical engineering",
-			level: "L2",
-			score: 61,
-			status: "Succeeded",
-		},
-		{
-			id: 6,
-			name: "Mukamana Grace",
-			district: "Kicukiro",
-			faculty: "Road construction",
-			level: "L3",
-			score: 78,
-			status: "Succeeded",
-		},
-		{
-			id: 7,
-			name: "Niyonzima Patrick",
-			district: "Gasabo",
-			faculty: "Software development",
-			level: "L4",
-			score: 82,
-			status: "Succeeded",
-		},
-		{
-			id: 8,
-			name: "Uwimana Diane",
-			district: "Rubavu",
-			faculty: "Tourism",
-			level: "L2",
-			score: 38,
-			status: "Failed",
-		},
-		{
-			id: 9,
-			name: "Habimana Claude",
-			district: "Kicukiro",
-			faculty: "Mechanics",
-			level: "L5",
-			score: 85,
-			status: "Succeeded",
-		},
-		{
-			id: 10,
-			name: "Uwase Jeanne",
-			district: "Gasabo",
-			faculty: "Software development",
-			level: "L3",
-			score: 67,
-			status: "Succeeded",
-		},
-		{
-			id: 11,
-			name: "Mugabo David",
-			district: "Nyamagabe",
-			faculty: "Automobile",
-			level: "L4",
-			score: 91,
-			status: "Succeeded",
-		},
-		{
-			id: 12,
-			name: "Niyomugabo Felix",
-			district: "Ngororero",
-			faculty: "Electrical engineering",
-			level: "L5",
-			score: 55,
-			status: "Succeeded",
-		},
-		{
-			id: 13,
-			name: "Mukeshimana Rose",
-			district: "Rubavu",
-			faculty: "Road construction",
-			level: "L2",
-			score: 42,
-			status: "Failed",
-		},
-		{
-			id: 14,
-			name: "Ndayisaba Emmanuel",
-			district: "Kicukiro",
-			faculty: "Tourism",
-			level: "L3",
-			score: 76,
-			status: "Succeeded",
-		},
-		{
-			id: 15,
-			name: "Ingabire Sandra",
-			district: "Gasabo",
-			faculty: "Software development",
-			level: "L4",
-			score: 89,
-			status: "Succeeded",
-		},
-	];
+	// Student data and pagination state
+	let students = $state<StudentSummary[]>([]);
+	let currentPage = $state(1);
+	let pageSize = $state(20);
+	let totalStudents = $state(0);
+	let totalPages = $derived(Math.max(1, Math.ceil(totalStudents / pageSize)));
+	let isLoading = $state(false);
+	let isMounted = $state(false);
+
+	/// Fetch students data
+	const fetchStudents = async () => {
+		try {
+			isLoading = true;
+			const paginatedStudentSchema =
+				createPaginatedResponseSchema(studentSummary);
+			const { result } = await customFetcher<{
+				data: StudentSummary[];
+				meta: Meta;
+			}>(`/v1/sdms/students?page=${currentPage}&limit=${pageSize}`, {
+				method: "GET",
+				bodySchema: paginatedStudentSchema,
+			});
+			if (!result.ok) {
+				console.error("Failed to fetch students");
+				return;
+			}
+			students = Array.isArray(result.value.data)
+				? result.value.data
+				: [];
+			totalStudents = result.value.meta.page?.total ?? 0;
+		} catch (error) {
+			console.error("Fetch error:", error);
+		} finally {
+			isLoading = false;
+		}
+	};
+
+	const handlePageChange = (page: number) => {
+		currentPage = page;
+	};
+
+	onMount(() => {
+		isMounted = true;
+	});
+
+	$effect(() => {
+		if (isMounted) {
+			fetchStudents();
+		}
+	});
 </script>
 
 <div class="w-full max-w-[100vw] overflow-x-hidden">
@@ -351,7 +270,15 @@
 
 				<!-- Student Registry Table -->
 				<div class="min-w-0 overflow-hidden">
-					<StudentRegistryTable {students} />
+					<StudentRegistryTable
+						{students}
+						{currentPage}
+						{totalPages}
+						{isLoading}
+						totalItems={totalStudents}
+						{pageSize}
+						onPageChange={handlePageChange}
+					/>
 				</div>
 			</div>
 		</Sidebar.Inset>

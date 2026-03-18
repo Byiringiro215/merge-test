@@ -1,122 +1,149 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import DataTable from "$lib/components/data-table/data-table.svelte";
 	import { Button } from "$lib/components/ui/button/index.js";
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle,
+	} from "$lib/components/ui/card";
 	import { renderSnippet } from "$lib/components/ui/data-table/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { Input } from "$lib/components/ui/input";
 	import Pagination from "$lib/components/ui/pagination/pagination.svelte";
-	import {
-		Card,
-		CardHeader,
-		CardTitle,
-		CardDescription,
-		CardContent,
-	} from "$lib/components/ui/card";
-	import { Edit, Eye, Search, Trash, ArrowUpDown } from "@lucide/svelte";
-	import EllipsisIcon from "@lucide/svelte/icons/ellipsis";
+	import type { StudentSummary } from "$lib/datamodel/student";
+	import { Columns4, Eye, Search } from "@lucide/svelte";
+	import type { Table } from "@tanstack/table-core";
 	import { type ColumnDef } from "@tanstack/table-core";
+	import { resolve } from "$app/paths";
 	import { createRawSnippet } from "svelte";
-	import type { Student } from "./types.js";
+
+	const navigateToStudent = (studentNumber: string) => {
+		goto(resolve(`/students/${studentNumber}`));
+	};
 
 	interface Props {
-		students: Student[];
-		totalCount?: number;
+		students: StudentSummary[];
+		currentPage: number;
+		totalPages: number;
+		totalItems: number;
+		pageSize: number;
+		isLoading?: boolean;
+		onPageChange: (page: number) => void;
 	}
 
-	let { students, totalCount }: Props = $props();
+	let {
+		students,
+		currentPage,
+		totalPages,
+		totalItems,
+		pageSize,
+		isLoading = false,
+		onPageChange,
+	}: Props = $props();
 
 	let searchQuery = $state("");
-	let currentPage = $state(1);
-	const pageSize = 10;
 
+	// Client-side filtering for search
 	let filteredStudents = $derived(
 		searchQuery
 			? students.filter(
 					(s) =>
-						s.name
+						s.names
 							.toLowerCase()
 							.includes(searchQuery.toLowerCase()) ||
-						s.district
+						s.schoolName
 							.toLowerCase()
 							.includes(searchQuery.toLowerCase()) ||
-						s.faculty
+						(s.classGroup ?? "")
 							.toLowerCase()
 							.includes(searchQuery.toLowerCase()),
 				)
 			: students,
 	);
 
-	let totalPages = $derived(Math.ceil(filteredStudents.length / pageSize));
-
-	let paginatedStudents = $derived(
-		filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-	);
-
-	// Reset to page 1 when search changes
-	$effect(() => {
-		searchQuery;
-		currentPage = 1;
-	});
-
 	function handlePageChange(page: number) {
-		currentPage = page;
+		onPageChange(page);
 	}
-
-	const columns: ColumnDef<Student>[] = [
+	// svelte-ignore non_reactive_update
+	let tableData: Table<StudentSummary>;
+	/// Table columns
+	const columns: ColumnDef<StudentSummary>[] = [
 		{
-			id: "name",
-			accessorKey: "name",
+			id: "studentNumber",
+			accessorKey: "studentNumber",
+			header: ({ table }) => {
+				tableData = table;
+				const snippet = createRawSnippet(() => ({
+					render: () => "Student ID",
+				}));
+				return renderSnippet(snippet);
+			},
+			cell: ({ row }) => {
+				const snippet = createRawSnippet(() => ({
+					render: () =>
+						`<span class="font-mono text-xs text-gray-600">${row.original.studentNumber}</span>`,
+				}));
+				return renderSnippet(snippet);
+			},
+		},
+		{
+			id: "names",
+			accessorKey: "names",
 			header: "Student Name",
 			cell: ({ row }) => {
 				const snippet = createRawSnippet(() => ({
 					render: () =>
-						`<span class="font-normal text-sm text-black">${row.original.name}</span>`,
+						`<span class="font-normal text-sm text-black">${row.original.names}</span>`,
 				}));
 				return renderSnippet(snippet);
 			},
 		},
 		{
-			accessorKey: "district",
-			header: "District",
+			accessorKey: "schoolName",
+			header: "School Name",
 			cell: ({ row }) => {
 				const snippet = createRawSnippet(() => ({
 					render: () =>
-						`<span class="inline-flex items-center rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-xs font-normal text-black">${row.original.district}</span>`,
+						`<span class="text-xs font-medium text-gray-700">${row.original.schoolName}</span>`,
 				}));
 				return renderSnippet(snippet);
 			},
+			enableHiding: false,
 		},
 		{
-			accessorKey: "faculty",
-			header: "Faculty",
+			accessorKey: "schoolCode",
+			header: "School Code",
 			cell: ({ row }) => {
 				const snippet = createRawSnippet(() => ({
 					render: () =>
-						`<span class="text-xs font-medium text-gray-700">${row.original.faculty}</span>`,
+						`<p class="text-xs font-medium text-gray-700 text-center">${row.original.schoolCode}</p>`,
 				}));
 				return renderSnippet(snippet);
 			},
 		},
 		{
-			accessorKey: "level",
-			header: "Level",
-			cell: ({ row }) => row.original.level,
+			accessorKey: "classGroup",
+			header: "Class Group",
+			cell: ({ row }) => {
+				const classGroup = row.original.classGroup ?? "-";
+				const snippet = createRawSnippet(() => ({
+					render: () =>
+						`<span class="inline-flex items-center rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-xs font-normal text-black">${classGroup}</span>`,
+				}));
+				return renderSnippet(snippet);
+			},
 		},
 		{
-			accessorKey: "score",
-			header: "Score",
+			accessorKey: "gender",
+			header: "Gender",
 			cell: ({ row }) => {
-				const score = row.original.score;
-				const barColor = score >= 50 ? "#3b82f6" : "#ef4444";
+				const gender = row.original.gender ?? "-";
 				const snippet = createRawSnippet(() => ({
-					render: () => `
-						<div class="flex items-center gap-2">
-							<span class="font-medium text-gray-900 w-10">${score}%</span>
-							<div class="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-								<div class="h-full rounded-full" style="width: ${score}%; background-color: ${barColor};"></div>
-							</div>
-						</div>
-					`,
+					render: () =>
+						`<span class="text-sm text-gray-700">${gender}</span>`,
 				}));
 				return renderSnippet(snippet);
 			},
@@ -125,12 +152,10 @@
 			accessorKey: "status",
 			header: "Status",
 			cell: ({ row }) => {
-				const status = row.original.status;
-				const isSucceeded = status === "Succeeded";
-				const bgColor = isSucceeded ? "bg-green-100" : "bg-red-100";
-				const textColor = isSucceeded
-					? "text-green-700"
-					: "text-red-700";
+				const status = row.original.status ?? "Unknown";
+				const isActive = status.toLowerCase() === "active";
+				const bgColor = isActive ? "bg-green-100" : "bg-gray-100";
+				const textColor = isActive ? "text-green-700" : "text-gray-700";
 				const snippet = createRawSnippet(() => ({
 					render: () =>
 						`<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${bgColor} ${textColor}">${status}</span>`,
@@ -145,47 +170,17 @@
 				renderSnippet(rowAction, { student: row.original }),
 		},
 	];
-
-	function handleRowClick(student: Student) {
-		console.log("Row clicked:", student.name);
-	}
 </script>
 
-{#snippet rowAction({ student }: { student: Student })}
-	<DropdownMenu.Root>
-		<DropdownMenu.Trigger>
-			{#snippet child({ props })}
-				<Button
-					{...props}
-					variant="ghost"
-					size="icon"
-					class="relative size-8 p-0"
-				>
-					<span class="sr-only">Open menu</span>
-					<EllipsisIcon />
-				</Button>
-			{/snippet}
-		</DropdownMenu.Trigger>
-		<DropdownMenu.Content>
-			<DropdownMenu.Group>
-				<DropdownMenu.Label>Actions</DropdownMenu.Label>
-				<DropdownMenu.Item>
-					<Eye class="mr-2 h-4 w-4" />
-					View details
-				</DropdownMenu.Item>
-			</DropdownMenu.Group>
-			<DropdownMenu.Item>
-				<Edit class="mr-2 h-4 w-4" />
-				Edit details
-			</DropdownMenu.Item>
-			<DropdownMenu.Item class="text-red-600 group cursor-pointer">
-				<Trash
-					class="mr-2 h-4 w-4 text-red-600 group-hover:text-black!"
-				/>
-				Delete
-			</DropdownMenu.Item>
-		</DropdownMenu.Content>
-	</DropdownMenu.Root>
+{#snippet rowAction({ student }: { student: StudentSummary })}
+	<Button
+		variant="ghost"
+		size="icon"
+		class="shrink-0 cursor-pointer"
+		onclick={() => navigateToStudent(student.studentNumber)}
+	>
+		<Eye class="h-4 w-4" />
+	</Button>
 {/snippet}
 
 <Card>
@@ -203,7 +198,7 @@
 				</CardDescription>
 			</div>
 			<div class="flex items-center gap-2">
-				<div class="relative w-full sm:w-64">
+				<div class="relative w-full sm:w-[288px]">
 					<Search
 						class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
 					/>
@@ -211,35 +206,62 @@
 						type="text"
 						placeholder="Search by student name..."
 						bind:value={searchQuery}
-						class="pl-9"
+						class="pl-9 h-10 border-none focus-visible:ring-1 rounded-[6px]"
 					/>
 				</div>
-				<Button variant="outline" size="icon" class="shrink-0">
-					<ArrowUpDown class="h-4 w-4" />
-				</Button>
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Button
+								{...props}
+								variant="outline"
+								size="icon"
+								class="shrink-0 cursor-pointer"
+							>
+								<Columns4 class="h-4 w-4" />
+							</Button>
+						{/snippet}
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="end">
+						{#each tableData
+							.getAllColumns()
+							.filter( (col) => col.getCanHide(), ) as column (column)}
+							<DropdownMenu.CheckboxItem
+								class="capitalize"
+								bind:checked={
+									() => column.getIsVisible(),
+									(v) => column.toggleVisibility(!!v)
+								}
+							>
+								{column.id}
+							</DropdownMenu.CheckboxItem>
+						{/each}
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
 			</div>
 		</div>
 	</CardHeader>
 	<CardContent class="p-0">
 		<div class="overflow-x-auto">
-			<DataTable
-				{columns}
-				data={paginatedStudents}
-				tableRowClick={handleRowClick}
-			/>
+			{#if isLoading}
+				<div class="flex items-center justify-center py-12">
+					<div
+						class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary"
+					></div>
+				</div>
+			{:else}
+				<DataTable {columns} data={filteredStudents} />
+			{/if}
 		</div>
 		<!-- Pagination -->
-		<div class="flex items-center justify-between border-t border-gray-200 px-4 py-3 lg:px-6">
-			<p class="text-sm text-gray-500">
-				Showing <span class="font-medium text-gray-900">{paginatedStudents.length}</span> of <span class="font-medium text-gray-900">{totalCount ?? filteredStudents.length}</span> students
-			</p>
-			{#if totalPages > 1}
-				<Pagination
-					{currentPage}
-					{totalPages}
-					onPageChange={handlePageChange}
-				/>
-			{/if}
+		<div class="border-t pt-3 px-4 lg:px-6 pb-3">
+			<Pagination
+				{currentPage}
+				{totalPages}
+				onPageChange={handlePageChange}
+				{totalItems}
+				{pageSize}
+			/>
 		</div>
 	</CardContent>
 </Card>
