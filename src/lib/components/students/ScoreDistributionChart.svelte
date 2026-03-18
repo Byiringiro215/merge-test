@@ -177,8 +177,7 @@
 
 		// Y Axis
 		const yAxis = g.append("g").call(
-			d3
-				.axisLeft(yScale)
+			axisLeft(yScale)
 				.tickValues(yTickValues)
 				.tickFormat((d) => d.toLocaleString())
 				.tickSize(0),
