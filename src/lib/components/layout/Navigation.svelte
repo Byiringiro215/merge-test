@@ -44,7 +44,7 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<nav class="sticky top-0 z-60 w-full border-b border-gray-200 bg-white">
+<nav class="sticky top-0 z-10 w-full border-b border-gray-200 bg-white">
 	<div class="flex h-16 items-center justify-between px-6 lg:px-8">
 		<!-- Logo -->
 		<a href={resolve("/")} class="flex items-center">

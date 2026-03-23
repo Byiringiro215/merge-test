@@ -1,185 +1,146 @@
 <script lang="ts">
 	import FilterIcon from "@lucide/svelte/icons/filter";
-	import MapPinIcon from "@lucide/svelte/icons/map-pin";
-	import TargetIcon from "@lucide/svelte/icons/target";
-	import { Button } from "$lib/components/ui/button";
-	import { Checkbox } from "$lib/components/ui/checkbox";
-	import { Slider } from "$lib/components/ui/slider";
+	import { Input } from "$lib/components/ui/input";
 	import { Label } from "$lib/components/ui/label";
 	import * as Sidebar from "$lib/components/ui/sidebar";
+	import { Checkbox } from "$lib/components/ui/checkbox";
+	import { Button } from "$lib/components/ui/button";
 	import {
-		type District,
-		type Faculty,
-		type TeacherFiltersState,
-		DISTRICTS,
-		FACULTIES,
-	} from "./types.js";
+		staffGenders,
+		type StaffGender,
+		type StaffFiltersState,
+	} from "$lib/datamodel/staff.js";
 
 	interface Props {
-		filters: TeacherFiltersState;
-		onFiltersChange: (filters: TeacherFiltersState) => void;
-		onApplyFilters?: () => void;
-		onExportReports?: () => void;
+		filters: StaffFiltersState;
+		onFiltersChange: (filters: StaffFiltersState) => void;
 	}
 
-	let { filters, onFiltersChange, onApplyFilters, onExportReports }: Props =
-		$props();
+	let { filters, onFiltersChange }: Props = $props();
 
-	// Extract successThreshold as typed tuple to avoid TS indexing errors
-	let successThreshold = $derived(
-		filters.successThreshold as unknown as [number, number],
+	// Local state for inputs (mutable)
+	let schoolCode = $derived(filters.schoolCode);
+	let position = $derived(filters.position);
+	let selectedGender = $derived<StaffGender | "">(filters.gender);
+
+	// Apply filters
+	const applyFilters = () => {
+		onFiltersChange({
+			schoolCode: schoolCode.trim().toUpperCase(),
+			position: position.trim().toUpperCase(),
+			gender: selectedGender,
+		});
+	};
+
+	// Clear all filters
+	const clearFilters = () => {
+		schoolCode = "";
+		position = "";
+		selectedGender = "";
+		onFiltersChange({
+			schoolCode: "",
+			position: "",
+			gender: "",
+		});
+	};
+
+	// Check if any filter is active
+	let hasActiveFilters = $derived(
+		schoolCode.trim() !== "" ||
+			position.trim() !== "" ||
+			selectedGender !== "",
 	);
 
-	function toggleDistrict(district: District) {
-		const newDistricts = filters.districts.includes(district)
-			? filters.districts.filter((d) => d !== district)
-			: [...filters.districts, district];
-		onFiltersChange({ ...filters, districts: newDistricts });
-	}
-
-	function toggleFaculty(faculty: Faculty) {
-		const newFaculties = filters.faculties.includes(faculty)
-			? filters.faculties.filter((f) => f !== faculty)
-			: [...filters.faculties, faculty];
-		onFiltersChange({ ...filters, faculties: newFaculties });
-	}
-
-	function handleThresholdChange(value: number[]) {
-		if (
-			value[0] !== successThreshold[0] ||
-			value[1] !== successThreshold[1]
-		) {
-			onFiltersChange({
-				districts: filters.districts,
-				faculties: filters.faculties,
-				successThreshold: [value[0], value[1]] as [number, number],
-			});
-		}
+	// Handle gender selection
+	function toggleGender(gender: StaffGender) {
+		selectedGender = selectedGender === gender ? "" : gender;
 	}
 </script>
 
 <Sidebar.Header
 	class="border-b items-center flex-row border-b-gray-300 bg-[#fafafb] px-6 py-6"
 >
-	<FilterIcon class="h-4 w-4 text-black" />
-	<span class="text-sm font-normal text-black">Teacher Filters</span>
+	<FilterIcon class="h-4 w-4 text-primary-black" />
+	<span class="text-sm font-semibold leading-5 text-primary-black capitalize"
+		>Teacher Analytics Filters
+	</span>
 </Sidebar.Header>
 
-<Sidebar.Content class="bg-[#fafafb] px-6">
-	<!-- District Selection -->
+<Sidebar.Content class="bg-[#fafafb] px-6 mt-3">
+	<!-- School Code Section -->
 	<Sidebar.Group>
 		<Sidebar.GroupLabel
-			class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-gray-500"
+			class="text-xs font-inter font-medium uppercase leading-4 tracking-[0.6px] text-gray-500"
 		>
-			<MapPinIcon class="h-3.5 w-3.5 text-primary" />
-			District Selection
+			School Code
 		</Sidebar.GroupLabel>
-		<Sidebar.GroupContent class="space-y-3 pt-2">
-			{#each DISTRICTS as district, index (index)}
-				<div class="flex items-center gap-2">
-					<Checkbox
-						id="teacher-district-{district}"
-						checked={filters.districts.includes(district)}
-						onCheckedChange={() => toggleDistrict(district)}
-					/>
-					<Label
-						for="teacher-district-{district}"
-						class="text-sm font-normal leading-0 text-black cursor-pointer"
-					>
-						{district}
-					</Label>
-				</div>
-			{/each}
-		</Sidebar.GroupContent>
-	</Sidebar.Group>
-
-	<!-- Primary Faculty -->
-	<Sidebar.Group>
-		<Sidebar.GroupLabel
-			class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-gray-500"
-		>
-			<svg
-				class="h-3.5 w-3.5 text-gray-500"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<rect x="3" y="3" width="7" height="7" rx="1" />
-				<rect x="14" y="3" width="7" height="7" rx="1" />
-				<rect x="3" y="14" width="7" height="7" rx="1" />
-				<rect x="14" y="14" width="7" height="7" rx="1" />
-			</svg>
-			Primary Faculty
-		</Sidebar.GroupLabel>
-		<Sidebar.GroupContent class="space-y-3 pt-2">
-			{#each FACULTIES as faculty, index (index)}
-				<div class="flex items-center gap-2">
-					<Checkbox
-						id="teacher-faculty-{index}"
-						checked={filters.faculties.includes(faculty)}
-						onCheckedChange={() => toggleFaculty(faculty)}
-					/>
-					<Label
-						for="teacher-faculty-{index}"
-						class="text-sm font-normal leading-0 text-black cursor-pointer"
-					>
-						{faculty}
-					</Label>
-				</div>
-			{/each}
-		</Sidebar.GroupContent>
-	</Sidebar.Group>
-
-	<!-- Success Threshold Section -->
-	<Sidebar.Group>
-		<Sidebar.GroupLabel
-			class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-gray-500"
-		>
-			<TargetIcon class="h-3.5 w-3.5 text-green-500" />
-			Success Threshold (%)
-		</Sidebar.GroupLabel>
-		<Sidebar.GroupContent class="pt-3 px-1">
-			<Slider
-				type="multiple"
-				bind:value={successThreshold}
-				onValueChange={handleThresholdChange}
-				min={0}
-				max={100}
-				step={1}
-				class="w-full **:data-[slot=slider-track]:bg-[#b5d0f1] **:data-[slot=slider-range]:bg-primary"
+		<Sidebar.GroupContent class="pt-1">
+			<Input
+				type="text"
+				placeholder="Enter school code..."
+				bind:value={schoolCode}
+				class="h-9 border-gray-300 placeholder:text-xs rounded-[6px] focus-visible:ring-1 uppercase"
 			/>
-			<div class="mt-3 flex justify-between text-xs text-gray-500">
-				<span>0%</span>
-				<span class="text-primary font-medium"
-					>{successThreshold[0]}% - {successThreshold[1]}%</span
-				>
-				<span>100%</span>
-			</div>
 		</Sidebar.GroupContent>
 	</Sidebar.Group>
 
-	<!-- Apply Filters Button -->
+	<!-- Position Section -->
 	<Sidebar.Group>
-		<Sidebar.GroupContent class="pt-2">
-			<Button
-				class="w-full bg-primary hover:bg-blue-700"
-				onclick={onApplyFilters}
-			>
-				Apply Filters
-			</Button>
+		<Sidebar.GroupLabel
+			class="text-xs font-inter font-medium uppercase leading-4 tracking-[0.6px] text-gray-500"
+		>
+			Position
+		</Sidebar.GroupLabel>
+		<Sidebar.GroupContent class="pt-1">
+			<Input
+				type="text"
+				placeholder="Enter position..."
+				bind:value={position}
+				class="h-9 border-gray-300 placeholder:text-xs rounded-[6px] focus-visible:ring-1 uppercase"
+			/>
 		</Sidebar.GroupContent>
 	</Sidebar.Group>
-	<!-- <Sidebar.Group class="border-t border-gray-200 bg-[#fafafb] px-6">
-		<Sidebar.GroupContent>
-			<Button
-				variant="outline"
-				class="w-full justify-start gap-2"
-				onclick={onExportReports}
-			>
-				<DownloadIcon class="h-4 w-4" />
-				Export Reports
-			</Button>
+
+	<!-- Gender Section -->
+	<Sidebar.Group>
+		<Sidebar.GroupLabel
+			class="text-xs font-inter font-medium uppercase leading-4 tracking-[0.6px] text-gray-500"
+		>
+			Gender
+		</Sidebar.GroupLabel>
+		<Sidebar.GroupContent class="space-y-3 pt-1">
+			{#each staffGenders as gender (gender)}
+				<div class="flex items-center gap-2">
+					<Checkbox
+						id="staff-gender-{gender}"
+						checked={selectedGender === gender}
+						onCheckedChange={() => toggleGender(gender)}
+					/>
+					<Label
+						for="staff-gender-{gender}"
+						class="text-sm font-normal leading-0 text-black cursor-pointer uppercase"
+					>
+						{gender}
+					</Label>
+				</div>
+			{/each}
 		</Sidebar.GroupContent>
-	</Sidebar.Group> -->
+	</Sidebar.Group>
+
+	<!-- Action Buttons -->
+	<Sidebar.Group>
+		<Sidebar.GroupContent class="flex flex-col gap-2 pt-4">
+			<Button
+				onclick={applyFilters}
+				disabled={!hasActiveFilters}
+				class="w-full disabled:opacity-70 rounded-[6px]"
+				>Apply Filters</Button
+			>
+			{#if hasActiveFilters}
+				<Button variant="outline" onclick={clearFilters} class="w-full">
+					Clear Filters
+				</Button>
+			{/if}
+		</Sidebar.GroupContent>
+	</Sidebar.Group>
 </Sidebar.Content>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import DataTable from "$lib/components/data-table/data-table.svelte";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import {
@@ -9,67 +11,55 @@
 		CardTitle,
 	} from "$lib/components/ui/card";
 	import { renderSnippet } from "$lib/components/ui/data-table/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { Input } from "$lib/components/ui/input";
 	import Pagination from "$lib/components/ui/pagination/pagination.svelte";
-	import { Edit, Eye, Search, Trash } from "@lucide/svelte";
-	import EllipsisIcon from "@lucide/svelte/icons/ellipsis";
+	import type { StaffSummary } from "$lib/datamodel/staff";
+	import { Eye, Search } from "@lucide/svelte";
 	import { type ColumnDef } from "@tanstack/table-core";
 	import { createRawSnippet } from "svelte";
-	import type { Teacher } from "./types.js";
 
 	interface Props {
-		teachers: Teacher[];
-		totalCount?: number;
+		staff: StaffSummary[];
+		currentPage: number;
+		totalPages: number;
+		totalItems: number;
+		pageSize: number;
+		isLoading?: boolean;
+		onPageChange: (page: number) => void;
 	}
 
-	let { teachers, totalCount = 1248 }: Props = $props();
+	let {
+		staff,
+		currentPage,
+		totalPages,
+		totalItems,
+		pageSize,
+		isLoading = false,
+		onPageChange,
+	}: Props = $props();
 
 	let searchQuery = $state("");
-	let currentPage = $state(1);
-	const pageSize = 10;
 
-	let filteredTeachers = $derived(
+	// Client-side filtering for search
+	let filteredStaff = $derived(
 		searchQuery
-			? teachers.filter(
-					(t) =>
-						t.name
+			? staff.filter(
+					(s) =>
+						s.names
 							.toLowerCase()
 							.includes(searchQuery.toLowerCase()) ||
-						t.assignedSchool
+						s.schoolName
 							.toLowerCase()
 							.includes(searchQuery.toLowerCase()) ||
-						t.primaryFaculty
+						(s.position ?? "")
 							.toLowerCase()
 							.includes(searchQuery.toLowerCase()),
 				)
-			: teachers,
+			: staff,
 	);
-
-	let totalPages = $derived(Math.ceil(filteredTeachers.length / pageSize));
-
-	let paginatedTeachers = $derived(
-		filteredTeachers.slice(
-			(currentPage - 1) * pageSize,
-			currentPage * pageSize,
-		),
-	);
-
-	// Reset to page 1 when search changes
-	$effect(() => {
-		searchQuery;
-		currentPage = 1;
-	});
 
 	function handlePageChange(page: number) {
-		currentPage = page;
-	}
-
-	function getSuccessRateColor(rate: number): string {
-		if (rate >= 90) return "#22c55e"; // green-500
-		if (rate >= 80) return "#3b82f6"; // blue-500
-		if (rate >= 70) return "#f59e0b"; // amber-500
-		return "#ef4444"; // red-500
+		onPageChange(page);
 	}
 
 	function getInitials(name: string): string {
@@ -81,23 +71,35 @@
 			.slice(0, 2);
 	}
 
-	const columns: ColumnDef<Teacher>[] = [
+	function getGenderColor(gender: string | null): string {
+		switch (gender?.toUpperCase()) {
+			case "MALE":
+				return "bg-sky-500";
+			case "FEMALE":
+				return "bg-pink-500";
+			default:
+				return "bg-gray-500";
+		}
+	}
+
+	const columns: ColumnDef<StaffSummary>[] = [
 		{
 			id: "profile",
-			accessorKey: "name",
-			header: "Teacher & Profile",
+			accessorKey: "names",
+			header: "Staff Member",
 			cell: ({ row }) => {
-				const teacher = row.original;
-				const initials = getInitials(teacher.name);
+				const member = row.original;
+				const initials = getInitials(member.names);
+				const avatarColor = getGenderColor(member.gender);
 				const snippet = createRawSnippet(() => ({
 					render: () => `
 						<div class="flex items-center gap-3">
-							<div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white font-medium text-sm shrink-0">
-								${teacher.avatar ? `<img src="${teacher.avatar}" alt="${teacher.name}" class="h-8 w-8 rounded-full object-cover" />` : initials}
+							<div class="h-9 w-9 rounded-full ${avatarColor} flex items-center justify-center text-white font-medium text-sm shrink-0">
+								${initials}
 							</div>
 							<div>
-								<div class="font-normal text-sm text-black">${teacher.name}</div>
-								<div class="text-xs text-gray-500">Registered Since ${teacher.registeredSince}</div>
+								<div class="font-medium text-sm text-gray-900">${member.names}</div>
+								<div class="text-xs text-gray-500 font-mono">${member.staffNumber}</div>
 							</div>
 						</div>
 					`,
@@ -106,28 +108,29 @@
 			},
 		},
 		{
-			accessorKey: "primaryFaculty",
-			header: "Primary Faculty",
+			accessorKey: "position",
+			header: "Position",
 			cell: ({ row }) => {
+				const position = row.original.position ?? "-";
 				const snippet = createRawSnippet(() => ({
 					render: () =>
-						`<span class="inline-flex items-center rounded-full border border-[#c9d9ec] bg-[#f4f7fb] px-1 py-0.5 text-xs font-normal text-secondary">${row.original.primaryFaculty}</span>`,
+						`<span class="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">${position}</span>`,
 				}));
 				return renderSnippet(snippet);
 			},
 		},
 		{
-			accessorKey: "assignedSchool",
-			header: "Assigned High School",
+			accessorKey: "schoolName",
+			header: "School",
 			cell: ({ row }) => {
 				const snippet = createRawSnippet(() => ({
 					render: () => `
-						<div class="flex items-center gap-1.5 text-gray-600">
-							<svg class="h-4 w-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<div class="flex items-center gap-1.5">
+							<svg class="h-4 w-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 								<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
 								<circle cx="12" cy="10" r="3"/>
 							</svg>
-							<span class="text-xs text-black  font-normal">${row.original.assignedSchool}</span>
+							<span class="text-sm text-gray-700">${row.original.schoolName}</span>
 						</div>
 					`,
 				}));
@@ -135,31 +138,27 @@
 			},
 		},
 		{
-			accessorKey: "students",
-			header: "Students",
+			accessorKey: "schoolCode",
+			header: "School Code",
 			cell: ({ row }) => {
 				const snippet = createRawSnippet(() => ({
 					render: () =>
-						`<span class="text-sm text-gray-900">${row.original.students}</span>`,
+						`<span class="font-mono text-xs text-gray-600">${row.original.schoolCode}</span>`,
 				}));
 				return renderSnippet(snippet);
 			},
 		},
 		{
-			accessorKey: "successRate",
-			header: "Success Rate",
+			accessorKey: "gender",
+			header: "Gender",
 			cell: ({ row }) => {
-				const rate = row.original.successRate;
-				const color = getSuccessRateColor(rate);
+				const gender = row.original.gender ?? "-";
+				const isMale = gender.toUpperCase() === "MALE";
+				const bgColor = isMale ? "bg-sky-100" : "bg-pink-100";
+				const textColor = isMale ? "text-sky-700" : "text-pink-700";
 				const snippet = createRawSnippet(() => ({
-					render: () => `
-						<div class="flex flex-col gap-1">
-							<span class="text-sm font-medium" style="color: ${color};">${rate}%</span>
-							<div class="w-24 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-								<div class="h-full rounded-full" style="width: ${rate}%; background-color: ${color};"></div>
-							</div>
-						</div>
-					`,
+					render: () =>
+						`<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${bgColor} ${textColor}">${gender}</span>`,
 				}));
 				return renderSnippet(snippet);
 			},
@@ -168,64 +167,33 @@
 			id: "actions",
 			header: "Actions",
 			cell: ({ row }) =>
-				renderSnippet(rowAction, { teacher: row.original }),
+				renderSnippet(rowAction, { member: row.original }),
 		},
 	];
-
-	function handleRowClick(teacher: Teacher) {
-		console.log("Row clicked:", teacher.name);
-	}
 </script>
 
-{#snippet rowAction({ teacher }: { teacher: Teacher })}
-	<DropdownMenu.Root>
-		<DropdownMenu.Trigger>
-			{#snippet child({ props })}
-				<Button
-					{...props}
-					variant="ghost"
-					size="icon"
-					class="relative size-8 p-0"
-				>
-					<span class="sr-only">Open menu</span>
-					<EllipsisIcon />
-				</Button>
-			{/snippet}
-		</DropdownMenu.Trigger>
-		<DropdownMenu.Content>
-			<DropdownMenu.Group>
-				<DropdownMenu.Label>Actions</DropdownMenu.Label>
-				<DropdownMenu.Item>
-					<Eye class="mr-2 h-4 w-4" />
-					View details
-				</DropdownMenu.Item>
-			</DropdownMenu.Group>
-			<DropdownMenu.Item>
-				<Edit class="mr-2 h-4 w-4" />
-				Edit details
-			</DropdownMenu.Item>
-			<DropdownMenu.Item class="text-red-600 group cursor-pointer">
-				<Trash
-					class="mr-2 h-4 w-4 text-red-600 group-hover:text-black!"
-				/>
-				Delete
-			</DropdownMenu.Item>
-		</DropdownMenu.Content>
-	</DropdownMenu.Root>
+{#snippet rowAction({ member }: { member: StaffSummary })}
+	<Button
+		variant="ghost"
+		size="icon"
+		class="shrink-0 cursor-pointer"
+		onclick={() => goto(resolve(`/teachers/${member.staffNumber}`))}
+	>
+		<Eye class="h-4 w-4" />
+	</Button>
 {/snippet}
 
-<Card class="border-none! ">
-	<CardHeader class="p-4 lg:p-6 ">
+<Card class="border-none!">
+	<CardHeader class="p-4 lg:p-6">
 		<div
 			class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
 		>
 			<div>
 				<CardTitle class="text-lg font-semibold"
-					>Teacher Performance Registry</CardTitle
+					>Staff Registry</CardTitle
 				>
 				<CardDescription>
-					Detailed metrics for individual faculty members in high
-					schools
+					Detailed records for staff members across monitored schools
 				</CardDescription>
 			</div>
 			<div class="relative w-full sm:w-72">
@@ -234,7 +202,7 @@
 				/>
 				<Input
 					type="text"
-					placeholder="Search name, school or faculty..."
+					placeholder="Search name, school or position..."
 					bind:value={searchQuery}
 					class="pl-9"
 				/>
@@ -243,32 +211,25 @@
 	</CardHeader>
 	<CardContent class="p-0">
 		<div class="overflow-x-auto">
-			<DataTable
-				{columns}
-				data={paginatedTeachers}
-				tableRowClick={handleRowClick}
-			/>
+			{#if isLoading}
+				<div class="flex items-center justify-center py-12">
+					<div
+						class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary"
+					></div>
+				</div>
+			{:else}
+				<DataTable {columns} data={filteredStaff} />
+			{/if}
 		</div>
 		<!-- Pagination -->
-		<div
-			class="flex items-center justify-between border-t border-gray-200 px-4 py-3 lg:px-6"
-		>
-			<p class="text-sm text-gray-500">
-				Showing <span class="font-medium text-gray-900"
-					>{paginatedTeachers.length}</span
-				>
-				of
-				<span class="font-medium text-gray-900"
-					>{totalCount.toLocaleString()}</span
-				> teachers
-			</p>
-			{#if totalPages > 1}
-				<Pagination
-					{currentPage}
-					{totalPages}
-					onPageChange={handlePageChange}
-				/>
-			{/if}
+		<div class="border-t pt-3 px-4 lg:px-6 pb-3">
+			<Pagination
+				{currentPage}
+				{totalPages}
+				onPageChange={handlePageChange}
+				{totalItems}
+				{pageSize}
+			/>
 		</div>
 	</CardContent>
 </Card>

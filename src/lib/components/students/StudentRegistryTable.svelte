@@ -9,14 +9,14 @@
 		CardHeader,
 		CardTitle,
 	} from "$lib/components/ui/card";
+	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+	import { Columns4 } from "@lucide/svelte";
 	import { renderSnippet } from "$lib/components/ui/data-table/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { Input } from "$lib/components/ui/input";
 	import Pagination from "$lib/components/ui/pagination/pagination.svelte";
 	import type { StudentSummary } from "$lib/datamodel/student";
-	import { Columns4, Eye, Search } from "@lucide/svelte";
-	import type { Table } from "@tanstack/table-core";
-	import { type ColumnDef } from "@tanstack/table-core";
+	import { Eye, Search } from "@lucide/svelte";
+	import { type ColumnDef, type Table } from "@tanstack/table-core";
 	import { resolve } from "$app/paths";
 	import { createRawSnippet } from "svelte";
 
@@ -46,7 +46,7 @@
 
 	let searchQuery = $state("");
 
-	// Client-side filtering for search
+	// Client-side filtering for search (searches within current page)
 	let filteredStudents = $derived(
 		searchQuery
 			? students.filter(
@@ -67,8 +67,10 @@
 	function handlePageChange(page: number) {
 		onPageChange(page);
 	}
+
 	// svelte-ignore non_reactive_update
 	let tableData: Table<StudentSummary>;
+
 	/// Table columns
 	const columns: ColumnDef<StudentSummary>[] = [
 		{
@@ -198,7 +200,7 @@
 				</CardDescription>
 			</div>
 			<div class="flex items-center gap-2">
-				<div class="relative w-full sm:w-[288px]">
+				<div class="relative w-full sm:w-72">
 					<Search
 						class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
 					/>
