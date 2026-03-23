@@ -1,5 +1,3 @@
-export type District = 'Kicukiro' | 'Nyamagabe' | 'Rubavu' | 'Ngororero' | 'Gasabo';
-
 export type Faculty =
 	| 'Software development'
 	| 'Mechanics'
@@ -10,24 +8,7 @@ export type Faculty =
 
 export type Level = 'L1' | 'L2' | 'L3' | 'L4' | 'L5';
 
-export type StudentStatus = 'Succeeded' | 'Failed';
 
-export interface Student {
-	id: number;
-	name: string;
-	district: District;
-	faculty: Faculty;
-	level: Level;
-	score: number;
-	status: StudentStatus;
-}
-
-export interface StudentFiltersState {
-	districts: District[];
-	faculties: Faculty[];
-	levelRange: [number, number];
-	schoolType: 'all' | 'highSchool';
-}
 
 export interface ScoreDistribution {
 	range: string;
@@ -39,8 +20,6 @@ export interface FacultyEnrollment {
 	count: number;
 	color: string;
 }
-
-export const DISTRICTS: District[] = ['Kicukiro', 'Nyamagabe', 'Rubavu', 'Ngororero', 'Gasabo'];
 
 export const FACULTIES: Faculty[] = [
 	'Software development',

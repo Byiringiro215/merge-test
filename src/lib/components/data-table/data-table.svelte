@@ -110,7 +110,7 @@
 			<Table.Row class=" bg-gray-50  ">
 				{#each headerGroup.headers as header (header.id)}
 					<Table.Head
-						class="text-[#565D6D] font-normal py-2 text-sm  leading-snug wrap-break-word whitespace-normal [&:has([role=checkbox])]:pl-3"
+						class="text-[#565D6D] font-medium py-2 text-sm  leading-snug wrap-break-word whitespace-normal [&:has([role=checkbox])]:pl-3"
 						style={(
 							header.column.columnDef.meta as { width: string }
 						)?.width
@@ -128,12 +128,10 @@
 			</Table.Row>
 		{/each}
 	</Table.Header>
-	<Table.Body
-		class="border-collapse border border-[#DEE1E6] text-xs font-medium wrap-break-word"
-	>
+	<Table.Body class="border-collapse border border-[#DEE1E6] ">
 		{#each table.getRowModel().rows as row (row.id)}
 			<Table.Row
-				class="h-16 leading-5 border border-[#DEE1E6] text-primary-black font-normal"
+				class="h-16 leading-5 border border-[#DEE1E6] text-primary-black text-sm font-medium wrap-break-word"
 				data-state={row.getIsSelected() && "selected"}
 				onclick={() => {
 					if (

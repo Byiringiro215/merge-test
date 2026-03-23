@@ -1,190 +1,188 @@
 <script lang="ts">
 	import FilterIcon from "@lucide/svelte/icons/filter";
-	import Building2Icon from "@lucide/svelte/icons/building-2";
-	import { Checkbox } from "$lib/components/ui/checkbox";
-	import { Slider } from "$lib/components/ui/slider";
+	import { Input } from "$lib/components/ui/input";
 	import { Label } from "$lib/components/ui/label";
 	import * as Sidebar from "$lib/components/ui/sidebar";
+	import { Checkbox } from "$lib/components/ui/checkbox";
+	import { Button } from "$lib/components/ui/button";
 	import {
-		type District,
-		type Faculty,
+		genders,
+		sdmsStatuses,
+		type Gender,
+		type SDMSStudentStatus,
 		type StudentFiltersState,
-		DISTRICTS,
-		FACULTIES,
-		LEVELS,
-	} from "./types.js";
+	} from "$lib/datamodel/student.js";
 
 	interface Props {
 		filters: StudentFiltersState;
 		onFiltersChange: (filters: StudentFiltersState) => void;
-		onExportReports: () => void;
 	}
 
-	let { filters, onFiltersChange, onExportReports }: Props = $props();
+	let { filters, onFiltersChange }: Props = $props();
 
-	// Extract levelRange as typed tuple to avoid TS indexing errors
-	let levelRange = $derived(
-		filters.levelRange as unknown as [number, number],
+	// Local state for inputs (mutable) - use $state, not $derived
+	let schoolCode = $derived(filters.schoolCode);
+	let classGroup = $derived(filters.classGroup);
+	let selectedGender = $derived<Gender | "">(filters.gender);
+	let selectedStatus = $derived<SDMSStudentStatus | "">(filters.status);
+
+	// Apply filters
+	const applyFilters = () => {
+		onFiltersChange({
+			schoolCode: schoolCode.trim().toUpperCase(),
+			classGroup: classGroup.toUpperCase(),
+			gender: selectedGender.toUpperCase() as Gender,
+			status: selectedStatus.toUpperCase() as SDMSStudentStatus,
+		});
+	};
+
+	// Clear all filters
+	const clearFilters = () => {
+		schoolCode = "";
+		classGroup = "";
+		selectedGender = "";
+		selectedStatus = "";
+		onFiltersChange({
+			schoolCode: "",
+			classGroup: "",
+			gender: "",
+			status: "",
+		});
+	};
+
+	// Check if any filter is active
+	let hasActiveFilters = $derived(
+		schoolCode.trim() !== "" ||
+			classGroup.trim() !== "" ||
+			selectedGender !== "" ||
+			selectedStatus !== "",
 	);
 
-	function toggleDistrict(district: District) {
-		const newDistricts = filters.districts.includes(district)
-			? filters.districts.filter((d) => d !== district)
-			: [...filters.districts, district];
-		onFiltersChange({ ...filters, districts: newDistricts });
+	// Handle gender selection
+	function toggleGender(gender: Gender) {
+		selectedGender = selectedGender === gender ? "" : gender;
 	}
 
-	function toggleFaculty(faculty: Faculty) {
-		const newFaculties = filters.faculties.includes(faculty)
-			? filters.faculties.filter((f) => f !== faculty)
-			: [...filters.faculties, faculty];
-		onFiltersChange({ ...filters, faculties: newFaculties });
-	}
-
-	function handleLevelChange(value: number[]) {
-		if (value[0] !== levelRange[0] || value[1] !== levelRange[1]) {
-			onFiltersChange({
-				districts: filters.districts,
-				faculties: filters.faculties,
-				levelRange: [value[0], value[1]] as [number, number],
-				schoolType: filters.schoolType,
-			});
-		}
-	}
-
-	function toggleSchoolType() {
-		onFiltersChange({
-			...filters,
-			schoolType:
-				filters.schoolType === "highSchool" ? "all" : "highSchool",
-		});
+	// Handle status selection
+	function toggleStatus(status: SDMSStudentStatus) {
+		selectedStatus = selectedStatus === status ? "" : status;
 	}
 </script>
 
 <Sidebar.Header
-	class="border-b items-center flex-row border-b-gray-300 bg-[#fafafb] px-6 py-6"
+	class="border-b items-center flex-row border-b-gray-300 bg-[#fafafb] px-6 py-6 "
 >
-	<FilterIcon class="h-4 w-4 text-black" />
-	<span class="text-sm font-normal text-black">Student Analytics Filters</span
-	>
+	<FilterIcon class="h-4 w-4 text-primary-black" />
+	<span class="text-sm font-semibold leading-5 text-primary-black capitalize"
+		>student Analytics filters
+	</span>
 </Sidebar.Header>
 
-<Sidebar.Content class="bg-[#fafafb] px-6">
-	<!-- District Section -->
+<Sidebar.Content class="bg-[#fafafb] px-6 mt-3">
+	<!-- School Code Section -->
 	<Sidebar.Group>
 		<Sidebar.GroupLabel
-			class="text-xs font-medium uppercase tracking-wide text-gray-500"
+			class="text-xs font-inter font-medium uppercase leading-4 tracking-[0.6px] text-gray-500"
 		>
-			District
+			School Code
 		</Sidebar.GroupLabel>
-		<Sidebar.GroupContent class="space-y-3 pt-2">
-			{#each DISTRICTS as district, index (index)}
-				<div class="flex items-center gap-2">
-					<Checkbox
-						id="district-{district}"
-						checked={filters.districts.includes(district)}
-						onCheckedChange={() => toggleDistrict(district)}
-					/>
-					<Label
-						for="district-{district}"
-						class="text-sm font-normal leading-0 text-black cursor-pointer"
-					>
-						{district}
-					</Label>
-				</div>
-			{/each}
-		</Sidebar.GroupContent>
-	</Sidebar.Group>
-
-	<!-- Faculty Section -->
-	<Sidebar.Group>
-		<Sidebar.GroupLabel
-			class="text-xs font-medium uppercase tracking-wide text-gray-500"
-		>
-			Faculty
-		</Sidebar.GroupLabel>
-		<Sidebar.GroupContent class="space-y-3 pt-2">
-			{#each FACULTIES as faculty, index (index)}
-				<div class="flex items-center gap-2">
-					<Checkbox
-						id="faculty-{index}"
-						checked={filters.faculties.includes(faculty)}
-						onCheckedChange={() => toggleFaculty(faculty)}
-					/>
-					<Label
-						for="faculty-{index}"
-						class="text-sm font-normal leading-0 text-black cursor-pointer"
-					>
-						{faculty}
-					</Label>
-				</div>
-			{/each}
-		</Sidebar.GroupContent>
-	</Sidebar.Group>
-
-	<!-- Target Level Section -->
-	<Sidebar.Group>
-		<Sidebar.GroupLabel
-			class="text-xs font-medium uppercase tracking-wide text-gray-500"
-		>
-			Target Level
-		</Sidebar.GroupLabel>
-		<Sidebar.GroupContent class="pt-2 px-1">
-			<Slider
-				type="multiple"
-				bind:value={levelRange}
-				onValueChange={handleLevelChange}
-				min={1}
-				max={5}
-				step={1}
-				class="w-full **:data-[slot=slider-track]:bg-[#b5d0f1]  **:data-[slot=slider-range]:bg-secondary"
+		<Sidebar.GroupContent class="pt-1">
+			<Input
+				type="text"
+				placeholder="Enter school code..."
+				bind:value={schoolCode}
+				class="h-9 border-gray-300 placeholder:text-xs rounded-[6px] focus-visible:ring-1 uppercase"
 			/>
-			<div class="mt-3 flex justify-between text-xs text-gray-500">
-				{#each LEVELS as level, index (index)}
-					{@const levelNum = parseInt(level.replace("L", ""))}
-					<span
-						class={levelNum >= levelRange[0] &&
-						levelNum <= levelRange[1]
-							? "text-primary font-medium"
-							: ""}
-					>
-						{level}
-					</span>
-				{/each}
-			</div>
 		</Sidebar.GroupContent>
 	</Sidebar.Group>
 
-	<!-- School Type Section -->
+	<!-- Class Group Section -->
 	<Sidebar.Group>
 		<Sidebar.GroupLabel
-			class="text-xs font-semibold uppercase tracking-wide text-gray-500"
+			class="text-xs font-inter font-medium uppercase leading-4 tracking-[0.6px] text-gray-500"
 		>
-			School Type
+			Class Group
 		</Sidebar.GroupLabel>
-		<Sidebar.GroupContent class="pt-2">
-			<button
-				type="button"
-				onclick={toggleSchoolType}
-				class="flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors {filters.schoolType ===
-				'highSchool'
-					? 'border-primary bg-blue-50 text-primary'
-					: 'border-gray-200 text-gray-700 hover:bg-gray-50'}"
+		<Sidebar.GroupContent class="pt-1">
+			<Input
+				type="text"
+				placeholder="Enter class group..."
+				bind:value={classGroup}
+				class="h-9 border-gray-300 placeholder:text-xs rounded-[6px] focus-visible:ring-1 uppercase"
+			/>
+		</Sidebar.GroupContent>
+	</Sidebar.Group>
+
+	<!-- Gender Section -->
+	<Sidebar.Group>
+		<Sidebar.GroupLabel
+			class="text-xs font-inter font-medium uppercase leading-4 tracking-[0.6px] text-gray-500"
+		>
+			Gender
+		</Sidebar.GroupLabel>
+		<Sidebar.GroupContent class="space-y-3 pt-1">
+			{#each genders as gender (gender)}
+				<div class="flex items-center gap-2">
+					<Checkbox
+						id="gender-{gender}"
+						checked={selectedGender === gender}
+						onCheckedChange={() => toggleGender(gender)}
+					/>
+					<Label
+						for="gender-{gender}"
+						class="text-sm font-normal leading-0 text-black cursor-pointer uppercase"
+					>
+						{gender}
+					</Label>
+				</div>
+			{/each}
+		</Sidebar.GroupContent>
+	</Sidebar.Group>
+
+	<!-- Status Section -->
+	<Sidebar.Group>
+		<Sidebar.GroupLabel
+			class="text-xs font-inter font-medium uppercase leading-4 tracking-[0.6px] text-gray-500"
+		>
+			Status
+		</Sidebar.GroupLabel>
+		<Sidebar.GroupContent class="space-y-3 pt-1">
+			{#each sdmsStatuses as status (status)}
+				<div class="flex items-center gap-2">
+					<Checkbox
+						id="status-{status}"
+						checked={selectedStatus === status}
+						onCheckedChange={() => toggleStatus(status)}
+					/>
+					<Label
+						for="status-{status}"
+						class="text-sm font-normal leading-0 text-black cursor-pointer"
+					>
+						{status}
+					</Label>
+				</div>
+			{/each}
+		</Sidebar.GroupContent>
+	</Sidebar.Group>
+
+	<!-- Action Buttons -->
+	<Sidebar.Group>
+		<Sidebar.GroupContent class="flex flex-col gap-2 pt-4">
+			<Button
+				onclick={applyFilters}
+				disabled={!hasActiveFilters}
+				class="w-full disabled:opacity-70 rounded-[6px]"
+				>Apply Filters</Button
 			>
-				<Building2Icon class="h-4 w-4" />
-				High School Only
-			</button>
+			{#if hasActiveFilters}
+				<Button
+					variant="outline"
+					onclick={clearFilters}
+					class="w-full "
+				>
+					Clear Filters
+				</Button>
+			{/if}
 		</Sidebar.GroupContent>
 	</Sidebar.Group>
 </Sidebar.Content>
-
-<!-- <Sidebar.Footer class="border-t border-gray-100">
-	<Button
-		variant="outline"
-		class="w-full justify-start gap-2"
-		onclick={onExportReports}
-	>
-		<DownloadIcon class="h-4 w-4" />
-		Export Reports
-	</Button>
-</Sidebar.Footer> -->

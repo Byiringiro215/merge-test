@@ -7,13 +7,15 @@
 	import type {
 		FacultyEnrollment,
 		ScoreDistribution,
-		StudentFiltersState,
 	} from "$lib/components/students/types.js";
 	import { FACULTY_COLORS } from "$lib/components/students/types.js";
 	import { Button } from "$lib/components/ui/button";
 	import * as Sidebar from "$lib/components/ui/sidebar";
 	import { customFetcher } from "$lib/customFetcher";
-	import type { StudentSummary } from "$lib/datamodel/student";
+	import type {
+		StudentFiltersState,
+		StudentSummary,
+	} from "$lib/datamodel/student";
 	import {
 		createPaginatedResponseSchema,
 		studentSummary,
@@ -27,28 +29,19 @@
 	import UserPlusIcon from "@lucide/svelte/icons/user-plus";
 	import UsersIcon from "@lucide/svelte/icons/users";
 	import { onMount } from "svelte";
+	import { SvelteURLSearchParams } from "svelte/reactivity";
 
-	// Filter state
+	// Sidebar filter state
 	let filters = $state<StudentFiltersState>({
-		districts: ["Kicukiro", "Nyamagabe", "Rubavu", "Ngororero", "Gasabo"],
-		faculties: [
-			"Software development",
-			"Mechanics",
-			"Automobile",
-			"Tourism",
-			"Electrical engineering",
-			"Road construction",
-		],
-		levelRange: [1, 5],
-		schoolType: "highSchool",
+		schoolCode: "",
+		classGroup: "",
+		gender: "",
+		status: "",
 	});
 
 	function handleFiltersChange(newFilters: StudentFiltersState) {
 		filters = newFilters;
-	}
-
-	function handleExportReports() {
-		console.log("Export reports clicked");
+		currentPage = 1; // Reset to first page when filters change
 	}
 
 	// Stats cards data
@@ -144,10 +137,24 @@
 			isLoading = true;
 			const paginatedStudentSchema =
 				createPaginatedResponseSchema(studentSummary);
+
+			// Build query params including sidebar filters
+			const params = new SvelteURLSearchParams();
+			params.set("page", currentPage.toString());
+			params.set("limit", pageSize.toString());
+
+			// Add active filters from sidebar to query params
+			if (filters.gender) params.set("gender", filters.gender);
+			if (filters.schoolCode)
+				params.set("schoolCode", filters.schoolCode);
+			if (filters.status) params.set("status", filters.status);
+			if (filters.classGroup)
+				params.set("classGroup", filters.classGroup);
+
 			const { result } = await customFetcher<{
 				data: StudentSummary[];
 				meta: Meta;
-			}>(`/v1/sdms/students?page=${currentPage}&limit=${pageSize}`, {
+			}>(`/v1/sdms/students?${params.toString()}`, {
 				method: "GET",
 				bodySchema: paginatedStudentSchema,
 			});
@@ -174,6 +181,7 @@
 		isMounted = true;
 	});
 
+	// Re-fetch when page or filters change
 	$effect(() => {
 		if (isMounted) {
 			fetchStudents();
@@ -187,11 +195,7 @@
 			side="left"
 			class="border-r border-r-gray-200 bg-[#fafafb]! mt-16 h-[calc(100vh-4rem-3.5rem)]"
 		>
-			<StudentFilters
-				{filters}
-				onFiltersChange={handleFiltersChange}
-				onExportReports={handleExportReports}
-			/>
+			<StudentFilters {filters} onFiltersChange={handleFiltersChange} />
 		</Sidebar.Root>
 
 		<Sidebar.Inset class="overflow-x-hidden bg-[#f1f7fe]">

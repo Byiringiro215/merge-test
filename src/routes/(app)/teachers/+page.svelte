@@ -13,36 +13,29 @@
 	import FacultySuccessRatesChart from "$lib/components/teachers/FacultySuccessRatesChart.svelte";
 	import TeacherRegistryTable from "$lib/components/teachers/TeacherRegistryTable.svelte";
 	import type {
-		Teacher,
-		TeacherFiltersState,
 		TeacherProvinceAssistance,
 		FacultySuccessData,
 	} from "$lib/components/teachers/types.js";
+	import { customFetcher } from "$lib/customFetcher";
+	import type { StaffSummary, StaffFiltersState } from "$lib/datamodel/staff";
+	import {
+		createPaginatedResponseSchema,
+		staffSummary,
+		type Meta,
+	} from "$lib/types/zod-schemas-api";
+	import { onMount } from "svelte";
+	import { SvelteURLSearchParams } from "svelte/reactivity";
 
-	// Filter state
-	let filters = $state<TeacherFiltersState>({
-		districts: ["Kicukiro", "Nyamagabe", "Rubavu", "Ngororero", "Gasabo"],
-		faculties: [
-			"Software development",
-			"Mechanics",
-			"Automobile",
-			"Tourism",
-			"Electrical engineering",
-			"Road construction",
-		],
-		successThreshold: [0, 100],
+	// Sidebar filter state (maps to backend query parameters)
+	let filters = $state<StaffFiltersState>({
+		schoolCode: "",
+		position: "",
+		gender: "",
 	});
 
-	function handleFiltersChange(newFilters: TeacherFiltersState) {
+	function handleFiltersChange(newFilters: StaffFiltersState) {
 		filters = newFilters;
-	}
-
-	function handleApplyFilters() {
-		console.log("Applying filters:", filters);
-	}
-
-	function handleExportReports() {
-		console.log("Export reports clicked");
+		currentPage = 1; // Reset to first page when filters change
 	}
 
 	// Stats cards data - 4 cards as shown in design
@@ -135,129 +128,66 @@
 		},
 	];
 
-	// Sample teacher data
-	const teachers: Teacher[] = [
-		{
-			id: 1,
-			name: "Jean-Paul Habimana",
-			registeredSince: "2021",
-			primaryFaculty: "Software development",
-			assignedSchool: "Kicukiro High School",
-			district: "Kicukiro",
-			students: 120,
-			successRate: 94,
-		},
-		{
-			id: 2,
-			name: "Marie Claire Uwase",
-			registeredSince: "2021",
-			primaryFaculty: "Tourism",
-			assignedSchool: "Rubavu Technical High",
-			district: "Rubavu",
-			students: 85,
-			successRate: 91,
-		},
-		{
-			id: 3,
-			name: "Emmanuel Nkurunziza",
-			registeredSince: "2021",
-			primaryFaculty: "Mechanics",
-			assignedSchool: "Gasabo Science School",
-			district: "Gasabo",
-			students: 110,
-			successRate: 82,
-		},
-		{
-			id: 4,
-			name: "Alice Murenzi",
-			registeredSince: "2021",
-			primaryFaculty: "Electrical engineering",
-			assignedSchool: "Nyamagabe Vocational",
-			district: "Nyamagabe",
-			students: 95,
-			successRate: 88,
-		},
-		{
-			id: 5,
-			name: "David Rugamba",
-			registeredSince: "2021",
-			primaryFaculty: "Road construction",
-			assignedSchool: "Ngororero High School",
-			district: "Ngororero",
-			students: 105,
-			successRate: 79,
-		},
-		{
-			id: 6,
-			name: "Claudine Mukamana",
-			registeredSince: "2020",
-			primaryFaculty: "Software development",
-			assignedSchool: "Gasabo Technical",
-			district: "Gasabo",
-			students: 98,
-			successRate: 92,
-		},
-		{
-			id: 7,
-			name: "Patrick Niyonzima",
-			registeredSince: "2022",
-			primaryFaculty: "Automobile",
-			assignedSchool: "Kicukiro Vocational",
-			district: "Kicukiro",
-			students: 75,
-			successRate: 85,
-		},
-		{
-			id: 8,
-			name: "Grace Uwimana",
-			registeredSince: "2020",
-			primaryFaculty: "Tourism",
-			assignedSchool: "Nyamagabe High School",
-			district: "Nyamagabe",
-			students: 130,
-			successRate: 90,
-		},
-		{
-			id: 9,
-			name: "Felix Ndayisaba",
-			registeredSince: "2021",
-			primaryFaculty: "Mechanics",
-			assignedSchool: "Rubavu Technical",
-			district: "Rubavu",
-			students: 88,
-			successRate: 77,
-		},
-		{
-			id: 10,
-			name: "Sandra Ingabire",
-			registeredSince: "2019",
-			primaryFaculty: "Electrical engineering",
-			assignedSchool: "Ngororero Vocational",
-			district: "Ngororero",
-			students: 112,
-			successRate: 86,
-		},
-		{
-			id: 11,
-			name: "Eric Mugabo",
-			registeredSince: "2022",
-			primaryFaculty: "Road construction",
-			assignedSchool: "Kicukiro Technical",
-			district: "Kicukiro",
-			students: 92,
-			successRate: 81,
-		},
-		{
-			id: 12,
-			name: "Rose Mukeshimana",
-			registeredSince: "2020",
-			primaryFaculty: "Software development",
-			assignedSchool: "Rubavu High School",
-			district: "Rubavu",
-			students: 105,
-			successRate: 93,
-		},
-	];
+	// Staff data and pagination state
+	let staff = $state<StaffSummary[]>([]);
+	let currentPage = $state(1);
+	let pageSize = $state(20);
+	let totalStaff = $state(0);
+	let totalPages = $derived(Math.max(1, Math.ceil(totalStaff / pageSize)));
+	let isLoading = $state(false);
+	let isMounted = $state(false);
+
+	const fetchStaff = async () => {
+		try {
+			isLoading = true;
+			const paginatedStaffSchema =
+				createPaginatedResponseSchema(staffSummary);
+
+			// Build query params including sidebar filters
+			const params = new SvelteURLSearchParams();
+			params.set("page", currentPage.toString());
+			params.set("limit", pageSize.toString());
+
+			// Add active filters from sidebar to query params
+			if (filters.schoolCode)
+				params.set("schoolCode", filters.schoolCode);
+			if (filters.position) params.set("position", filters.position);
+			if (filters.gender) params.set("gender", filters.gender);
+
+			const { result } = await customFetcher<{
+				data: StaffSummary[];
+				meta: Meta;
+			}>(`/v1/sdms/staff?${params.toString()}`, {
+				method: "GET",
+				bodySchema: paginatedStaffSchema,
+			});
+			if (!result.ok) {
+				console.error("Failed to fetch staff");
+				return;
+			}
+			staff = Array.isArray(result.value.data) ? result.value.data : [];
+			totalStaff = result.value.meta.page?.total ?? 0;
+		} catch (error) {
+			console.error("Fetch error:", error);
+		} finally {
+			isLoading = false;
+		}
+	};
+
+	const handlePageChange = (page: number) => {
+		currentPage = page;
+	};
+
+	onMount(() => {
+		isMounted = true;
+	});
+
+	// Re-fetch when page or filters change
+	$effect(() => {
+		if (isMounted) {
+			fetchStaff();
+		}
+	});
 </script>
 
 <div class="w-full max-w-[100vw] overflow-x-hidden">
@@ -266,12 +196,7 @@
 			side="left"
 			class="border-r border-r-gray-200 bg-[#fafafb]! mt-16 h-[calc(100vh-4rem-3.5rem)]"
 		>
-			<TeacherFilters
-				{filters}
-				onFiltersChange={handleFiltersChange}
-				onApplyFilters={handleApplyFilters}
-				onExportReports={handleExportReports}
-			/>
+			<TeacherFilters {filters} onFiltersChange={handleFiltersChange} />
 		</Sidebar.Root>
 
 		<Sidebar.Inset class="overflow-x-hidden bg-[#fdfdfe]!">
@@ -355,8 +280,13 @@
 				<!-- Teacher Registry Table -->
 				<div class="min-w-0 overflow-hidden">
 					<TeacherRegistryTable
-						{teachers}
-						totalCount={teachers.length}
+						{staff}
+						{currentPage}
+						{totalPages}
+						totalItems={totalStaff}
+						{pageSize}
+						{isLoading}
+						onPageChange={handlePageChange}
 					/>
 				</div>
 			</div>
