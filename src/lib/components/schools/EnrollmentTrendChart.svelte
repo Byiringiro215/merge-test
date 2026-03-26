@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { ChartContainer } from "$lib/components/ui/chart-container";
 	import {
 		select,
 		scaleBand,
@@ -26,24 +26,19 @@
 
 	let { data = defaultData }: Props = $props();
 
-	let chartContainer: HTMLDivElement;
-	let width = $state(0);
-	let tooltipText = $state("");
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipVisible = $state(false);
+	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 280;
 
-	function createChart() {
-		if (!chartContainer || width === 0) return;
+	function createChart(container: HTMLDivElement, width: number) {
+		if (!container || width === 0) return;
 
-		select(chartContainer).selectAll("*").remove();
+		select(container).selectAll("*").remove();
 
 		const margin = { top: 20, right: 20, left: 45, bottom: 40 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = select(chartContainer)
+		const svg = select(container)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -102,7 +97,6 @@
 				const y = yScale(d.students);
 				const h = innerHeight - y;
 				const r = Math.min(cornerRadius, h / 2, barWidth / 2);
-				// Path with rounded top corners only
 				return `M${x},${innerHeight}
 						L${x},${y + r}
 						Q${x},${y} ${x + r},${y}
@@ -126,7 +120,7 @@
 					.attr("fill", CHART_COLORS.enrollmentHover)
 					.attr("opacity", 0.9);
 
-				showTooltip(
+				chartContainerRef?.showTooltip(
 					event,
 					`${d.district}: ${d.students.toLocaleString()} students`,
 				);
@@ -139,7 +133,7 @@
 					event: MouseEvent,
 					d: EnrollmentData,
 				) {
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.district}: ${d.students.toLocaleString()} students`,
 					);
@@ -153,7 +147,7 @@
 					.attr("fill", CHART_COLORS.enrollment)
 					.attr("opacity", 1);
 
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
 
 		// X Axis
@@ -171,8 +165,7 @@
 
 		// Y Axis
 		const yAxis = g.append("g").call(
-			d3
-				.axisLeft(yScale)
+			axisLeft(yScale)
 				.tickValues(yTickValues)
 				.tickFormat((d) => d.toLocaleString())
 				.tickSize(0),
@@ -185,38 +178,6 @@
 			.attr("font-size", "12px")
 			.attr("dx", "-0.5em");
 	}
-
-	function showTooltip(event: MouseEvent, text: string) {
-		tooltipText = text;
-		tooltipX = event.offsetX + 10;
-		tooltipY = event.offsetY - 30;
-		tooltipVisible = true;
-	}
-
-	function hideTooltip() {
-		tooltipVisible = false;
-	}
-
-	onMount(() => {
-		const resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				createChart();
-			}
-		});
-
-		if (chartContainer) {
-			resizeObserver.observe(chartContainer);
-		}
-
-		return () => resizeObserver.disconnect();
-	});
-
-	$effect(() => {
-		if (width > 0) {
-			createChart();
-		}
-	});
 </script>
 
 <div class="flex flex-col h-full">
@@ -227,24 +188,10 @@
 		</h3>
 	</div>
 
-	<div class="relative flex-1">
-		<div
-			bind:this={chartContainer}
-			class="w-full"
-			style="height: {height}px;"
-		></div>
-
-		<!-- Tooltip -->
-		<div
-			class="pointer-events-none absolute z-20 rounded-md bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg transition-opacity duration-150"
-			style="opacity: {tooltipVisible
-				? 1
-				: 0}; left: {tooltipX}px; top: {tooltipY}px; transform: translate(0, -100%);"
-		>
-			{tooltipText}
-			<div
-				class="absolute left-2 top-full border-4 border-transparent border-t-gray-900"
-			></div>
-		</div>
-	</div>
+	<ChartContainer
+		bind:this={chartContainerRef}
+		{height}
+		bare
+		onResize={createChart}
+	/>
 </div>

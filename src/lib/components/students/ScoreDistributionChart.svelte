@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { ChartContainer } from "$lib/components/ui/chart-container";
 	import {
 		select,
 		scaleBand,
@@ -8,13 +8,6 @@
 		axisBottom,
 		axisLeft,
 	} from "d3";
-	import {
-		Card,
-		CardHeader,
-		CardTitle,
-		CardDescription,
-		CardContent,
-	} from "$lib/components/ui/card";
 	import type { ScoreDistribution } from "./types.js";
 
 	const defaultData: ScoreDistribution[] = [
@@ -31,25 +24,19 @@
 
 	let { data = defaultData }: Props = $props();
 
-	let chartContainer: HTMLDivElement;
-	let tooltipEl: HTMLDivElement;
-	let width = $state(0);
-	let tooltipText = $state("");
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipVisible = $state(false);
+	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 400;
 
-	function createChart() {
-		if (!chartContainer || width === 0) return;
+	function createChart(container: HTMLDivElement, width: number) {
+		if (!container || width === 0) return;
 
-		select(chartContainer).selectAll("*").remove();
+		select(container).selectAll("*").remove();
 
 		const margin = { top: 10, right: 20, left: 40, bottom: 30 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = select(chartContainer)
+		const svg = select(container)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -108,7 +95,6 @@
 				const y = yScale(d.count);
 				const h = innerHeight - y;
 				const r = Math.min(cornerRadius, h / 2, barWidth / 2);
-				// Path with rounded top corners only
 				return `M${x},${innerHeight}
 						L${x},${y + r}
 						Q${x},${y} ${x + r},${y}
@@ -132,7 +118,7 @@
 					.attr("fill", "#1a4d8c")
 					.attr("opacity", 0.9);
 
-				showTooltip(
+				chartContainerRef?.showTooltip(
 					event,
 					`${d.range}: ${d.count.toLocaleString()} students`,
 				);
@@ -145,7 +131,7 @@
 					event: MouseEvent,
 					d: ScoreDistribution,
 				) {
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.range}: ${d.count.toLocaleString()} students`,
 					);
@@ -159,7 +145,7 @@
 					.attr("fill", "#205fad")
 					.attr("opacity", 1);
 
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
 
 		// X Axis
@@ -190,63 +176,15 @@
 			.attr("font-size", "12px")
 			.attr("dx", "-0.5em");
 	}
-
-	function showTooltip(event: MouseEvent, text: string) {
-		tooltipText = text;
-		tooltipX = event.offsetX + 10;
-		tooltipY = event.offsetY - 30;
-		tooltipVisible = true;
-	}
-
-	function hideTooltip() {
-		tooltipVisible = false;
-	}
-
-	onMount(() => {
-		const resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				createChart();
-			}
-		});
-
-		if (chartContainer) {
-			resizeObserver.observe(chartContainer);
-		}
-
-		return () => resizeObserver.disconnect();
-	});
-
-	$effect(() => {
-		if (width > 0) {
-			createChart();
-		}
-	});
 </script>
 
-<Card class="h-full">
-	<CardHeader class="px-4 pb-2 pt-4 lg:px-6 lg:pt-5">
-		<CardTitle class="text-lg font-semibold">Score Distribution</CardTitle>
-		<CardDescription
-			>Frequency of students across academic score ranges</CardDescription
-		>
-	</CardHeader>
-	<CardContent class="px-4 pb-4 pt-0 lg:px-6 lg:pb-5">
-		<div class="relative">
-			<div
-				bind:this={chartContainer}
-				class="w-full"
-				style="height: {height}px;"
-			></div>
-			<div
-				bind:this={tooltipEl}
-				class="pointer-events-none absolute rounded bg-gray-900 px-2 py-1 text-xs text-white transition-opacity"
-				style="opacity: {tooltipVisible
-					? 1
-					: 0}; left: {tooltipX}px; top: {tooltipY}px;"
-			>
-				{tooltipText}
-			</div>
-		</div>
-	</CardContent>
-</Card>
+<ChartContainer
+	bind:this={chartContainerRef}
+	title="Score Distribution"
+	description="Frequency of students across academic score ranges"
+	{height}
+	cardClass="h-full"
+	headerClass="px-4 pb-2 pt-4 lg:px-6 lg:pt-5"
+	contentClass="px-4 pb-4 pt-0 lg:px-6 lg:pb-5"
+	onResize={createChart}
+/>

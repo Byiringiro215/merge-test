@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { ChartContainer } from "$lib/components/ui/chart-container";
 	import {
 		select,
 		scaleBand,
@@ -10,13 +10,6 @@
 		axisBottom,
 		axisLeft,
 	} from "d3";
-	import {
-		Card,
-		CardHeader,
-		CardTitle,
-		CardDescription,
-		CardContent,
-	} from "$lib/components/ui/card";
 	import type { FacultySuccessData } from "./types.js";
 
 	interface Props {
@@ -58,24 +51,19 @@
 
 	let { data = defaultData }: Props = $props();
 
-	let chartContainer: HTMLDivElement;
-	let width = $state(0);
-	let tooltipText = $state("");
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipVisible = $state(false);
+	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 320;
 
-	function createChart() {
-		if (!chartContainer || width === 0) return;
+	function createChart(container: HTMLDivElement, width: number) {
+		if (!container || width === 0) return;
 
-		select(chartContainer).selectAll("*").remove();
+		select(container).selectAll("*").remove();
 
 		const margin = { top: 20, right: 20, left: 40, bottom: 50 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = select(chartContainer)
+		const svg = select(container)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -121,7 +109,6 @@
 			.style("cursor", "pointer")
 			.attr("d", (d: FacultySuccessData) => {
 				const x = xScale(d.abbreviation) || 0;
-				// Start at bottom (zero height)
 				return `M${x},${innerHeight} L${x},${innerHeight} L${x + barWidth},${innerHeight} L${x + barWidth},${innerHeight} Z`;
 			});
 
@@ -152,7 +139,7 @@
 					.ease(easeQuadOut)
 					.attr("fill", "#2563eb")
 					.attr("opacity", 0.9);
-				showTooltip(
+				chartContainerRef?.showTooltip(
 					event,
 					`${d.faculty}: ${d.currentRate}% success rate`,
 				);
@@ -161,7 +148,7 @@
 			.on(
 				"mousemove",
 				function (event: MouseEvent, d: FacultySuccessData) {
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.faculty}: ${d.currentRate}% success rate`,
 					);
@@ -174,7 +161,7 @@
 					.ease(easeQuadOut)
 					.attr("fill", "#3B82F6")
 					.attr("opacity", 1);
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
 
 		// Draw target line
@@ -231,7 +218,7 @@
 					.duration(150)
 					.attr("r", 7)
 					.attr("fill", "#9CA3AF");
-				showTooltip(
+				chartContainerRef?.showTooltip(
 					event,
 					`${d.faculty}: ${d.nationalTarget}% national target`,
 				);
@@ -240,7 +227,7 @@
 			.on(
 				"mousemove",
 				function (event: MouseEvent, d: FacultySuccessData) {
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.faculty}: ${d.nationalTarget}% national target`,
 					);
@@ -252,7 +239,7 @@
 					.duration(150)
 					.attr("r", 5)
 					.attr("fill", "white");
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
 
 		// X Axis
@@ -283,85 +270,29 @@
 			.attr("font-size", "12px")
 			.attr("dx", "-0.5em");
 	}
-
-	function showTooltip(event: MouseEvent, text: string) {
-		tooltipText = text;
-		tooltipX = event.offsetX + 10;
-		tooltipY = event.offsetY - 30;
-		tooltipVisible = true;
-	}
-
-	function hideTooltip() {
-		tooltipVisible = false;
-	}
-
-	onMount(() => {
-		const resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				createChart();
-			}
-		});
-
-		if (chartContainer) {
-			resizeObserver.observe(chartContainer);
-		}
-
-		return () => resizeObserver.disconnect();
-	});
-
-	$effect(() => {
-		if (width > 0) {
-			createChart();
-		}
-	});
 </script>
 
-<Card class="h-full border-0 shadow-none bg-transparent border-none">
-	<CardHeader class="px-0 pb-3 pt-0">
-		<CardTitle class="text-base font-bold text-gray-900"
-			>Faculty Success Rates</CardTitle
-		>
-		<CardDescription class="text-sm text-gray-500">
-			Comparison of current student success rates vs national targets per
-			faculty.
-		</CardDescription>
-	</CardHeader>
-	<CardContent class="px-0 pb-0 pt-0">
-		<div class="relative">
-			<div
-				bind:this={chartContainer}
-				class="w-full"
-				style="height: {height}px;"
-			></div>
-			<!-- Tooltip -->
-			<div
-				class="pointer-events-none absolute z-20 rounded-md bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg transition-opacity duration-150"
-				style="opacity: {tooltipVisible
-					? 1
-					: 0}; left: {tooltipX}px; top: {tooltipY}px; transform: translate(0, -100%);"
-			>
-				{tooltipText}
+<ChartContainer
+	bind:this={chartContainerRef}
+	title="Faculty Success Rates"
+	description="Comparison of current student success rates vs national targets per faculty."
+	{height}
+	onResize={createChart}
+	cardClass="border-0"
+>
+	{#snippet legend()}
+		<div class="flex items-center gap-2">
+			<div class="h-3 w-3 rounded-sm bg-[#3B82F6]"></div>
+			<span class="text-sm text-gray-600">Current Rate</span>
+		</div>
+		<div class="flex items-center gap-2">
+			<div class="flex items-center">
+				<div class="h-0.5 w-4 bg-gray-400"></div>
 				<div
-					class="absolute left-2 top-full border-4 border-transparent border-t-gray-900"
+					class="h-2.5 w-2.5 rounded-full bg-white border-2 border-gray-400 -ml-1"
 				></div>
 			</div>
+			<span class="text-sm text-gray-600">National Target</span>
 		</div>
-		<!-- Legend -->
-		<div class="flex flex-wrap items-center justify-center gap-6 mt-4">
-			<div class="flex items-center gap-2">
-				<div class="h-3 w-3 rounded-sm bg-[#3B82F6]"></div>
-				<span class="text-sm text-gray-600">Current Rate</span>
-			</div>
-			<div class="flex items-center gap-2">
-				<div class="flex items-center">
-					<div class="h-0.5 w-4 bg-gray-400"></div>
-					<div
-						class="h-2.5 w-2.5 rounded-full bg-white border-2 border-gray-400 -ml-1"
-					></div>
-				</div>
-				<span class="text-sm text-gray-600">National Target</span>
-			</div>
-		</div>
-	</CardContent>
-</Card>
+	{/snippet}
+</ChartContainer>

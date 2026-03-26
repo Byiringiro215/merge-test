@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle,
-	} from "$lib/components/ui/card";
+	import { ChartContainer } from "$lib/components/ui/chart-container";
 	import {
 		select,
 		stack,
@@ -18,14 +12,14 @@
 		axisLeft,
 	} from "d3";
 	import type { SeriesPoint } from "d3";
-	import { onMount } from "svelte";
 	import type { TeacherProvinceAssistance } from "./types.js";
 	import { PROVINCE_COLORS, PROVINCES } from "./types.js";
+	import ChartLegend from "../ui/chart-container/chart-legend.svelte";
 
 	interface Props {
 		data?: TeacherProvinceAssistance[];
 	}
-
+	// Sample data for the chart
 	const defaultData: TeacherProvinceAssistance[] = [
 		{
 			teacherName: "Uwimana A.",
@@ -51,12 +45,7 @@
 
 	let { data = defaultData }: Props = $props();
 
-	let chartContainer: HTMLDivElement;
-	let width = $state(0);
-	let tooltipText = $state("");
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipVisible = $state(false);
+	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 320;
 
 	interface StackedDataItem {
@@ -68,16 +57,16 @@
 		West: number;
 	}
 
-	function createChart() {
-		if (!chartContainer || width === 0) return;
+	function createChart(container: HTMLDivElement, width: number) {
+		if (!container || width === 0) return;
 
-		select(chartContainer).selectAll("*").remove();
+		select(container).selectAll("*").remove();
 
 		const margin = { top: 10, right: 30, left: 35, bottom: 60 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = select(chartContainer)
+		const svg = select(container)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -182,14 +171,14 @@
 						.ease(easeQuadOut)
 						.attr("opacity", 0.8);
 					const value = d[1] - d[0];
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.data.teacher} - ${province}: ${value} students`,
 					);
 				})
 					.on("mousemove", function (event: MouseEvent, d) {
 						const value = d[1] - d[0];
-						showTooltip(
+						chartContainerRef?.showTooltip(
 							event,
 							`${d.data.teacher} - ${province}: ${value} students`,
 						);
@@ -200,7 +189,7 @@
 							.duration(200)
 							.ease(easeQuadOut)
 							.attr("opacity", 1);
-						hideTooltip();
+						chartContainerRef?.hideTooltip();
 					});
 			} else {
 				// Other layers - animate from bottom (height grows)
@@ -235,14 +224,14 @@
 						.ease(easeQuadOut)
 						.attr("opacity", 0.8);
 					const value = d[1] - d[0];
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.data.teacher} - ${province}: ${value} students`,
 					);
 				})
 					.on("mousemove", function (event: MouseEvent, d) {
 						const value = d[1] - d[0];
-						showTooltip(
+						chartContainerRef?.showTooltip(
 							event,
 							`${d.data.teacher} - ${province}: ${value} students`,
 						);
@@ -253,7 +242,7 @@
 							.duration(200)
 							.ease(easeQuadOut)
 							.attr("opacity", 1);
-						hideTooltip();
+						chartContainerRef?.hideTooltip();
 					});
 			}
 		});
@@ -288,82 +277,22 @@
 			.attr("text-anchor", "end");
 	}
 
-	function showTooltip(event: MouseEvent, text: string) {
-		tooltipText = text;
-		tooltipX = event.offsetX + 10;
-		tooltipY = event.offsetY - 30;
-		tooltipVisible = true;
-	}
-
-	function hideTooltip() {
-		tooltipVisible = false;
-	}
-
-	onMount(() => {
-		const resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				createChart();
-			}
-		});
-
-		if (chartContainer) {
-			resizeObserver.observe(chartContainer);
-		}
-
-		return () => resizeObserver.disconnect();
-	});
-
-	$effect(() => {
-		if (width > 0) {
-			createChart();
-		}
-	});
+	// Legend items for the ChartLegend component
+	const legendItems = PROVINCES.map((province) => ({
+		label: province,
+		color: PROVINCE_COLORS[province],
+	}));
 </script>
 
-<Card class="h-full border-0 shadow-none bg-transparent">
-	<CardHeader class="px-0 pb-3 pt-0">
-		<CardTitle class="text-base font-bold text-gray-900"
-			>Student Assistance by Province</CardTitle
-		>
-		<CardDescription class="text-sm text-gray-500">
-			Number of students assisted per teacher broken down by their
-			originating district.
-		</CardDescription>
-	</CardHeader>
-	<CardContent class="px-0 pb-0 pt-0">
-		<div class="relative">
-			<div
-				bind:this={chartContainer}
-				class="w-full"
-				style="height: {height}px;"
-			></div>
-			<!-- Tooltip -->
-			<div
-				class="pointer-events-none absolute z-20 rounded-md bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg transition-opacity duration-150"
-				style="opacity: {tooltipVisible
-					? 1
-					: 0}; left: {tooltipX}px; top: {tooltipY}px; transform: translate(0, -100%);"
-			>
-				{tooltipText}
-				<div
-					class="absolute left-2 top-full border-4 border-transparent border-t-gray-900"
-				></div>
-			</div>
-		</div>
-		<!-- Legend -->
-		<div
-			class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-2"
-		>
-			{#each PROVINCES as province, i (i)}
-				<div class="flex items-center gap-1.5">
-					<div
-						class="h-2.5 w-2.5 rounded-full"
-						style="background-color: {PROVINCE_COLORS[province]}"
-					></div>
-					<span class="text-xs text-gray-600">{province}</span>
-				</div>
-			{/each}
-		</div>
-	</CardContent>
-</Card>
+<ChartContainer
+	bind:this={chartContainerRef}
+	title="Student Assistance by Province"
+	description="Number of students assisted per teacher broken down by their originating district."
+	{height}
+	onResize={createChart}
+	cardClass="border-0"
+>
+	{#snippet legend()}
+		<ChartLegend items={legendItems} />
+	{/snippet}
+</ChartContainer>

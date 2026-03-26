@@ -1,13 +1,7 @@
 <script lang="ts">
-	import {
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle,
-	} from "$lib/components/ui/card";
+	import { ChartContainer } from "$lib/components/ui/chart-container";
+	import ChartLegend from "$lib/components/ui/chart-container/chart-legend.svelte";
 	import { scaleBand, scaleLinear, select, easeQuadOut, axisLeft } from "d3";
-	import { onMount } from "svelte";
 
 	interface DistrictData {
 		district: string;
@@ -23,25 +17,19 @@
 		{ district: "Ngororero", successRate: 85, activeSchools: 15 },
 	];
 
-	let chartContainer: HTMLDivElement;
-	let tooltipEl: HTMLDivElement;
-	let width = $state(0);
-	let tooltipText = $state("");
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipVisible = $state(false);
+	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 300;
 
-	function createChart() {
-		if (!chartContainer || width === 0) return;
+	function createChart(container: HTMLDivElement, width: number) {
+		if (!container || width === 0) return;
 
-		select(chartContainer).selectAll("*").remove();
+		select(container).selectAll("*").remove();
 
 		const margin = { top: 10, right: 30, left: 80, bottom: 20 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = select(chartContainer)
+		const svg = select(container)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -98,7 +86,7 @@
 						.attr("fill", "#f97316")
 						.attr("opacity", 0.9);
 
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.district} Success Rate: ${d.successRate}%`,
 					);
@@ -111,7 +99,7 @@
 					event: MouseEvent,
 					d: DistrictData,
 				) {
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.district} Success Rate: ${d.successRate}%`,
 					);
@@ -125,7 +113,7 @@
 					.attr("fill", "#EB8B47")
 					.attr("opacity", 1);
 
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
 
 		// Draw active schools bars (blue) with animation
@@ -168,7 +156,7 @@
 						.attr("fill", "#205FAD")
 						.attr("opacity", 0.9);
 
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.district} Active Schools: ${d.activeSchools}`,
 					);
@@ -181,7 +169,7 @@
 					event: MouseEvent,
 					d: DistrictData,
 				) {
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.district} Active Schools: ${d.activeSchools}`,
 					);
@@ -195,7 +183,7 @@
 					.attr("fill", "#205FAD")
 					.attr("opacity", 1);
 
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
 
 		// Y Axis (district names)
@@ -209,75 +197,23 @@
 			.attr("dx", "-0.5em");
 	}
 
-	function showTooltip(event: MouseEvent, text: string) {
-		tooltipText = text;
-		tooltipX = event.offsetX + 10;
-		tooltipY = event.offsetY - 30;
-		tooltipVisible = true;
-	}
-
-	function hideTooltip() {
-		tooltipVisible = false;
-	}
-
-	onMount(() => {
-		const resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				createChart();
-			}
-		});
-
-		if (chartContainer) {
-			resizeObserver.observe(chartContainer);
-		}
-
-		return () => resizeObserver.disconnect();
-	});
-
-	$effect(() => {
-		if (width > 0) {
-			createChart();
-		}
-	});
+	const legendItems = [
+		{ label: "District Success Rate", color: "#EB8B47" },
+		{ label: "Active High Schools", color: "#205FAD" },
+	];
 </script>
 
-<Card class="py-6">
-	<CardHeader>
-		<CardTitle
-			class="text-[18px] font-semibold leading-7 text-primary-black -tracking-[0.45px]"
-			>District Contributions</CardTitle
-		>
-		<CardDescription
-			>High School count and performance levels by district.</CardDescription
-		>
-	</CardHeader>
-	<CardContent>
-		<div class="relative">
-			<div
-				bind:this={chartContainer}
-				class="w-full"
-				style="height: {height}px;"
-			></div>
-			<div
-				bind:this={tooltipEl}
-				class="pointer-events-none absolute rounded bg-gray-900 px-2 py-1 text-xs text-white transition-opacity"
-				style="opacity: {tooltipVisible
-					? 1
-					: 0}; left: {tooltipX}px; top: {tooltipY}px;"
-			>
-				{tooltipText}
-			</div>
-		</div>
-		<div class="mt-4 flex items-center justify-center gap-6">
-			<div class="flex items-center gap-2">
-				<div class="h-3 w-3 rounded-full bg-orange-400"></div>
-				<span class="text-sm text-gray-600">District Success Rate</span>
-			</div>
-			<div class="flex items-center gap-2">
-				<div class="h-3 w-3 rounded-full bg-blue-400"></div>
-				<span class="text-sm text-gray-600">Active High Schools</span>
-			</div>
-		</div>
-	</CardContent>
-</Card>
+<ChartContainer
+	bind:this={chartContainerRef}
+	title="District Contributions"
+	description="High School count and performance levels by district."
+	{height}
+	cardClass="py-6"
+	headerClass="px-6 pb-3"
+	contentClass="px-6"
+	onResize={createChart}
+>
+	{#snippet legend()}
+		<ChartLegend items={legendItems} shape="circle" size="md" />
+	{/snippet}
+</ChartContainer>

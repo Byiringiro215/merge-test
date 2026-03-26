@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { ChartContainer } from "$lib/components/ui/chart-container";
+	import ChartLegend from "$lib/components/ui/chart-container/chart-legend.svelte";
 	import BarChart3Icon from "@lucide/svelte/icons/bar-chart-3";
 	import { select, scaleBand, scaleLinear, axisBottom, axisLeft } from "d3";
-	import { onMount } from "svelte";
 	import type { DistributionData } from "./types.js";
 	import { CHART_COLORS } from "./types.js";
 
@@ -19,24 +20,19 @@
 
 	let { data = defaultData }: Props = $props();
 
-	let chartContainer: HTMLDivElement;
-	let width = $state(0);
-	let tooltipText = $state("");
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipVisible = $state(false);
+	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 280;
 
-	function createChart() {
-		if (!chartContainer || width === 0) return;
+	function createChart(container: HTMLDivElement, width: number) {
+		if (!container || width === 0) return;
 
-		select(chartContainer).selectAll("*").remove();
+		select(container).selectAll("*").remove();
 
 		const margin = { top: 20, right: 20, left: 35, bottom: 40 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = select(chartContainer)
+		const svg = select(container)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -47,7 +43,7 @@
 
 		// Calculate max value for Y scale
 		const maxValue = Math.max(...data.map((d) => d.active + d.inactive));
-		const yMax = Math.ceil(maxValue / 4) * 4 + 4; // Round up to nearest 4
+		const yMax = Math.ceil(maxValue / 4) * 4 + 4;
 
 		// Scales
 		const xScale = scaleBand()
@@ -111,7 +107,6 @@
 			.style("cursor", "pointer")
 			.attr("d", (d: DistributionData) => {
 				const x = xScale(d.district) || 0;
-				// Start with zero height (for animation)
 				return `M${x},${innerHeight} L${x},${innerHeight} L${x + barWidth},${innerHeight} L${x + barWidth},${innerHeight} Z`;
 			});
 
@@ -125,7 +120,6 @@
 				const h = yScale(d.active) - yScale(d.active + d.inactive);
 				const bottomY = y + h;
 				const r = Math.min(cornerRadius, h / 2, barWidth / 2);
-				// Path with rounded top corners only, flat bottom
 				return `M${x},${bottomY}
 						L${x},${y + r}
 						Q${x},${y} ${x + r},${y}
@@ -147,7 +141,7 @@
 						.transition()
 						.duration(200)
 						.attr("fill", CHART_COLORS.activeHover);
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.district}: ${d.active} Active Schools`,
 					);
@@ -160,7 +154,7 @@
 					event: MouseEvent,
 					d: DistributionData,
 				) {
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.district}: ${d.active} Active Schools`,
 					);
@@ -171,7 +165,7 @@
 					.transition()
 					.duration(200)
 					.attr("fill", CHART_COLORS.active);
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
 
 		// Hover effects for inactive bars
@@ -187,7 +181,7 @@
 						.transition()
 						.duration(200)
 						.attr("fill", CHART_COLORS.inactiveHover);
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.district}: ${d.inactive} Inactive Schools`,
 					);
@@ -200,7 +194,7 @@
 					event: MouseEvent,
 					d: DistributionData,
 				) {
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.district}: ${d.inactive} Inactive Schools`,
 					);
@@ -211,7 +205,7 @@
 					.transition()
 					.duration(200)
 					.attr("fill", CHART_COLORS.inactive);
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
 
 		// X Axis
@@ -229,8 +223,7 @@
 
 		// Y Axis
 		const yAxis = g.append("g").call(
-			d3
-				.axisLeft(yScale)
+			axisLeft(yScale)
 				.tickValues(yTickValues)
 				.tickFormat((d) => d.toString())
 				.tickSize(0),
@@ -244,37 +237,10 @@
 			.attr("dx", "-0.5em");
 	}
 
-	function showTooltip(event: MouseEvent, text: string) {
-		tooltipText = text;
-		tooltipX = event.offsetX + 10;
-		tooltipY = event.offsetY - 30;
-		tooltipVisible = true;
-	}
-
-	function hideTooltip() {
-		tooltipVisible = false;
-	}
-
-	onMount(() => {
-		const resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				createChart();
-			}
-		});
-
-		if (chartContainer) {
-			resizeObserver.observe(chartContainer);
-		}
-
-		return () => resizeObserver.disconnect();
-	});
-
-	$effect(() => {
-		if (width > 0) {
-			createChart();
-		}
-	});
+	const legendItems = [
+		{ label: "Active Schools", color: CHART_COLORS.active },
+		{ label: "Inactive Schools", color: CHART_COLORS.inactive },
+	];
 </script>
 
 <div class="flex flex-col h-full">
@@ -285,42 +251,14 @@
 		</h3>
 	</div>
 
-	<div class="relative flex-1">
-		<div
-			bind:this={chartContainer}
-			class="w-full"
-			style="height: {height}px;"
-		></div>
-
-		<!-- Tooltip -->
-		<div
-			class="pointer-events-none absolute z-20 rounded-md bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg transition-opacity duration-150"
-			style="opacity: {tooltipVisible
-				? 1
-				: 0}; left: {tooltipX}px; top: {tooltipY}px; transform: translate(0, -100%);"
-		>
-			{tooltipText}
-			<div
-				class="absolute left-2 top-full border-4 border-transparent border-t-gray-900"
-			></div>
-		</div>
-	</div>
-
-	<!-- Legend -->
-	<div class="flex items-center justify-center gap-6 mt-4">
-		<div class="flex items-center gap-2">
-			<div
-				class="h-3 w-3 rounded-full"
-				style="background-color: {CHART_COLORS.active}"
-			></div>
-			<span class="text-sm text-gray-600">Active Schools</span>
-		</div>
-		<div class="flex items-center gap-2">
-			<div
-				class="h-3 w-3 rounded-full"
-				style="background-color: {CHART_COLORS.inactive}"
-			></div>
-			<span class="text-sm text-gray-600">Inactive Schools</span>
-		</div>
-	</div>
+	<ChartContainer
+		bind:this={chartContainerRef}
+		{height}
+		bare
+		onResize={createChart}
+	>
+		{#snippet legend()}
+			<ChartLegend items={legendItems} shape="circle" size="md" />
+		{/snippet}
+	</ChartContainer>
 </div>
