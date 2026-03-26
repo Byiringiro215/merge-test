@@ -29,10 +29,32 @@
 	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 280;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart(container: HTMLDivElement, width: number) {
 		if (!container || width === 0) return;
 
 		select(container).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		const margin = { top: 20, right: 20, left: 45, bottom: 40 };
 		const innerWidth = width - margin.left - margin.right;
@@ -107,10 +129,10 @@
 
 		// Bar hover effects
 		bars.on(
-			"mouseenter",
+			"pointerenter",
 			function (
 				this: SVGPathElement,
-				event: MouseEvent,
+				event: PointerEvent,
 				d: EnrollmentData,
 			) {
 				select(this)
@@ -120,26 +142,32 @@
 					.attr("fill", CHART_COLORS.enrollmentHover)
 					.attr("opacity", 0.9);
 
-				chartContainerRef?.showTooltip(
+				if (!tooltip) return;
+				showTooltip(
+					tooltip,
+					container,
 					event,
 					`${d.district}: ${d.students.toLocaleString()} students`,
 				);
 			},
 		)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGPathElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: EnrollmentData,
 				) {
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.district}: ${d.students.toLocaleString()} students`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGPathElement) {
+			.on("pointerleave", function (this: SVGPathElement) {
 				select(this)
 					.transition()
 					.duration(200)
@@ -147,7 +175,8 @@
 					.attr("fill", CHART_COLORS.enrollment)
 					.attr("opacity", 1);
 
-				chartContainerRef?.hideTooltip();
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// X Axis

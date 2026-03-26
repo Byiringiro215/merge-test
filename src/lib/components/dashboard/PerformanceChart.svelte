@@ -35,10 +35,32 @@
 	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 300;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart(container: HTMLDivElement, width: number) {
 		if (!container || width === 0) return;
 
 		select(container).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		const margin = { top: 20, right: 50, left: 40, bottom: 50 };
 		const innerWidth = width - margin.left - margin.right;
@@ -189,8 +211,8 @@
 
 		// Dot hover effects with smooth animation
 		dots.on(
-			"mouseenter",
-			function (this: SVGCircleElement, event: MouseEvent, d: DataPoint) {
+			"pointerenter",
+			function (this: SVGCircleElement, event: PointerEvent, d: DataPoint) {
 				select(this)
 					.transition()
 					.duration(200)
@@ -198,21 +220,38 @@
 					.attr("r", 9)
 					.attr("fill", "#2563eb");
 
-				chartContainerRef?.showTooltip(
+				if (!tooltip) return;
+				showTooltip(
+					tooltip,
+					container,
 					event,
 					`${d.month}: ${d.avgScore}% avg score, ${d.students} students`,
 				);
 			},
-		).on("mouseleave", function (this: SVGCircleElement) {
-			select(this)
-				.transition()
-				.duration(200)
-				.ease(easeQuadOut)
-				.attr("r", 6)
-				.attr("fill", "#3b82f6");
+		)
+			.on(
+				"pointermove",
+				function (this: SVGCircleElement, event: PointerEvent, d: DataPoint) {
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
+						event,
+						`${d.month}: ${d.avgScore}% avg score, ${d.students} students`,
+					);
+				},
+			)
+			.on("pointerleave", function (this: SVGCircleElement) {
+				select(this)
+					.transition()
+					.duration(200)
+					.ease(easeQuadOut)
+					.attr("r", 6)
+					.attr("fill", "#3b82f6");
 
-			chartContainerRef?.hideTooltip();
-		});
+				if (!tooltip) return;
+				hideTooltip(tooltip);
+			});
 
 		// X Axis
 		const xAxis = g

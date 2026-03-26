@@ -20,10 +20,32 @@
 	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 300;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart(container: HTMLDivElement, width: number) {
 		if (!container || width === 0) return;
 
 		select(container).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		const margin = { top: 10, right: 30, left: 80, bottom: 20 };
 		const innerWidth = width - margin.left - margin.right;
@@ -73,10 +95,10 @@
 		// Success bar hover with smooth animation
 		successBars
 			.on(
-				"mouseenter",
+				"pointerenter",
 				function (
 					this: SVGRectElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: DistrictData,
 				) {
 					select(this)
@@ -86,26 +108,32 @@
 						.attr("fill", "#f97316")
 						.attr("opacity", 0.9);
 
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.district} Success Rate: ${d.successRate}%`,
 					);
 				},
 			)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGRectElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: DistrictData,
 				) {
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.district} Success Rate: ${d.successRate}%`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGRectElement) {
+			.on("pointerleave", function (this: SVGRectElement) {
 				select(this)
 					.transition()
 					.duration(200)
@@ -113,7 +141,8 @@
 					.attr("fill", "#EB8B47")
 					.attr("opacity", 1);
 
-				chartContainerRef?.hideTooltip();
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// Draw active schools bars (blue) with animation
@@ -143,10 +172,10 @@
 		// School bar hover with smooth animation
 		schoolBars
 			.on(
-				"mouseenter",
+				"pointerenter",
 				function (
 					this: SVGRectElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: DistrictData,
 				) {
 					select(this)
@@ -156,26 +185,32 @@
 						.attr("fill", "#205FAD")
 						.attr("opacity", 0.9);
 
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.district} Active Schools: ${d.activeSchools}`,
 					);
 				},
 			)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGRectElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: DistrictData,
 				) {
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.district} Active Schools: ${d.activeSchools}`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGRectElement) {
+			.on("pointerleave", function (this: SVGRectElement) {
 				select(this)
 					.transition()
 					.duration(200)
@@ -183,7 +218,8 @@
 					.attr("fill", "#205FAD")
 					.attr("opacity", 1);
 
-				chartContainerRef?.hideTooltip();
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// Y Axis (district names)

@@ -54,10 +54,32 @@
 	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 320;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart(container: HTMLDivElement, width: number) {
 		if (!container || width === 0) return;
 
 		select(container).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		const margin = { top: 20, right: 20, left: 40, bottom: 50 };
 		const innerWidth = width - margin.left - margin.right;
@@ -131,37 +153,46 @@
 
 		// Bar hover effects
 		bars.on(
-			"mouseenter",
-			function (event: MouseEvent, d: FacultySuccessData) {
+			"pointerenter",
+			function (event: PointerEvent, d: FacultySuccessData) {
 				select(this)
 					.transition()
 					.duration(200)
 					.ease(easeQuadOut)
 					.attr("fill", "#2563eb")
 					.attr("opacity", 0.9);
-				chartContainerRef?.showTooltip(
+
+				if (!tooltip) return;
+				showTooltip(
+					tooltip,
+					container,
 					event,
 					`${d.faculty}: ${d.currentRate}% success rate`,
 				);
 			},
 		)
 			.on(
-				"mousemove",
-				function (event: MouseEvent, d: FacultySuccessData) {
-					chartContainerRef?.showTooltip(
+				"pointermove",
+				function (event: PointerEvent, d: FacultySuccessData) {
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.faculty}: ${d.currentRate}% success rate`,
 					);
 				},
 			)
-			.on("mouseleave", function () {
+			.on("pointerleave", function () {
 				select(this)
 					.transition()
 					.duration(200)
 					.ease(easeQuadOut)
 					.attr("fill", "#3B82F6")
 					.attr("opacity", 1);
-				chartContainerRef?.hideTooltip();
+
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// Draw target line
@@ -211,35 +242,44 @@
 
 		// Dot hover effects
 		dots.on(
-			"mouseenter",
-			function (event: MouseEvent, d: FacultySuccessData) {
+			"pointerenter",
+			function (event: PointerEvent, d: FacultySuccessData) {
 				select(this)
 					.transition()
 					.duration(150)
 					.attr("r", 7)
 					.attr("fill", "#9CA3AF");
-				chartContainerRef?.showTooltip(
+
+				if (!tooltip) return;
+				showTooltip(
+					tooltip,
+					container,
 					event,
 					`${d.faculty}: ${d.nationalTarget}% national target`,
 				);
 			},
 		)
 			.on(
-				"mousemove",
-				function (event: MouseEvent, d: FacultySuccessData) {
-					chartContainerRef?.showTooltip(
+				"pointermove",
+				function (event: PointerEvent, d: FacultySuccessData) {
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.faculty}: ${d.nationalTarget}% national target`,
 					);
 				},
 			)
-			.on("mouseleave", function () {
+			.on("pointerleave", function () {
 				select(this)
 					.transition()
 					.duration(150)
 					.attr("r", 5)
 					.attr("fill", "white");
-				chartContainerRef?.hideTooltip();
+
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// X Axis

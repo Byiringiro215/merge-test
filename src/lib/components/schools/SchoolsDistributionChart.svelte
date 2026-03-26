@@ -23,10 +23,32 @@
 	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 280;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart(container: HTMLDivElement, width: number) {
 		if (!container || width === 0) return;
 
 		select(container).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		const margin = { top: 20, right: 20, left: 35, bottom: 40 };
 		const innerWidth = width - margin.left - margin.right;
@@ -131,81 +153,99 @@
 		// Hover effects for active bars
 		activeBars
 			.on(
-				"mouseenter",
+				"pointerenter",
 				function (
 					this: SVGRectElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: DistributionData,
 				) {
 					select(this)
 						.transition()
 						.duration(200)
 						.attr("fill", CHART_COLORS.activeHover);
-					chartContainerRef?.showTooltip(
+
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.district}: ${d.active} Active Schools`,
 					);
 				},
 			)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGRectElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: DistributionData,
 				) {
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.district}: ${d.active} Active Schools`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGRectElement) {
+			.on("pointerleave", function (this: SVGRectElement) {
 				select(this)
 					.transition()
 					.duration(200)
 					.attr("fill", CHART_COLORS.active);
-				chartContainerRef?.hideTooltip();
+
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// Hover effects for inactive bars
 		inactiveBars
 			.on(
-				"mouseenter",
+				"pointerenter",
 				function (
 					this: SVGPathElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: DistributionData,
 				) {
 					select(this)
 						.transition()
 						.duration(200)
 						.attr("fill", CHART_COLORS.inactiveHover);
-					chartContainerRef?.showTooltip(
+
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.district}: ${d.inactive} Inactive Schools`,
 					);
 				},
 			)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGPathElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: DistributionData,
 				) {
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.district}: ${d.inactive} Inactive Schools`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGPathElement) {
+			.on("pointerleave", function (this: SVGPathElement) {
 				select(this)
 					.transition()
 					.duration(200)
 					.attr("fill", CHART_COLORS.inactive);
-				chartContainerRef?.hideTooltip();
+
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// X Axis
