@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ChartContainer } from "$lib/components/ui/chart-container";
 	import {
 		select,
 		scaleBand,
@@ -7,7 +8,6 @@
 		axisBottom,
 		axisLeft,
 	} from "d3";
-	import { onMount } from "svelte";
 	import type { EnrollmentByTradeData } from "./types.js";
 	import { TRADE_COLORS } from "./types.js";
 
@@ -38,18 +38,16 @@
 
 	let { data = defaultData }: Props = $props();
 
-	let chartContainer: HTMLDivElement;
-	let width = $state(0);
-	let height = $state(0);
-	let tooltipText = $state("");
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipVisible = $state(false);
+	let chartContainerRef: ReturnType<typeof ChartContainer>;
 
-	function createChart() {
-		if (!chartContainer || width === 0 || height === 0) return;
+	function createChart(
+		container: HTMLDivElement,
+		width: number,
+		height: number,
+	) {
+		if (!container || width === 0 || height === 0) return;
 
-		select(chartContainer).selectAll("*").remove();
+		select(container).selectAll("*").remove();
 
 		// Responsive margins and padding
 		const isMobile = width < 400;
@@ -63,7 +61,7 @@
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = select(chartContainer)
+		const svg = select(container)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -115,7 +113,6 @@
 			.attr("stroke-dasharray", "4,4");
 
 		// Draw bars with rounded top corners
-		// Limit bar width on small screens
 		const maxBarWidth = isMobile ? 35 : 60;
 		const barWidth = Math.min(xScale.bandwidth(), maxBarWidth);
 		const barOffset = (xScale.bandwidth() - barWidth) / 2;
@@ -166,7 +163,7 @@
 					.ease(easeQuadOut)
 					.attr("opacity", 0.8);
 
-				showTooltip(
+				chartContainerRef?.showTooltip(
 					event,
 					`${d.trade}: ${d.enrollment.toLocaleString()} students`,
 				);
@@ -179,7 +176,7 @@
 					event: MouseEvent,
 					d: EnrollmentByTradeData,
 				) {
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.trade}: ${d.enrollment.toLocaleString()} students`,
 					);
@@ -192,7 +189,7 @@
 					.ease(easeQuadOut)
 					.attr("opacity", 1);
 
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
 
 		// X Axis
@@ -223,8 +220,7 @@
 
 		// Y Axis
 		const yAxis = g.append("g").call(
-			d3
-				.axisLeft(yScale)
+			axisLeft(yScale)
 				.tickValues(yTickValues)
 				.tickFormat((d) => d.toString())
 				.tickSize(0),
@@ -237,65 +233,13 @@
 			.attr("font-size", isMobile ? "10px" : "12px")
 			.attr("dx", "-0.5em");
 	}
-
-	function showTooltip(event: MouseEvent, text: string) {
-		tooltipText = text;
-		tooltipX = event.offsetX + 10;
-		tooltipY = event.offsetY - 30;
-		tooltipVisible = true;
-	}
-
-	function hideTooltip() {
-		tooltipVisible = false;
-	}
-
-	onMount(() => {
-		const resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				height = entry.contentRect.height;
-				createChart();
-			}
-		});
-
-		if (chartContainer) {
-			resizeObserver.observe(chartContainer);
-		}
-
-		return () => resizeObserver.disconnect();
-	});
-
-	$effect(() => {
-		if (width > 0 && height > 0) {
-			createChart();
-		}
-	});
 </script>
 
-<div class="flex flex-col h-full">
-	<div class="mb-4">
-		<h3 class="text-lg font-semibold text-primary-black">
-			Enrollment by Trade
-		</h3>
-		<p class="text-sm text-gray-500 mt-1">
-			Aggregate student count per technical specialization.
-		</p>
-	</div>
-
-	<div class="relative flex-1">
-		<div bind:this={chartContainer} class="w-full h-full"></div>
-
-		<!-- Tooltip -->
-		<div
-			class="pointer-events-none absolute z-20 rounded-md bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg transition-opacity duration-150"
-			style="opacity: {tooltipVisible
-				? 1
-				: 0}; left: {tooltipX}px; top: {tooltipY}px; transform: translate(0, -100%);"
-		>
-			{tooltipText}
-			<div
-				class="absolute left-2 top-full border-4 border-transparent border-t-gray-900"
-			></div>
-		</div>
-	</div>
-</div>
+<ChartContainer
+	bind:this={chartContainerRef}
+	title="Enrollment by Trade"
+	description="Aggregate student count per technical specialization."
+	bare
+	fillHeight
+	onResize={createChart}
+/>

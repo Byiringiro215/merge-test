@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { ChartContainer } from "$lib/components/ui/chart-container";
+	import ChartLegend from "$lib/components/ui/chart-container/chart-legend.svelte";
 	import {
 		select,
 		scalePoint,
@@ -14,13 +15,6 @@
 		axisRight,
 	} from "d3";
 	import type { NumberValue } from "d3";
-	import {
-		Card,
-		CardHeader,
-		CardTitle,
-		CardDescription,
-		CardContent,
-	} from "$lib/components/ui/card";
 
 	interface DataPoint {
 		month: string;
@@ -38,25 +32,19 @@
 		{ month: "Jun", students: 780, avgScore: 85 },
 	];
 
-	let chartContainer: HTMLDivElement;
-	let tooltipEl: HTMLDivElement;
-	let width = $state(0);
-	let tooltipText = $state("");
-	let tooltipOpacity = $state(0);
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
+	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 300;
 
-	function createChart() {
-		if (!chartContainer || width === 0) return;
+	function createChart(container: HTMLDivElement, width: number) {
+		if (!container || width === 0) return;
 
-		select(chartContainer).selectAll("*").remove();
+		select(container).selectAll("*").remove();
 
 		const margin = { top: 20, right: 50, left: 40, bottom: 50 };
 		const innerWidth = width - margin.left - margin.right;
 		const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = select(chartContainer)
+		const svg = select(container)
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height);
@@ -210,7 +198,7 @@
 					.attr("r", 9)
 					.attr("fill", "#2563eb");
 
-				showTooltip(
+				chartContainerRef?.showTooltip(
 					event,
 					`${d.month}: ${d.avgScore}% avg score, ${d.students} students`,
 				);
@@ -223,7 +211,7 @@
 				.attr("r", 6)
 				.attr("fill", "#3b82f6");
 
-			hideTooltip();
+			chartContainerRef?.hideTooltip();
 		});
 
 		// X Axis
@@ -272,73 +260,23 @@
 			.attr("dx", "0.5em");
 	}
 
-	function showTooltip(event: MouseEvent, text: string) {
-		tooltipText = text;
-		tooltipOpacity = 1;
-		tooltipX = event.offsetX + 10;
-		tooltipY = event.offsetY - 30;
-	}
-
-	function hideTooltip() {
-		tooltipOpacity = 0;
-	}
-
-	onMount(() => {
-		const resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				createChart();
-			}
-		});
-
-		if (chartContainer) {
-			resizeObserver.observe(chartContainer);
-		}
-
-		return () => resizeObserver.disconnect();
-	});
-
-	$effect(() => {
-		if (width > 0) {
-			createChart();
-		}
-	});
+	const legendItems = [
+		{ label: "Total Students", color: "#86efac" },
+		{ label: "Avg Score (%)", color: "#3b82f6" },
+	];
 </script>
 
-<Card class="h-130">
-	<CardHeader class=" p-4 lg:p-6">
-		<CardTitle
-			class="text-[18px] font-semibold leading-7 text-primary-black -tracking-[0.45px]"
-			>Overall Performance & Enrollment</CardTitle
-		>
-		<CardDescription class="text-[#565D6D]"
-			>Visualizing student growth and average grades across all faculties.</CardDescription
-		>
-	</CardHeader>
-	<CardContent class="px-0 lg:px-6">
-		<div class="relative">
-			<div
-				bind:this={chartContainer}
-				class="w-full"
-				style="height: {height}px;"
-			></div>
-			<div
-				bind:this={tooltipEl}
-				class="pointer-events-none absolute rounded bg-gray-900 px-2 py-1 text-xs text-white transition-opacity"
-				style="opacity: {tooltipOpacity}; left: {tooltipX}px; top: {tooltipY}px;"
-			>
-				{tooltipText}
-			</div>
-		</div>
-		<div class="mt-4 flex items-center justify-center gap-6">
-			<div class="flex items-center gap-2">
-				<div class="h-3 w-3 rounded-sm bg-green-300"></div>
-				<span class="text-sm text-gray-600">Total Students</span>
-			</div>
-			<div class="flex items-center gap-2">
-				<div class="h-3 w-3 rounded-sm bg-blue-500"></div>
-				<span class="text-sm text-gray-600">Avg Score (%)</span>
-			</div>
-		</div>
-	</CardContent>
-</Card>
+<ChartContainer
+	bind:this={chartContainerRef}
+	title="Overall Performance & Enrollment"
+	description="Visualizing student growth and average grades across all faculties."
+	{height}
+	cardClass="h-130 "
+	headerClass="p-4 lg:p-6"
+	contentClass="px-0 lg:px-6"
+	onResize={createChart}
+>
+	{#snippet legend()}
+		<ChartLegend items={legendItems} shape="square" size="md" />
+	{/snippet}
+</ChartContainer>

@@ -2,13 +2,8 @@
 	import { onMount } from "svelte";
 	import { select, pie, arc, easeQuadOut, interpolate } from "d3";
 	import type { PieArcDatum } from "d3";
-	import {
-		Card,
-		CardHeader,
-		CardTitle,
-		CardDescription,
-		CardContent,
-	} from "$lib/components/ui/card";
+	import { ChartContainer } from "$lib/components/ui/chart-container";
+	import ChartLegend from "$lib/components/ui/chart-container/chart-legend.svelte";
 	import type { FacultyEnrollment } from "./types.js";
 	import { FACULTY_COLORS } from "./types.js";
 
@@ -47,25 +42,20 @@
 
 	let { data = defaultData }: Props = $props();
 
-	let chartWrapper: HTMLDivElement;
-	let chartContainer: HTMLDivElement;
-	let tooltipEl: HTMLDivElement;
+	let chartContainerRef: ReturnType<typeof ChartContainer>;
+	let chartElement: HTMLDivElement;
 	let mounted = $state(false);
-	let tooltipText = $state("");
-	let tooltipOpacity = $state("0");
-	let tooltipLeft = $state("0px");
-	let tooltipTop = $state("0px");
 
 	const chartSize = 200;
 	const radius = chartSize / 2;
 	const innerRadius = radius * 0.55;
 
 	function createChart() {
-		if (!chartContainer || !mounted) return;
+		if (!chartElement || !mounted) return;
 
-		select(chartContainer).selectAll("*").remove();
+		select(chartElement).selectAll("*").remove();
 
-		const svg = select(chartContainer)
+		const svg = select(chartElement)
 			.append("svg")
 			.attr("width", chartSize)
 			.attr("height", chartSize)
@@ -104,7 +94,10 @@
 		arcs.each(function (this: SVGPathElement, d: PieArcData) {
 			const path = select(this);
 			const startAngle = d.startAngle;
-			path.attr("d", arcGenerator({ ...d, endAngle: startAngle } as PieArcData));
+			path.attr(
+				"d",
+				arcGenerator({ ...d, endAngle: startAngle } as PieArcData),
+			);
 		});
 
 		arcs.transition()
@@ -119,7 +112,7 @@
 					} as PieArcData) || "";
 			});
 
-		// Hover effects - using opacity only to avoid overflow issues
+		// Hover effects
 		arcs.on(
 			"mouseenter",
 			function (this: SVGPathElement, event: MouseEvent, d: PieArcData) {
@@ -131,7 +124,7 @@
 
 				const total = data.reduce((sum, item) => sum + item.count, 0);
 				const percent = ((d.data.count / total) * 100).toFixed(1);
-				showTooltip(
+				chartContainerRef?.showTooltip(
 					event,
 					`${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
 				);
@@ -149,7 +142,7 @@
 						0,
 					);
 					const percent = ((d.data.count / total) * 100).toFixed(1);
-					showTooltip(
+					chartContainerRef?.showTooltip(
 						event,
 						`${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
 					);
@@ -162,21 +155,8 @@
 					.ease(easeQuadOut)
 					.attr("opacity", 1);
 
-				hideTooltip();
+				chartContainerRef?.hideTooltip();
 			});
-	}
-
-	function showTooltip(event: MouseEvent, text: string) {
-		if (!chartWrapper) return;
-		const rect = chartWrapper.getBoundingClientRect();
-		tooltipText = text;
-		tooltipOpacity = "1";
-		tooltipLeft = `${event.clientX - rect.left + 10}px`;
-		tooltipTop = `${event.clientY - rect.top - 30}px`;
-	}
-
-	function hideTooltip() {
-		tooltipOpacity = "0";
 	}
 
 	onMount(() => {
@@ -189,50 +169,39 @@
 			createChart();
 		}
 	});
+
+	// Legend items for ChartLegend component
+	const legendItems = data.map((item) => ({
+		label: item.faculty,
+		color: item.color,
+	}));
 </script>
 
-<Card class="h-full">
-	<CardHeader class="p-4 lg:p-6">
-		<CardTitle class="text-lg font-semibold">Faculty Enrollment</CardTitle>
-		<CardDescription
-			>Breakdown by specialized vocational tracks</CardDescription
-		>
-	</CardHeader>
-	<CardContent class="p-4 pt-0 lg:p-6 lg:pt-0">
-		<div
-			bind:this={chartWrapper}
-			class="relative flex flex-col items-center"
-		>
+<ChartContainer
+	bind:this={chartContainerRef}
+	title="Faculty Enrollment"
+	description="Breakdown by specialized vocational tracks"
+	cardClass="h-full"
+	headerClass="p-4 lg:p-6"
+	contentClass="p-4 pt-0 lg:p-6 lg:pt-0"
+>
+	{#snippet children()}
+		<div class="flex flex-col items-center">
 			<!-- Donut Chart -->
 			<div
 				class="shrink-0"
-				bind:this={chartContainer}
+				bind:this={chartElement}
 				style="width: {chartSize}px; height: {chartSize}px;"
 			></div>
-
-			<!-- Legend - vertical list below donut -->
-			<div class="mt-4 flex flex-col gap-2">
-				{#each data as item, i (i)}
-					<div class="flex items-center gap-2">
-						<div
-							class="h-3 w-3 shrink-0 rounded-full"
-							style="background-color: {item.color}"
-						></div>
-						<span class="text-sm font-light leading-0 text-gray-600"
-							>{item.faculty}</span
-						>
-					</div>
-				{/each}
-			</div>
-
-			<!-- Tooltip -->
-			<div
-				bind:this={tooltipEl}
-				class="pointer-events-none absolute z-10 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity"
-				style="opacity: {tooltipOpacity}; left: {tooltipLeft}; top: {tooltipTop};"
-			>
-				{tooltipText}
-			</div>
 		</div>
-	</CardContent>
-</Card>
+	{/snippet}
+
+	{#snippet legend()}
+		<ChartLegend
+			items={legendItems}
+			direction="vertical"
+			shape="circle"
+			size="md"
+		/>
+	{/snippet}
+</ChartContainer>
