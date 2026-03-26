@@ -27,10 +27,32 @@
 	let chartContainerRef: ReturnType<typeof ChartContainer>;
 	const height = 400;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart(container: HTMLDivElement, width: number) {
 		if (!container || width === 0) return;
 
 		select(container).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		const margin = { top: 10, right: 20, left: 40, bottom: 30 };
 		const innerWidth = width - margin.left - margin.right;
@@ -105,10 +127,10 @@
 
 		// Bar hover effects
 		bars.on(
-			"mouseenter",
+			"pointerenter",
 			function (
 				this: SVGPathElement,
-				event: MouseEvent,
+				event: PointerEvent,
 				d: ScoreDistribution,
 			) {
 				select(this)
@@ -118,26 +140,32 @@
 					.attr("fill", "#1a4d8c")
 					.attr("opacity", 0.9);
 
-				chartContainerRef?.showTooltip(
+				if (!tooltip) return;
+				showTooltip(
+					tooltip,
+					container,
 					event,
 					`${d.range}: ${d.count.toLocaleString()} students`,
 				);
 			},
 		)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGPathElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: ScoreDistribution,
 				) {
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.range}: ${d.count.toLocaleString()} students`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGPathElement) {
+			.on("pointerleave", function (this: SVGPathElement) {
 				select(this)
 					.transition()
 					.duration(200)
@@ -145,7 +173,8 @@
 					.attr("fill", "#205fad")
 					.attr("opacity", 1);
 
-				chartContainerRef?.hideTooltip();
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// X Axis

@@ -46,6 +46,26 @@
 
 	let chartContainerRef: ReturnType<typeof ChartContainer>;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart(
 		container: HTMLDivElement,
 		containerWidth: number,
@@ -54,6 +74,8 @@
 		if (!container || containerWidth === 0 || containerHeight === 0) return;
 
 		select(container).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		// Limit the max size of the donut chart
 		const maxRadius = 100;
@@ -117,10 +139,10 @@
 
 		// Hover effects
 		arcs.on(
-			"mouseenter",
+			"pointerenter",
 			function (
 				this: SVGPathElement,
-				event: MouseEvent,
+				event: PointerEvent,
 				d: PieArcDatum<DistrictDistributionData>,
 			) {
 				select(this)
@@ -128,32 +150,39 @@
 					.duration(200)
 					.attr("d", hoverArc as unknown as string);
 
-				chartContainerRef?.showTooltip(
+				if (!tooltip) return;
+				showTooltip(
+					tooltip,
+					container,
 					event,
 					`${d.data.district}: ${d.data.value.toLocaleString()} (${d.data.percentage}%)`,
 				);
 			},
 		)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGPathElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: PieArcDatum<DistrictDistributionData>,
 				) {
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.data.district}: ${d.data.value.toLocaleString()} (${d.data.percentage}%)`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGPathElement) {
+			.on("pointerleave", function (this: SVGPathElement) {
 				select(this)
 					.transition()
 					.duration(200)
 					.attr("d", arcGenerator as unknown as string);
 
-				chartContainerRef?.hideTooltip();
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 	}
 </script>

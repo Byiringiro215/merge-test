@@ -57,10 +57,32 @@
 		West: number;
 	}
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart(container: HTMLDivElement, width: number) {
 		if (!container || width === 0) return;
 
 		select(container).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		const margin = { top: 10, right: 30, left: 35, bottom: 60 };
 		const innerWidth = width - margin.left - margin.right;
@@ -164,32 +186,41 @@
 					});
 
 				// Hover effects
-				bars.on("mouseenter", function (event: MouseEvent, d) {
+				bars.on("pointerenter", function (event: PointerEvent, d) {
 					select(this)
 						.transition()
 						.duration(200)
 						.ease(easeQuadOut)
 						.attr("opacity", 0.8);
+
+					if (!tooltip) return;
 					const value = d[1] - d[0];
-					chartContainerRef?.showTooltip(
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.data.teacher} - ${province}: ${value} students`,
 					);
 				})
-					.on("mousemove", function (event: MouseEvent, d) {
+					.on("pointermove", function (event: PointerEvent, d) {
+						if (!tooltip) return;
 						const value = d[1] - d[0];
-						chartContainerRef?.showTooltip(
+						showTooltip(
+							tooltip,
+							container,
 							event,
 							`${d.data.teacher} - ${province}: ${value} students`,
 						);
 					})
-					.on("mouseleave", function () {
+					.on("pointerleave", function () {
 						select(this)
 							.transition()
 							.duration(200)
 							.ease(easeQuadOut)
 							.attr("opacity", 1);
-						chartContainerRef?.hideTooltip();
+
+						if (!tooltip) return;
+						hideTooltip(tooltip);
 					});
 			} else {
 				// Other layers - animate from bottom (height grows)
@@ -217,32 +248,41 @@
 					.attr("height", (d) => yScale(d[0]) - yScale(d[1]));
 
 				// Hover effects
-				bars.on("mouseenter", function (event: MouseEvent, d) {
+				bars.on("pointerenter", function (event: PointerEvent, d) {
 					select(this)
 						.transition()
 						.duration(200)
 						.ease(easeQuadOut)
 						.attr("opacity", 0.8);
+
+					if (!tooltip) return;
 					const value = d[1] - d[0];
-					chartContainerRef?.showTooltip(
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.data.teacher} - ${province}: ${value} students`,
 					);
 				})
-					.on("mousemove", function (event: MouseEvent, d) {
+					.on("pointermove", function (event: PointerEvent, d) {
+						if (!tooltip) return;
 						const value = d[1] - d[0];
-						chartContainerRef?.showTooltip(
+						showTooltip(
+							tooltip,
+							container,
 							event,
 							`${d.data.teacher} - ${province}: ${value} students`,
 						);
 					})
-					.on("mouseleave", function () {
+					.on("pointerleave", function () {
 						select(this)
 							.transition()
 							.duration(200)
 							.ease(easeQuadOut)
 							.attr("opacity", 1);
-						chartContainerRef?.hideTooltip();
+
+						if (!tooltip) return;
+						hideTooltip(tooltip);
 					});
 			}
 		});

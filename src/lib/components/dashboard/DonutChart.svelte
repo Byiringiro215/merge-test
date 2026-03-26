@@ -18,10 +18,32 @@
 	const radius = chartSize / 2 - 20;
 	const innerRadius = radius * 0.64;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart() {
 		if (!chartElement || !mounted) return;
 
 		select(chartElement).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		const svg = select(chartElement)
 			.append("svg")
@@ -82,8 +104,8 @@
 
 		// Hover effects - smooth opacity transition with slight scale
 		arcs.on(
-			"mouseenter",
-			function (this: SVGPathElement, event: MouseEvent, d: PieArcData) {
+			"pointerenter",
+			function (this: SVGPathElement, event: PointerEvent, d: PieArcData) {
 				select(this)
 					.transition()
 					.duration(200)
@@ -91,26 +113,32 @@
 					.attr("opacity", 0.85)
 					.attr("transform", "scale(1.02)");
 
-				chartContainerRef?.showTooltip(
+				if (!tooltip) return;
+				showTooltip(
+					tooltip,
+					chartElement,
 					event,
 					`${d.data.label}: ${d.data.value}%`,
 				);
 			},
 		)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGPathElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: PieArcData,
 				) {
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+					showTooltip(
+						tooltip,
+						chartElement,
 						event,
 						`${d.data.label}: ${d.data.value}%`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGPathElement) {
+			.on("pointerleave", function (this: SVGPathElement) {
 				select(this)
 					.transition()
 					.duration(200)
@@ -118,7 +146,8 @@
 					.attr("opacity", 1)
 					.attr("transform", "scale(1)");
 
-				chartContainerRef?.hideTooltip();
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// Center text

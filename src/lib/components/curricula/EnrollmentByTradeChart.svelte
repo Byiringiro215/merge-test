@@ -40,6 +40,26 @@
 
 	let chartContainerRef: ReturnType<typeof ChartContainer>;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart(
 		container: HTMLDivElement,
 		width: number,
@@ -48,6 +68,8 @@
 		if (!container || width === 0 || height === 0) return;
 
 		select(container).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		// Responsive margins and padding
 		const isMobile = width < 400;
@@ -141,20 +163,21 @@
 				const y = yScale(d.enrollment);
 				const h = innerHeight - y;
 				const r = Math.min(cornerRadius, h / 2, barWidth / 2);
+
 				return `M${x},${innerHeight}
-						L${x},${y + r}
-						Q${x},${y} ${x + r},${y}
-						L${x + barWidth - r},${y}
-						Q${x + barWidth},${y} ${x + barWidth},${y + r}
-						L${x + barWidth},${innerHeight} Z`;
+					L${x},${y + r}
+					Q${x},${y} ${x + r},${y}
+					L${x + barWidth - r},${y}
+					Q${x + barWidth},${y} ${x + barWidth},${y + r}
+					L${x + barWidth},${innerHeight} Z`;
 			});
 
 		// Bar hover effects
 		bars.on(
-			"mouseenter",
+			"pointerenter",
 			function (
 				this: SVGPathElement,
-				event: MouseEvent,
+				event: PointerEvent,
 				d: EnrollmentByTradeData,
 			) {
 				select(this)
@@ -163,33 +186,42 @@
 					.ease(easeQuadOut)
 					.attr("opacity", 0.8);
 
-				chartContainerRef?.showTooltip(
+				if (!tooltip) return;
+
+				showTooltip(
+					tooltip,
+					container,
 					event,
 					`${d.trade}: ${d.enrollment.toLocaleString()} students`,
 				);
 			},
 		)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGPathElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: EnrollmentByTradeData,
 				) {
-					chartContainerRef?.showTooltip(
+					if (!tooltip) return;
+
+					showTooltip(
+						tooltip,
+						container,
 						event,
 						`${d.trade}: ${d.enrollment.toLocaleString()} students`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGPathElement) {
+			.on("pointerleave", function (this: SVGPathElement) {
 				select(this)
 					.transition()
 					.duration(200)
 					.ease(easeQuadOut)
 					.attr("opacity", 1);
 
-				chartContainerRef?.hideTooltip();
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 
 		// X Axis

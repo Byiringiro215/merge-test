@@ -50,10 +50,32 @@
 	const radius = chartSize / 2;
 	const innerRadius = radius * 0.55;
 
+	function showTooltip(
+		tooltip: HTMLDivElement,
+		container: HTMLDivElement,
+		event: PointerEvent,
+		content: string,
+	) {
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		tooltip.textContent = content;
+		tooltip.style.left = `${x + 12}px`;
+		tooltip.style.top = `${y - 12}px`;
+		tooltip.style.display = "block";
+	}
+
+	function hideTooltip(tooltip: HTMLDivElement) {
+		tooltip.style.display = "none";
+	}
+
 	function createChart() {
 		if (!chartElement || !mounted) return;
 
 		select(chartElement).selectAll("*").remove();
+
+		const tooltip = chartContainerRef?.getTooltipElement();
 
 		const svg = select(chartElement)
 			.append("svg")
@@ -114,48 +136,57 @@
 
 		// Hover effects
 		arcs.on(
-			"mouseenter",
-			function (this: SVGPathElement, event: MouseEvent, d: PieArcData) {
+			"pointerenter",
+			function (this: SVGPathElement, event: PointerEvent, d: PieArcData) {
 				select(this)
 					.transition()
 					.duration(200)
 					.ease(easeQuadOut)
 					.attr("opacity", 0.75);
 
+				if (!tooltip) return;
+
 				const total = data.reduce((sum, item) => sum + item.count, 0);
 				const percent = ((d.data.count / total) * 100).toFixed(1);
-				chartContainerRef?.showTooltip(
+				showTooltip(
+					tooltip,
+					chartElement,
 					event,
 					`${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
 				);
 			},
 		)
 			.on(
-				"mousemove",
+				"pointermove",
 				function (
 					this: SVGPathElement,
-					event: MouseEvent,
+					event: PointerEvent,
 					d: PieArcData,
 				) {
+					if (!tooltip) return;
+
 					const total = data.reduce(
 						(sum, item) => sum + item.count,
 						0,
 					);
 					const percent = ((d.data.count / total) * 100).toFixed(1);
-					chartContainerRef?.showTooltip(
+					showTooltip(
+						tooltip,
+						chartElement,
 						event,
 						`${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
 					);
 				},
 			)
-			.on("mouseleave", function (this: SVGPathElement) {
+			.on("pointerleave", function (this: SVGPathElement) {
 				select(this)
 					.transition()
 					.duration(200)
 					.ease(easeQuadOut)
 					.attr("opacity", 1);
 
-				chartContainerRef?.hideTooltip();
+				if (!tooltip) return;
+				hideTooltip(tooltip);
 			});
 	}
 
