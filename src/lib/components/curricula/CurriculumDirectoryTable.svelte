@@ -1,6 +1,6 @@
 <script lang='ts'>
     import type { ColumnDef } from '@tanstack/table-core';
-    import type { RegionData } from './types.js';
+    import type { CurriculumRecord } from './types.js';
     import DataTable from '$lib/components/data-table/data-table.svelte';
     import { Button } from '$lib/components/ui/button';
     import { Card } from '$lib/components/ui/card';
@@ -8,67 +8,64 @@
     import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
     import { Input } from '$lib/components/ui/input';
     import { Pagination } from '$lib/components/ui/pagination';
-    import {
-        ArrowUpDown,
-        BarChart3,
-        Edit,
-        Eye,
-        Search,
-        Trash,
-    } from '@lucide/svelte';
+    import { Edit, Eye, Search, Trash } from '@lucide/svelte';
     import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
+    import FilterIcon from '@lucide/svelte/icons/filter';
     import { createRawSnippet } from 'svelte';
 
-    const defaultData: RegionData[] = [
+    const mockData: CurriculumRecord[] = [
         {
-            region: 'Kigali City',
-            totalSchools: 85,
-            students: 45000,
-            teachingStaff: 3200,
-            curriculumProgs: 112,
-            infraSpiu: '12/4',
+            idCode: 'CUR-2023-001',
+            name: 'Software Engineering L4',
+            tradeArea: 'ICT',
+            level: 'Level 4',
             status: 'Active',
+            lastUpdated: '2023-10-15',
         },
         {
-            region: 'Southern Province',
-            totalSchools: 112,
-            students: 32000,
-            teachingStaff: 2800,
-            curriculumProgs: 98,
-            infraSpiu: '25/3',
-            status: 'Active',
+            idCode: 'CUR-2023-002',
+            name: 'Culinary Arts L3',
+            tradeArea: 'Hospitality',
+            level: 'Level 3',
+            status: 'Under Review',
+            lastUpdated: '2023-10-20',
         },
         {
-            region: 'Western Province',
-            totalSchools: 95,
-            students: 28500,
-            teachingStaff: 2450,
-            curriculumProgs: 85,
-            infraSpiu: '18/2',
-            status: 'Warning',
+            idCode: 'CUR-2023-003',
+            name: 'Masonry & Concrete L2',
+            tradeArea: 'Construction',
+            level: 'Level 2',
+            status: 'Draft',
+            lastUpdated: '2023-10-22',
         },
         {
-            region: 'Northern Province',
-            totalSchools: 78,
-            students: 22000,
-            teachingStaff: 2100,
-            curriculumProgs: 76,
-            infraSpiu: '15/5',
+            idCode: 'CUR-2023-004',
+            name: 'Crop Production L5',
+            tradeArea: 'Agriculture',
+            level: 'Level 5',
             status: 'Active',
+            lastUpdated: '2023-09-10',
         },
         {
-            region: 'Eastern Province',
-            totalSchools: 82,
-            students: 17780,
-            teachingStaff: 1900,
-            curriculumProgs: 70,
-            infraSpiu: '19/1',
+            idCode: 'CUR-2023-005',
+            name: 'Networking Basics L3',
+            tradeArea: 'ICT',
+            level: 'Level 3',
+            status: 'Archived',
+            lastUpdated: '2023-05-14',
+        },
+        {
+            idCode: 'CUR-2023-006',
+            name: 'Welding Fabrication L4',
+            tradeArea: 'Manufacturing',
+            level: 'Level 4',
             status: 'Active',
+            lastUpdated: '2023-10-01',
         },
     ];
 
     interface Props {
-        data?: RegionData[];
+        data?: CurriculumRecord[];
         currentPage?: number;
         totalPages?: number;
         totalItems?: number;
@@ -77,11 +74,11 @@
     }
 
     const {
-        data = defaultData,
+        data = mockData,
         currentPage = 1,
-        totalPages = 6,
-        totalItems = 30,
-        pageSize = 5,
+        totalPages = 31,
+        totalItems = 184,
+        pageSize = 6,
         onPageChange,
     }: Props = $props();
 
@@ -89,72 +86,77 @@
 
     const filteredData = $derived(
         searchQuery
-            ? data.filter(r =>
-                r.region.toLowerCase().includes(searchQuery.toLowerCase()),
+            ? data.filter(
+                item =>
+                    item.name
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase())
+                        || item.idCode
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase())
+                        || item.tradeArea
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase()),
             )
             : data,
     );
 
-    const columns: ColumnDef<RegionData>[] = [
+    function getStatusStyles(
+        status: CurriculumRecord['status'],
+    ): { bg: string; text: string } {
+        switch (status) {
+            case 'Active':
+                return { bg: 'bg-green-50', text: 'text-green-700' };
+            case 'Under Review':
+                return { bg: 'bg-amber-50', text: 'text-amber-700' };
+            case 'Draft':
+                return { bg: 'bg-gray-50', text: 'text-gray-700' };
+            case 'Archived':
+                return { bg: 'bg-gray-100', text: 'text-gray-500' };
+            default:
+                return { bg: 'bg-gray-50', text: 'text-gray-700' };
+        }
+    }
+
+    const columns: ColumnDef<CurriculumRecord>[] = [
         {
-            id: 'region',
-            accessorKey: 'region',
-            header: 'REGION / ENTITY',
+            id: 'idCode',
+            accessorKey: 'idCode',
+            header: 'ID Code',
             cell: ({ row }) => {
                 const snippet = createRawSnippet(() => ({
                     render: () =>
-                        `<span class="font-medium text-gray-900">${row.original.region}</span>`,
+                        `<span class="text-gray-600">${row.original.idCode}</span>`,
                 }));
                 return renderSnippet(snippet);
             },
         },
         {
-            accessorKey: 'totalSchools',
-            header: 'TOTAL SCHOOLS',
+            accessorKey: 'name',
+            header: 'Curriculum Name',
             cell: ({ row }) => {
                 const snippet = createRawSnippet(() => ({
                     render: () =>
-                        `<div class="flex items-center gap-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
-                            <span>${row.original.totalSchools}</span>
-                        </div>`,
+                        `<span class="font-medium text-gray-900">${row.original.name}</span>`,
                 }));
                 return renderSnippet(snippet);
             },
         },
         {
-            accessorKey: 'students',
-            header: 'STUDENTS',
-            cell: ({ row }) =>
-                row.original.students.toLocaleString(),
+            accessorKey: 'tradeArea',
+            header: 'Trade Area',
+            cell: ({ row }) => row.original.tradeArea,
         },
         {
-            accessorKey: 'teachingStaff',
-            header: 'TEACHING STAFF',
-            cell: ({ row }) =>
-                row.original.teachingStaff.toLocaleString(),
-        },
-        {
-            accessorKey: 'curriculumProgs',
-            header: 'CURRICULUM PROGS',
-            cell: ({ row }) => row.original.curriculumProgs,
-        },
-        {
-            accessorKey: 'infraSpiu',
-            header: 'INFRA / SPIU',
-            cell: ({ row }) => row.original.infraSpiu,
+            accessorKey: 'level',
+            header: 'Level',
+            cell: ({ row }) => row.original.level,
         },
         {
             accessorKey: 'status',
-            header: 'STATUS',
+            header: 'Status',
             cell: ({ row }) => {
-                const statusStyles: Record<string, { bg: string; text: string }> = {
-                    Active: { bg: 'bg-gray-100', text: 'text-gray-700' },
-                    Warning: { bg: 'bg-amber-50', text: 'text-amber-700' },
-                    Inactive: { bg: 'bg-red-50', text: 'text-red-700' },
-                };
-                const style = statusStyles[row.original.status] || statusStyles.Active;
-
+                const style = getStatusStyles(row.original.status);
                 const snippet = createRawSnippet(() => ({
                     render: () =>
                         `<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${style.bg} ${style.text}">${row.original.status}</span>`,
@@ -163,8 +165,13 @@
             },
         },
         {
+            accessorKey: 'lastUpdated',
+            header: 'Last Updated',
+            cell: ({ row }) => row.original.lastUpdated,
+        },
+        {
             id: 'actions',
-            header: 'ACTIONS',
+            header: 'Actions',
             cell: ({ row }) => renderSnippet(rowAction, { record: row.original }),
         },
     ];
@@ -216,29 +223,32 @@
 
 <Card class='p-5 bg-white border border-gray-100 shadow-sm rounded-xl'>
     <!-- Header -->
-    <div class='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4'>
-        <div class='flex items-center gap-3'>
-            <div class='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50'>
-                <BarChart3 class='h-5 w-5 text-primary' />
-            </div>
-            <div>
-                <h3 class='text-lg font-bold text-gray-900'>Cross-Department Records</h3>
-                <p class='text-sm text-gray-500'>Aggregated data by region</p>
-            </div>
+    <div
+        class='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4'
+    >
+        <div>
+            <h3 class='text-lg font-semibold text-gray-900'>
+                Curriculum Directory
+            </h3>
+            <p class='text-sm text-gray-500 mt-0.5'>
+                Comprehensive list of all curriculum programs and their current
+                status.
+            </p>
         </div>
         <div class='flex items-center gap-3'>
-            <div class='relative w-full sm:w-64'>
-                <Search class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+            <div class='relative w-full sm:w-56'>
+                <Search
+                    class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400'
+                />
                 <Input
                     type='text'
-                    placeholder='Search records...'
+                    placeholder='Search curricula...'
                     bind:value={searchQuery}
                     class='pl-9 bg-white rounded-lg placeholder:font-normal text-sm'
                 />
             </div>
-            <Button variant='outline' size='sm' class='gap-2'>
-                <ArrowUpDown class='h-4 w-4' />
-                Sort
+            <Button variant='outline' size='icon' class='h-9 w-9'>
+                <FilterIcon class='h-4 w-4' />
             </Button>
         </div>
     </div>
@@ -251,7 +261,9 @@
     <!-- Pagination -->
     <div class='flex items-center justify-between mt-4 pt-2'>
         <p class='text-sm text-gray-500'>
-            Showing <span class='font-medium'>{startItem}</span> to <span class='font-medium'>{endItem}</span> of <span class='font-medium'>{totalItems}</span> results
+            Showing <span class='font-medium'>{startItem}</span> to
+            <span class='font-medium'>{endItem}</span> of
+            <span class='font-medium'>{totalItems}</span> entries
         </p>
         <Pagination
             {currentPage}
