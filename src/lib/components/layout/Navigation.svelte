@@ -12,7 +12,6 @@
         DropdownMenuTrigger,
     } from '$lib/components/ui/dropdown-menu';
     import {
-        Bell,
         BookOpen,
         Building2,
         GraduationCap,
@@ -30,7 +29,7 @@
     const auth = getAuthState();
 
     const allNavItems: ReadonlyArray<{ label: string; href: string; icon: typeof LayoutGrid; resource: Resource }> = [
-        { label: 'General', href: '/dashboard', icon: LayoutGrid, resource: 'sdms:schools' },
+        { label: 'DG General', href: '/dashboard', icon: LayoutGrid, resource: 'sdms:schools' },
         { label: 'Students', href: '/students', icon: Users, resource: 'sdms:students' },
         { label: 'Teachers', href: '/teachers', icon: GraduationCap, resource: 'sdms:staff' },
         { label: 'Schools', href: '/schools', icon: Building2, resource: 'sdms:schools' },
@@ -72,21 +71,21 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<nav class='sticky top-0 z-10 w-full border-b border-gray-200 bg-white'>
-    <div class='flex h-16 items-center justify-between px-6 lg:px-8'>
-        <!-- Logo -->
-        <a href={resolve('/')} class='flex items-center'>
-            <div class='h-12 w-12 flex items-center'>
-                <img
-                    src='/rtb-logo.png'
-                    alt='RTB Rwanda Logo'
-                    class='w-full object-cover'
-                />
-            </div>
-            <span class='text-lg leading-4 font-semibold mt-1 text-primary'
-            >RTB Rwanda</span
-            >
-        </a>
+<nav class="sticky top-0 z-10 w-full border-b border-gray-200 bg-white">
+	<div class="flex h-20 items-center justify-between px-6 lg:px-10">
+		<!-- Logo -->
+		<a href={resolve("/")} class="flex items-center">
+			<div class="h-12 w-12 flex items-center">
+				<img
+					src="/rtb-logo.png"
+					alt="RTB Rwanda Logo"
+					class="w-full object-cover"
+				/>
+			</div>
+			<span class="text-lg leading-4 font-semibold mt-1 text-primary"
+				>RTB Rwanda</span
+			>
+		</a>
 
         <!-- Navigation Links - Hidden on mobile -->
         <div class='hidden items-center gap-1 md:flex'>
@@ -119,25 +118,13 @@
                 />
             </div>
 
-            <!-- Icon Buttons -->
-            <button
-                type='button'
-                class='relative rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700'
-                aria-label='Notifications'
-            >
-                <Bell class='h-5 w-5' />
-                <span
-                    class='absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500'
-                ></span>
-            </button>
-
-            <button
-                type='button'
-                class='rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700'
-                aria-label='Settings'
-            >
-                <Settings class='h-5 w-5' />
-            </button>
+			<button
+				type="button"
+				class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+				aria-label="Settings"
+			>
+				<Settings class="h-5 w-5" />
+			</button>
 
             <!-- User Avatar Dropdown -->
             <DropdownMenu>
