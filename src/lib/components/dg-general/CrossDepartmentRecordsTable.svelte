@@ -7,6 +7,7 @@
     import { renderSnippet } from '$lib/components/ui/data-table/index.js';
     import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
     import { Input } from '$lib/components/ui/input';
+    import { Pagination } from '$lib/components/ui/pagination';
     import {
         ArrowUpDown,
         BarChart3,
@@ -252,33 +253,10 @@
         <p class='text-sm text-gray-500'>
             Showing <span class='font-medium'>{startItem}</span> to <span class='font-medium'>{endItem}</span> of <span class='font-medium'>{totalItems}</span> results
         </p>
-        <div class='flex items-center gap-2'>
-            <Button
-                variant='outline'
-                size='sm'
-                disabled={currentPage <= 1}
-                onclick={() => handlePageChange(currentPage - 1)}
-            >
-                Previous
-            </Button>
-            {#each Array.from({ length: Math.min(3, totalPages) }, (_, i) => i + 1) as page (page)}
-                <Button
-                    variant={currentPage === page ? 'default' : 'outline'}
-                    size='sm'
-                    class='w-9'
-                    onclick={() => handlePageChange(page)}
-                >
-                    {page}
-                </Button>
-            {/each}
-            <Button
-                variant='outline'
-                size='sm'
-                disabled={currentPage >= totalPages}
-                onclick={() => handlePageChange(currentPage + 1)}
-            >
-                Next
-            </Button>
-        </div>
+        <Pagination
+            {currentPage}
+            {totalPages}
+            onPageChange={handlePageChange}
+        />
     </div>
 </Card>

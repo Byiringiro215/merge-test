@@ -58,17 +58,23 @@
             resource: 'sdms:schools',
             subNav: [
                 { label: 'General', href: '/curricula' },
-                { label: 'Students', href: '/students' },
-                { label: 'Schools', href: '/schools' },
+                { label: 'Curriculum', href: '/curricula/curriculum' },
+                { label: 'Schools', href: '/curricula/schools' },
             ],
         },
         {
             id: 'training',
             label: 'Training',
-            href: '/teachers',
+            href: '/training',
             icon: GraduationCap,
             resource: 'sdms:staff',
-            subNav: [{ label: 'Overview', href: '/teachers' }],
+            subNav: [
+                { label: 'General', href: '/training' },
+                { label: 'Schools', href: '/schools' },
+                { label: 'Students', href: '/students' },
+                { label: 'Trades', href: '/trades' },
+                { label: 'Courses', href: '/Courses' },
+            ],
         },
         {
             id: 'digital-tech',
@@ -76,7 +82,12 @@
             href: '/digital-tech',
             icon: Monitor,
             resource: 'sdms:schools',
-            subNav: [{ label: 'Overview', href: '/digital-tech' }],
+            subNav: [
+                { label: 'General', href: '/digitalTech' },
+                { label: 'Schools', href: '/digitalTech/schools' },
+                { label: 'Devices', href: '/digitalTech/Devices' },
+                { label: 'E-learning', href: '/digitalTech/e-learning' },
+            ],
         },
     ];
 
@@ -148,7 +159,7 @@
 <nav class='sticky top-0 z-10 w-full bg-white'>
     <!-- Main Navigation Bar -->
     <div
-        class='flex h-16 items-center justify-between border-b border-gray-200 px-6 lg:px-10'
+        class='flex h-16 items-center justify-between border-b border-gray-200 px-6 lg:px-15'
     >
         <!-- Logo -->
         <a href={resolve('/')} class='flex items-center gap-1'>
@@ -255,13 +266,15 @@
 
     <!-- Sub Navigation - Desktop -->
     {#if activeDepartment?.subNav && activeDepartment.subNav.length > 1}
-        <div class='hidden border-b border-gray-200 px-6 md:block lg:px-10'>
+        <div
+            class='hidden border-b bg-[#F2F7FD4D] border-gray-200 px-6 md:block lg:px-21'
+        >
             <div class='flex items-center gap-6'>
                 {#each activeDepartment.subNav as subItem (subItem.href)}
                     {@const isActive = isSubNavActive(subItem.href)}
                     <a
                         href={resolve(subItem.href as any)}
-                        class="relative py-3 text-sm font-medium transition-colors {isActive
+                        class="relative py-3 text-sm font-normal transition-colors {isActive
                             ? 'text-primary'
                             : 'text-gray-500 hover:text-gray-900'}"
                     >

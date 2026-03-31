@@ -32,7 +32,7 @@
         sidebarWidth = 288,
         sidebarTitle = 'Filters',
         sidebarClass,
-        containerClass: containerBgColor = 'bg-white px-4',
+        containerClass = 'bg-white px-4',
         onReset,
     }: Props = $props();
 
@@ -47,12 +47,7 @@
     }
 </script>
 
-<div
-    class={cn(
-        'flex min-h-screen bg-red-500 {containerBgColor}',
-        containerBgColor,
-    )}
->
+<div class={cn('flex min-h-screen bg-white', containerClass)}>
     <!-- Main Content Area -->
     <div
         class={`${isRightSidebar ? `w-[calc(100%-${sidebarWidth}px)]` : 'w-full'} flex-1 flex flex-col overflow-auto`}
