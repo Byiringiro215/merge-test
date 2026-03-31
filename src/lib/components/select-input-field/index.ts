@@ -1,1 +1,1 @@
-export { default as SelectInputField } from "./select-input-field.svelte";
+export { default as SelectInputField } from './select-input-field.svelte';
