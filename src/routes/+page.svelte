@@ -1,8 +1,16 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import { resolve } from "$app/paths";
+	import { getAuthState, logout } from "$lib/auth/index.svelte";
 	import { Card } from "$lib/components/ui/card";
 	import { Input } from "$lib/components/ui/input";
-	import { ChartPie, LogOut, Search, SquareKanban } from "@lucide/svelte";
+	import {
+		ChartPie,
+		LogOut,
+		Search,
+		SquareKanban,
+		LoaderCircle,
+	} from "@lucide/svelte";
 	import BarChart3Icon from "@lucide/svelte/icons/bar-chart-3";
 	import CloudIcon from "@lucide/svelte/icons/cloud";
 	import MessageSquareIcon from "@lucide/svelte/icons/message-square";
@@ -11,6 +19,23 @@
 	import type { Component } from "svelte";
 
 	let searchQuery = $state("");
+
+	const auth = getAuthState();
+
+	$effect(() => {
+		if (!auth.isLoading && !auth.isAuthenticated) {
+			goto("/signin");
+		}
+	});
+
+	const userInitials = $derived(
+		auth.user?.name
+			?.split(" ")
+			.map((n) => n[0])
+			.join("")
+			.toUpperCase()
+			.slice(0, 2) ?? "",
+	);
 
 	interface App {
 		id: string;
@@ -121,125 +146,130 @@
 	);
 </script>
 
-<div class="min-h-screen bg-[#F9FAFB] font-manrope overflow-x-hidden">
-	<!-- Header -->
-	<header class="bg-white border-b border-gray-200">
-		<div class="w-full max-w-375 mx-auto px-4 sm:px-6 lg:px-5">
-			<div class="flex items-center justify-between h-16">
-				<!-- Logo -->
-				<div class="flex items-center">
-					<img
-						src="/rtb-logo.png"
-						alt="RTB Rwanda"
-						class="h-10.75 w-13.25 object-cover"
-					/>
-					<span
-						class="text-xl leading-5 -mx-0.5 tracking-normal text-primary font-bold mt-2 font-inter"
-						>RTB Rwanda</span
-					>
-				</div>
+{#if auth.isLoading}
+	<div class="flex min-h-screen items-center justify-center bg-[#F9FAFB]">
+		<LoaderCircle class="h-8 w-8 animate-spin text-primary" />
+	</div>
+{:else if auth.isAuthenticated}
+	<div class="min-h-screen bg-[#F9FAFB] font-manrope overflow-x-hidden">
+		<!-- Header -->
+		<header class="bg-white border-b border-gray-200">
+			<div class="w-full max-w-375 mx-auto px-4 sm:px-6 lg:px-5">
+				<div class="flex items-center justify-between h-16">
+					<!-- Logo -->
+					<div class="flex items-center">
+						<img
+							src="/rtb-logo.png"
+							alt="RTB Rwanda"
+							class="h-10.75 w-13.25 object-cover"
+						/>
+						<span
+							class="text-xl leading-5 -mx-0.5 tracking-normal text-primary font-bold mt-2 font-inter"
+							>RTB Rwanda</span
+						>
+					</div>
 
-				<!-- User info -->
-				<div class="flex items-center gap-4">
-					<span
-						class="text-sm font-medium text-[#181B20] hidden sm:block tracking-normal"
-						>Jane Mutoni</span
-					>
-					<div class="flex items-center gap-3">
-						<div
-							class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium overflow-hidden"
+					<!-- User info -->
+					<div class="flex items-center gap-4">
+						<span
+							class="text-sm font-medium text-[#181B20] hidden sm:block tracking-normal"
+							>{auth.user?.name ?? ""}</span
 						>
-							<img
-								src="https://ui-avatars.com/api/?name=Jane+Mutoni&background=3B82F6&color=fff"
-								alt="Jane Mutoni"
-								class="h-full w-full object-cover"
-							/>
+						<div class="flex items-center gap-3">
+							<div
+								class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium overflow-hidden"
+							>
+								<span>{userInitials}</span>
+							</div>
+							<div class="h-8 w-px bg-gray-200"></div>
+							<button
+								onclick={() => logout()}
+								class="p-2 text-gray-500 hover:text-[#8F96A3] hover:bg-gray-100 rounded-lg transition-colors"
+							>
+								<LogOut class="h-5 w-5" />
+							</button>
 						</div>
-						<div class="h-8 w-px bg-gray-200"></div>
-						<button
-							class="p-2 text-gray-500 hover:text-[#8F96A3] hover:bg-gray-100 rounded-lg transition-colors"
-						>
-							<LogOut class="h-5 w-5" />
-						</button>
 					</div>
 				</div>
 			</div>
-		</div>
-	</header>
+		</header>
 
-	<!-- Main Content -->
-	<main class="w-full max-w-375 mx-auto px-4 sm:px-6 lg:px-5 py-8 sm:py-12">
-		<!-- Page Header -->
-		<div
-			class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-12"
+		<!-- Main Content -->
+		<main
+			class="w-full max-w-375 mx-auto px-4 sm:px-6 lg:px-5 py-8 sm:py-12"
 		>
-			<div>
-				<h1
-					class="text-2xl sm:text-3xl font-semibold -tracking-[0.75px] leading-7.5 text-primary-black"
-				>
-					Applications
-				</h1>
-				<p class="text-sm sm:text-base text-[#8F96A3] mt-1">
-					Select an application to launch your workspace.
-				</p>
-			</div>
-
-			<!-- Search -->
-			<div class="relative w-full sm:w-101.5">
-				<Search
-					class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-				/>
-				<Input
-					type="text"
-					placeholder="Filter apps..."
-					bind:value={searchQuery}
-					class="pl-10 h-11 bg-white border-gray-200 rounded-lg placeholder:text-[#8F96A3]"
-				/>
-			</div>
-		</div>
-
-		<!-- Authenticated Apps Section -->
-		{#if filteredAuthenticatedApps.length > 0}
-			<section class="mb-10 sm:mb-14">
-				<h2 class="text-sm font-medium text-[#8F96A3] mb-4 sm:mb-6">
-					Authenticated Apps
-				</h2>
-				<div
-					class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-5"
-				>
-					{#each filteredAuthenticatedApps as app (app.id)}
-						{@render AppCard(app)}
-					{/each}
+			<!-- Page Header -->
+			<div
+				class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-12"
+			>
+				<div>
+					<h1
+						class="text-2xl sm:text-3xl font-semibold -tracking-[0.75px] leading-7.5 text-primary-black"
+					>
+						Applications
+					</h1>
+					<p class="text-sm sm:text-base text-[#8F96A3] mt-1">
+						Select an application to launch your workspace.
+					</p>
 				</div>
-			</section>
-		{/if}
 
-		<!-- More Apps Section -->
-		{#if filteredMoreApps.length > 0}
-			<section>
-				<h2 class="text-sm font-medium text-[#8F96A3] mb-4 sm:mb-6">
-					More Apps
-				</h2>
-				<div
-					class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-5"
-				>
-					{#each filteredMoreApps as app (app.id)}
-						{@render AppCard(app)}
-					{/each}
+				<!-- Search -->
+				<div class="relative w-full sm:w-101.5">
+					<Search
+						class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+					/>
+					<Input
+						type="text"
+						placeholder="Filter apps..."
+						bind:value={searchQuery}
+						class="pl-10 h-11 bg-white border-gray-200 rounded-lg placeholder:text-[#8F96A3]"
+					/>
 				</div>
-			</section>
-		{/if}
-
-		<!-- No results -->
-		{#if filteredAuthenticatedApps.length === 0 && filteredMoreApps.length === 0}
-			<div class="text-center py-12">
-				<p class="text-gray-500">
-					No apps found matching "{searchQuery}"
-				</p>
 			</div>
-		{/if}
-	</main>
-</div>
+
+			<!-- Authenticated Apps Section -->
+			{#if filteredAuthenticatedApps.length > 0}
+				<section class="mb-10 sm:mb-14">
+					<h2 class="text-sm font-medium text-[#8F96A3] mb-4 sm:mb-6">
+						Authenticated Apps
+					</h2>
+					<div
+						class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-5"
+					>
+						{#each filteredAuthenticatedApps as app (app.id)}
+							{@render AppCard(app)}
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- More Apps Section -->
+			{#if filteredMoreApps.length > 0}
+				<section>
+					<h2 class="text-sm font-medium text-[#8F96A3] mb-4 sm:mb-6">
+						More Apps
+					</h2>
+					<div
+						class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-5"
+					>
+						{#each filteredMoreApps as app (app.id)}
+							{@render AppCard(app)}
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- No results -->
+			{#if filteredAuthenticatedApps.length === 0 && filteredMoreApps.length === 0}
+				<div class="text-center py-12">
+					<p class="text-gray-500">
+						No apps found matching "{searchQuery}"
+					</p>
+				</div>
+			{/if}
+		</main>
+	</div>
+{/if}
 
 <!-- App Card  -->
 {#snippet AppCard(app: App)}
