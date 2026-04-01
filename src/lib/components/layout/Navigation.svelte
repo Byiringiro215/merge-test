@@ -23,6 +23,7 @@
         Settings,
         X,
     } from '@lucide/svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { cubicOut } from 'svelte/easing';
     import { slide } from 'svelte/transition';
 
@@ -70,16 +71,16 @@
             resource: 'sdms:staff',
             subNav: [
                 { label: 'General', href: '/training' },
-                { label: 'Schools', href: '/schools' },
-                { label: 'Students', href: '/students' },
-                { label: 'Trades', href: '/trades' },
-                { label: 'Courses', href: '/Courses' },
+                { label: 'Schools', href: '/training/schools' },
+                { label: 'Students', href: '/training/students' },
+                { label: 'Trades', href: '/training/trades' },
+                { label: 'Courses', href: '/training/courses' },
             ],
         },
         {
             id: 'digital-tech',
             label: 'Digital Tech',
-            href: '/digital-tech',
+            href: '/digitalTech',
             icon: Monitor,
             resource: 'sdms:schools',
             subNav: [
@@ -96,6 +97,9 @@
             ? allNavItems.filter(item => hasPermission(item.resource, 'read'))
             : [...allNavItems],
     );
+
+    const subNavRefs: HTMLAnchorElement[] = [];
+    let indicatorStyle = $state('');
 
     let searchQuery = $state('');
     let mobileMenuOpen = $state(false);
@@ -150,8 +154,59 @@
 
     function isSubNavActive(subHref: string): boolean {
         const path = page.url.pathname;
-        return path === subHref || path.startsWith(`${subHref}/`);
+
+        if (path === subHref)
+            return true;
+
+        if (path.startsWith(`${subHref}/`)) {
+            const allSubHrefs
+                = activeDepartment?.subNav?.map(s => s.href) ?? [];
+
+            const hasMoreSpecificMatch = allSubHrefs.some(
+                href =>
+                    href !== subHref
+                        && (path === href || path.startsWith(`${href}/`)),
+            );
+
+            return !hasMoreSpecificMatch;
+        }
+
+        return false;
     }
+
+    function updateIndicator() {
+        const subNav = activeDepartment?.subNav;
+        if (!subNav)
+            return;
+
+        const activeIndex = subNav.findIndex(item =>
+            isSubNavActive(item.href),
+        );
+
+        if (activeIndex >= 0 && subNavRefs[activeIndex]) {
+            const activeLink = subNavRefs[activeIndex];
+            const left = activeLink.offsetLeft;
+            const width = activeLink.offsetWidth;
+            indicatorStyle = `transform: translateX(${left}px); width: ${width}px; opacity: 1;`;
+        }
+        else {
+            indicatorStyle = 'opacity: 0;';
+        }
+    }
+
+    $effect(() => {
+        void page.url.pathname;
+        setTimeout(updateIndicator, 0);
+    });
+
+    onMount(() => {
+        updateIndicator();
+        window.addEventListener('resize', updateIndicator);
+    });
+
+    onDestroy(() => {
+        window.removeEventListener('resize', updateIndicator);
+    });
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -179,7 +234,7 @@
                 {@const isActive = activeDepartment?.id === item.id}
                 <a
                     href={resolve(item.href as any)}
-                    class="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-normal transition-colors {isActive
+                    class="flex items-center gap-2 rounded-[6px] px-4 py-2 text-sm font-normal transition-colors {isActive
                         ? 'bg-[#205FAD1A] text-[#205FAD]'
                         : 'text-[#565D6D] hover:bg-gray-50 hover:text-gray-900'}"
                 >
@@ -269,23 +324,24 @@
         <div
             class='hidden border-b bg-[#F2F7FD4D] border-gray-200 px-6 md:block lg:px-21'
         >
-            <div class='flex items-center gap-6'>
-                {#each activeDepartment.subNav as subItem (subItem.href)}
+            <div class='relative flex items-center gap-6'>
+                {#each activeDepartment.subNav as subItem, index (subItem.href)}
                     {@const isActive = isSubNavActive(subItem.href)}
                     <a
+                        bind:this={subNavRefs[index]}
                         href={resolve(subItem.href as any)}
-                        class="relative py-3 text-sm font-normal transition-colors {isActive
+                        class="relative py-3 text-sm font-normal transition-colors duration-200 {isActive
                             ? 'text-primary'
                             : 'text-gray-500 hover:text-gray-900'}"
                     >
                         {subItem.label}
-                        {#if isActive}
-                            <span
-                                class='absolute bottom-0 left-0 right-0 h-0.5 bg-primary'
-                            ></span>
-                        {/if}
                     </a>
                 {/each}
+                <!-- Sliding indicator -->
+                <span
+                    class='absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ease-out'
+                    style={indicatorStyle}
+                ></span>
             </div>
         </div>
     {/if}
@@ -323,7 +379,7 @@
                             <button
                                 type='button'
                                 onclick={() => toggleMobileNavExpand(item.id)}
-                                class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors {isActive
+                                class="flex w-full items-center justify-between rounded-[6px] px-3 py-2.5 text-sm font-medium transition-colors {isActive
                                     ? 'bg-[#205FAD1A] text-primary'
                                     : 'text-[#565D6D] hover:bg-gray-100 hover:text-gray-900'}"
                             >
@@ -363,7 +419,7 @@
                                         <a
                                             href={resolve(subItem.href as any)}
                                             onclick={closeMobileMenu}
-                                            class="block rounded-lg px-3 py-2 text-sm transition-colors {isSubActive
+                                            class="block rounded-[6px] px-3 py-2 text-sm transition-colors {isSubActive
                                                 ? 'text-[#205FAD] font-normal bg-[#205FAD1A]'
                                                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}"
                                         >

@@ -127,8 +127,8 @@
     >
         <Select.Trigger
             class={cn(
-                'w-full',
-                disabled && 'cursor-not-allowed h-9.5 rounded-[6px] opacity-50',
+                'w-full h-9.5 rounded-[6px]',
+                disabled && 'cursor-not-allowed opacity-50',
                 triggerClass,
             )}
         >
