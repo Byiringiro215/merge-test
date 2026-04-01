@@ -10,11 +10,21 @@
 		Settings,
 		Menu,
 		X,
+		LogOut,
 	} from "@lucide/svelte";
 	import { page } from "$app/state";
 	import { slide } from "svelte/transition";
 	import { cubicOut } from "svelte/easing";
 	import { resolve } from "$app/paths";
+	import { getAuthState, logout } from "$lib/auth/index.svelte";
+	import {
+		DropdownMenu,
+		DropdownMenuContent,
+		DropdownMenuItem,
+		DropdownMenuLabel,
+		DropdownMenuSeparator,
+		DropdownMenuTrigger,
+	} from "$lib/components/ui/dropdown-menu";
 
 	const navItems = [
 		{ label: "General", href: "/dashboard", icon: LayoutGrid },
@@ -26,6 +36,17 @@
 
 	let searchQuery = $state("");
 	let mobileMenuOpen = $state(false);
+
+	const auth = getAuthState();
+
+	const userInitials = $derived(
+		auth.user?.name
+			?.split(" ")
+			.map((n) => n[0])
+			.join("")
+			.toUpperCase()
+			.slice(0, 2) ?? "",
+	);
 
 	function toggleMobileMenu() {
 		mobileMenuOpen = !mobileMenuOpen;
@@ -111,16 +132,41 @@
 				<Settings class="h-5 w-5" />
 			</button>
 
-			<!-- User Avatar -->
-			<button
-				type="button"
-				class="h-9 w-9 overflow-hidden rounded-full bg-linear-to-br from-blue-500 to-blue-600"
-			>
-				<span
-					class="flex h-full w-full items-center justify-center text-sm font-medium text-white"
-					>JD</span
-				>
-			</button>
+			<!-- User Avatar Dropdown -->
+			<DropdownMenu>
+				<DropdownMenuTrigger>
+					<button
+						type="button"
+						class="h-9 w-9 overflow-hidden rounded-full bg-linear-to-br from-blue-500 to-blue-600 cursor-pointer"
+					>
+						<span
+							class="flex h-full w-full items-center justify-center text-sm font-medium text-white"
+							>{userInitials}</span
+						>
+					</button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="end" class="w-56">
+					<DropdownMenuLabel>
+						<div class="flex flex-col gap-0.5">
+							<span class="text-sm font-medium"
+								>{auth.user?.name ?? ""}</span
+							>
+							<span
+								class="text-xs font-normal text-muted-foreground"
+								>{auth.user?.email ?? ""}</span
+							>
+						</div>
+					</DropdownMenuLabel>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem
+						onclick={() => logout()}
+						class="text-red-600 cursor-pointer"
+					>
+						<LogOut class="mr-2 h-4 w-4" />
+						Sign out
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
 
 			<!-- Mobile Menu Button -->
 			<button
