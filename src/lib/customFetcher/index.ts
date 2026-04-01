@@ -1,5 +1,6 @@
 import { PUBLIC_API_URL } from "$env/static/public";
 import { ZodType } from "zod/v4";
+import { getAccessToken, refreshAccessToken } from "$lib/auth/index.svelte";
 
 export type Result<T> =
     | {
@@ -32,6 +33,7 @@ export type FetcherResponse<T> = Response & {
 export type FetcherOptions<T, R = unknown> = RequestInit & {
     bodySchema?: ZodType<T>;
     requestBodySchema?: ZodType<R>;
+    auth?: boolean;
     defaultFetch?: (
         input: RequestInfo | URL,
         init?: RequestInit,
@@ -45,17 +47,12 @@ async function jsonResultHandler<T>(
     const json = await response.clone().json();
 
     if (!response.ok) {
-        if (json.message) {
-            return {
-                ...response,
-                result: Err(new Error(json.message)),
-            };
-        } else {
-            return {
-                ...response,
-                result: Err(new Error(response.statusText)),
-            };
-        }
+        const message =
+            json?.error?.message ?? json?.message ?? response.statusText;
+        return {
+            ...response,
+            result: Err(new Error(message)),
+        };
     }
     if (!bodySchema) {
         return {
@@ -63,7 +60,6 @@ async function jsonResultHandler<T>(
             result: Ok(json as T),
         };
     }
-    // const contentType = response.headers.get("content-type");
     const parseResult = bodySchema.safeParse(json);
     if (parseResult.error) {
         return {
@@ -80,23 +76,59 @@ async function jsonResultHandler<T>(
 async function defaultResultHandler<T>(
     response: Response,
 ): Promise<FetcherResponse<T>> {
-    // const contentType = response.headers.get("content-type");
     return {
         ...response,
         result: Err(new Error("cannot handler result")),
     };
 }
 
-const ResponseHandlers: Record<
-    string,
-    <T>(
-        response: Response,
-        bodySchema?: ZodType<T>,
-    ) => Promise<FetcherResponse<T>>
-> = {
-    "application/json": jsonResultHandler,
-    default: defaultResultHandler,
-};
+function getResponseHandler<T>(contentType: string | null) {
+    if (contentType && contentType.includes("application/json")) {
+        return jsonResultHandler<T>;
+    }
+    return defaultResultHandler<T>;
+}
+
+async function doFetch<T, R = unknown>(
+    path: RequestInfo | URL,
+    options?: FetcherOptions<T, R>,
+    queries?: { [key: string]: string },
+): Promise<FetcherResponse<T>> {
+    const {
+        bodySchema,
+        auth: authEnabled = true,
+        defaultFetch = fetch,
+        ...init
+    } = options ?? {};
+
+    const baseUrl = PUBLIC_API_URL;
+    const endpoint = new URL(`${baseUrl}${path}`);
+    for (const [k, v] of Object.entries(queries ?? {})) {
+        endpoint.searchParams.append(k, v);
+    }
+
+    const headers = new Headers(init.headers);
+    if (options?.body && !headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+    }
+    if (authEnabled) {
+        const token = getAccessToken();
+        if (token) {
+            headers.set("Authorization", `Bearer ${token}`);
+        }
+    }
+
+    const response = await defaultFetch(endpoint, {
+        ...init,
+        headers,
+    });
+
+    const contentType = response.headers.get("content-type");
+    const responseHandler = getResponseHandler<T>(contentType);
+
+    return responseHandler(response, bodySchema);
+}
+
 /**
  *  this `fetcher` method starts the process of fetching a resource from the network,
  *  returning a promise that is fulfilled once the response is available
@@ -107,28 +139,16 @@ export async function customFetcher<T, R = unknown>(
     options?: FetcherOptions<T, R>,
     queries?: { [key: string]: string },
 ): Promise<FetcherResponse<T>> {
-    const {
-        bodySchema,
-        defaultFetch = fetch,
-        ...init
-    } = options ?? {};
-    const baseUrl = PUBLIC_API_URL;
-    const endpoint = new URL(`${baseUrl}${path}`);
-    for (const [k, v] of Object.entries(queries ?? {})) {
-        endpoint.searchParams.append(k, v);
+    const response = await doFetch(path, options, queries);
+
+    // Auto-retry on 401 if auth is enabled
+    const authEnabled = options?.auth !== false;
+    if (response.status === 401 && authEnabled) {
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+            return doFetch(path, options, queries);
+        }
     }
-    if (options?.body)
-        init.headers = {
-            "Content-Type": "application/json",
-        };
-    const response = await defaultFetch(endpoint, {
-        ...init,
-    });
-    const contentType = response.headers.get("content-type");
 
-    const responseHandler = contentType
-        ? ResponseHandlers[contentType]
-        : ResponseHandlers["default"];
-
-    return responseHandler(response, bodySchema);
+    return response;
 }

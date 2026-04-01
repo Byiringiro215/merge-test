@@ -1,18 +1,35 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
+	import { page } from "$app/state";
+	import { login } from "$lib/auth/index.svelte";
 	import { Input } from "$lib/components/ui/input";
 	import { Button } from "$lib/components/ui/button";
 	import { Card } from "$lib/components/ui/card";
-	import { Mail, Lock, ArrowRight, LifeBuoy } from "@lucide/svelte";
+	import { Mail, Lock, ArrowRight, LifeBuoy, LoaderCircle } from "@lucide/svelte";
 
 	let email = $state("");
 	let password = $state("");
+	let isSubmitting = $state(false);
+	let errorMessage = $state("");
 
-	function handleSignIn() {
-		console.log("Sign in with:", email, password);
+	async function handleSignIn() {
+		errorMessage = "";
+		isSubmitting = true;
+
+		const result = await login(email, password);
+
+		if (result.ok) {
+			const redirect = page.url.searchParams.get("redirect") || "/";
+			goto(redirect);
+		} else {
+			errorMessage = result.error;
+		}
+
+		isSubmitting = false;
 	}
 
 	function handleMicrosoftSignIn() {
-		console.log("Sign in with Microsoft");
+		// Microsoft SSO — coming soon
 	}
 </script>
 
@@ -110,6 +127,13 @@
 						handleSignIn();
 					}}
 				>
+					<!-- Error Message -->
+					{#if errorMessage}
+						<div class="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-inter">
+							{errorMessage}
+						</div>
+					{/if}
+
 					<!-- Email Field -->
 					<div class="mb-4">
 						<label
@@ -127,6 +151,7 @@
 								type="email"
 								placeholder="jane@rtb.rw"
 								bind:value={email}
+								disabled={isSubmitting}
 								class="pl-10 h-11 w-full border-[#DEE1E6]! bg-[#F9FAFB] rounded-lg text-sm placeholder:text-[#171A1F] font-inter focus-visible:ring-2"
 							/>
 						</div>
@@ -157,6 +182,7 @@
 								type="password"
 								placeholder="••••••••"
 								bind:value={password}
+								disabled={isSubmitting}
 								class="pl-10 h-11 w-full  border-[#DEE1E6]! bg-[#F9FAFB] rounded-xl text-sm placeholder:text-black placeholder:tracking-normal font-inter focus-visible:ring-2"
 							/>
 						</div>
@@ -165,10 +191,16 @@
 					<!-- Sign In Button -->
 					<Button
 						type="submit"
-						class="w-full h-11 bg-[#205FAD] hover:bg-[#2563EB] text-white font-medium rounded-lg flex items-center justify-center gap-2 font-inter"
+						disabled={isSubmitting}
+						class="w-full h-11 bg-[#205FAD] hover:bg-[#2563EB] text-white font-medium rounded-lg flex items-center justify-center gap-2 font-inter disabled:opacity-70"
 					>
-						Sign In
-						<ArrowRight class="h-4 w-4" />
+						{#if isSubmitting}
+							<LoaderCircle class="h-4 w-4 animate-spin" />
+							Signing in...
+						{:else}
+							Sign In
+							<ArrowRight class="h-4 w-4" />
+						{/if}
 					</Button>
 				</form>
 
@@ -187,7 +219,8 @@
 					type="button"
 					variant="outline"
 					onclick={handleMicrosoftSignIn}
-					class="w-full h-11 border-[#DEE1E6] hover:bg-gray-50 bg-[#F3F4F6] text-[#323843] font-medium font-inter rounded-lg flex items-center justify-center  gap-2.5"
+					disabled
+					class="w-full h-11 border-[#DEE1E6] hover:bg-gray-50 bg-[#F3F4F6] text-[#323843] font-medium font-inter rounded-lg flex items-center justify-center  gap-2.5 disabled:opacity-50"
 				>
 					<!-- Microsoft Logo -->
 					<svg
