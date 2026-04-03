@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "Deployment environment (staging or production)"
+      public_api_url:
+        required: true
+        type: string
+        description: "PUBLIC_API_URL to bake into the build"
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/rtb-rwanda-tvet-board/tdmp-web
+
+jobs:
+  lint-and-check:
+    name: Lint & Type Check
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Type check
+        run: bun run check
+
+  test-unit:
+    name: Unit Tests
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run unit tests
+        run: bun run test:unit -- --run
+
+  test-e2e:
+    name: E2E Tests
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: bun run test:e2e
+
+  build-and-push:
+    name: Build & Push Docker Image
+    runs-on: self-hosted
+    needs: [lint-and-check, test-unit, test-e2e]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: |
+            PUBLIC_API_URL=${{ inputs.public_api_url }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ inputs.environment }}-${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:latest-${{ inputs.environment }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

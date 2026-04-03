@@ -1,0 +1,14 @@
+services:
+  tdmp-web:
+    image: ghcr.io/rtb-rwanda-tvet-board/tdmp-web:latest-staging
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PUBLIC_API_URL: ${PUBLIC_API_URL}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      ORIGIN: ${ORIGIN:-http://localhost:3000}
