@@ -1,0 +1,44 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [develop]
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    with:
+      environment: staging
+      public_api_url: ${{ secrets.STAGING_API_URL }}
+    secrets: inherit
+
+  deploy:
+    name: Deploy to Staging
+    runs-on: self-hosted
+    needs: ci
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest image
+        run: docker compose pull
+
+      - name: Deploy
+        run: docker compose up -d --remove-orphans
+        env:
+          PUBLIC_API_URL: ${{ secrets.STAGING_API_URL }}
+          ORIGIN: ${{ secrets.STAGING_ORIGIN }}
+
+      - name: Clean up old images
+        run: docker image prune -f

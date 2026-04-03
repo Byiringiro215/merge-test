@@ -1,0 +1,28 @@
+services:
+  tdmp-web:
+    image: ghcr.io/rtb-rwanda-tvet-board/tdmp-web:latest-production
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      ORIGIN: ${ORIGIN:-http://localhost:3000}
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

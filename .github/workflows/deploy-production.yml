@@ -1,0 +1,46 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    with:
+      environment: production
+      public_api_url: ${{ secrets.PRODUCTION_API_URL }}
+    secrets: inherit
+
+  deploy:
+    name: Deploy to Production (Swarm)
+    runs-on: self-hosted
+    needs: ci
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest image on production
+        run: docker --context production pull ghcr.io/rtb-rwanda-tvet-board/tdmp-web:latest-production
+
+      - name: Deploy to Swarm
+        run: docker --context production stack deploy -c docker-stack.prod.yml tdmp-web --with-registry-auth
+        env:
+          ORIGIN: ${{ secrets.PRODUCTION_ORIGIN }}
+
+      - name: Verify deployment
+        run: |
+          echo "Waiting for service to stabilize..."
+          sleep 15
+          docker --context production service ls --filter name=tdmp-web
