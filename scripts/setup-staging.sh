@@ -81,12 +81,12 @@ info "Step 1/4: Playwright system dependencies"
 if dpkg -l | grep -q "libglib2.0-0\|libglib2.0-0t64"; then
   ok "Playwright system dependencies appear to be installed (libglib2.0 found)"
   if confirm "Re-install Playwright deps anyway?"; then
-    sudo npx playwright install-deps chromium
+    sudo bunx playwright install-deps chromium
     ok "Playwright dependencies installed"
   fi
 else
   info "Installing Playwright system dependencies for Chromium..."
-  sudo npx playwright install-deps chromium
+  sudo bunx playwright install-deps chromium
   ok "Playwright dependencies installed"
 fi
 
