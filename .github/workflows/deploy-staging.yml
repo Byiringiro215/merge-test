@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       environment: staging
-      public_api_url: ${{ secrets.STAGING_API_URL }}
+      public_api_url: ${{ vars.STAGING_API_URL }}
     secrets: inherit
 
   deploy:
@@ -41,7 +41,7 @@ jobs:
       - name: Deploy
         run: docker compose up -d --remove-orphans
         env:
-          PUBLIC_API_URL: ${{ secrets.STAGING_API_URL }}
+          PUBLIC_API_URL: ${{ vars.STAGING_API_URL }}
           ORIGIN: ${{ secrets.STAGING_ORIGIN }}
           PORT: ${{ vars.PORT }}
 
