@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       environment: production
-      public_api_url: ${{ secrets.PRODUCTION_API_URL }}
+      public_api_url: ${{ vars.PRODUCTION_API_URL }}
     secrets: inherit
 
   deploy:
