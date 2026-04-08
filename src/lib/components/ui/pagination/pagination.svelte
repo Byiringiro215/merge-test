@@ -11,13 +11,8 @@
 		pageSize?: number;
 	}
 
-	let {
-		currentPage = 1,
-		totalPages = 1,
-		onPageChange,
-		totalItems,
-		pageSize,
-	}: Props = $props();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let { currentPage = 1, totalPages = 1, onPageChange, totalItems, pageSize }: Props = $props();
 
 	const getPageNumbers = () => {
 		const pages: (number | string)[] = [];

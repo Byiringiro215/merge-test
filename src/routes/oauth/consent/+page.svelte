@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import {
 		getAuthState,
@@ -28,7 +29,7 @@
 
 	$effect(() => {
 		if (!auth.isLoading && !auth.isAuthenticated) {
-			goto(`/signin?redirect=${encodeURIComponent(page.url.pathname + page.url.search)}`);
+			goto(resolve(`/signin?redirect=${encodeURIComponent(page.url.pathname + page.url.search)}`));
 		}
 	});
 
@@ -258,7 +259,7 @@
 							>
 						</div>
 						<div class="space-y-3 pl-6">
-							{#each permissions as permission}
+							{#each permissions as permission (permission)}
 								<div class="flex items-start gap-2.5">
 									<Check
 										class="h-4 w-4 text-green-500 mt-0.5 shrink-0"
@@ -318,15 +319,15 @@
 						class="text-[10px] text-[#8F96A3] font-inter text-center mt-4"
 					>
 						By clicking Allow Access, you agree to the <a
-							href="/terms"
+							href={resolve("/terms")}
 							class="text-[#4770EB] hover:underline"
 							>Terms of Use</a
 						>,
-						<a href="/privacy" class="text-[#4770EB] hover:underline"
+						<a href={resolve("/privacy")} class="text-[#4770EB] hover:underline"
 							>Privacy Policy</a
 						>,
 						<a
-							href="/security"
+							href={resolve("/security")}
 							class="text-[#4770EB] hover:underline"
 							>Security Policy</a
 						>

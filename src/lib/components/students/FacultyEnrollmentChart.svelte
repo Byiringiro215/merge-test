@@ -216,16 +216,14 @@
 	headerClass="p-4 lg:p-6"
 	contentClass="p-4 pt-0 lg:p-6 lg:pt-0"
 >
-	{#snippet children()}
-		<div class="flex flex-col items-center">
-			<!-- Donut Chart -->
-			<div
-				class="shrink-0"
-				bind:this={chartElement}
-				style="width: {chartSize}px; height: {chartSize}px;"
-			></div>
-		</div>
-	{/snippet}
+	<div class="flex flex-col items-center">
+		<!-- Donut Chart -->
+		<div
+			class="shrink-0"
+			bind:this={chartElement}
+			style="width: {chartSize}px; height: {chartSize}px;"
+		></div>
+	</div>
 
 	{#snippet legend()}
 		<ChartLegend
