@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import { login } from "$lib/auth/index.svelte";
 	import { Input } from "$lib/components/ui/input";
@@ -20,7 +21,7 @@
 
 		if (result.ok) {
 			const redirect = page.url.searchParams.get("redirect") || "/";
-			goto(redirect);
+			goto(resolve(redirect));
 		} else {
 			errorMessage = result.error;
 		}
