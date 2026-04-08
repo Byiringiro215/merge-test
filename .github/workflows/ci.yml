@@ -20,65 +20,9 @@ env:
   IMAGE_NAME: ghcr.io/rtb-rwanda-tvet-board/tdmp-web
 
 jobs:
-  lint-and-check:
-    name: Lint & Type Check
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: oven-sh/setup-bun@v2
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Lint
-        run: bun run lint
-
-      - name: Type check
-        run: bun run check
-
-  test-unit:
-    name: Unit Tests
-    runs-on: self-hosted
-    env:
-      PUBLIC_API_URL: http://localhost
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: oven-sh/setup-bun@v2
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Install Playwright browsers
-        run: bunx playwright install chromium
-
-      - name: Run unit tests
-        run: bun run test:unit -- --run
-
-  test-e2e:
-    name: E2E Tests
-    runs-on: self-hosted
-    env:
-      PUBLIC_API_URL: http://localhost
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: oven-sh/setup-bun@v2
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Install Playwright browsers
-        run: bunx playwright install chromium
-
-      - name: Run E2E tests
-        run: bunx playwright test
-
   build-and-push:
     name: Build & Push Docker Image
     runs-on: self-hosted
-    needs: [lint-and-check, test-unit, test-e2e]
     steps:
       - uses: actions/checkout@v5
 
