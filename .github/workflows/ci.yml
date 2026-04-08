@@ -40,6 +40,8 @@ jobs:
   test-unit:
     name: Unit Tests
     runs-on: self-hosted
+    env:
+      PUBLIC_API_URL: http://localhost
     steps:
       - uses: actions/checkout@v5
 
@@ -57,6 +59,8 @@ jobs:
   test-e2e:
     name: E2E Tests
     runs-on: self-hosted
+    env:
+      PUBLIC_API_URL: http://localhost
     steps:
       - uses: actions/checkout@v5
 
