@@ -4,6 +4,10 @@ on:
   push:
     branches: [develop]
 
+permissions:
+  contents: read
+  packages: write
+
 concurrency:
   group: deploy-staging
   cancel-in-progress: true
@@ -22,7 +26,7 @@ jobs:
     needs: ci
     environment: staging
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -39,6 +43,7 @@ jobs:
         env:
           PUBLIC_API_URL: ${{ secrets.STAGING_API_URL }}
           ORIGIN: ${{ secrets.STAGING_ORIGIN }}
+          PORT: ${{ vars.PORT }}
 
       - name: Clean up old images
         run: docker image prune -f
