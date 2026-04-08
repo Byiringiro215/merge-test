@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	const currentYear = new Date().getFullYear();
 </script>
 
@@ -23,12 +24,12 @@
 		<!-- Right Section -->
 		<div class="flex items-center gap-6 text-xs">
 			<a
-				href="/privacy"
+				href={resolve("/privacy")}
 				class="text-gray-500 transition-colors hover:text-gray-700"
 				>Privacy Policy</a
 			>
 			<a
-				href="/terms"
+				href={resolve("/terms")}
 				class="text-gray-500 transition-colors hover:text-gray-700"
 				>Terms</a
 			>

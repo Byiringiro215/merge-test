@@ -73,7 +73,7 @@ jobs:
         run: bunx playwright install chromium
 
       - name: Run E2E tests
-        run: bun run test:e2e
+        run: bunx playwright test
 
   build-and-push:
     name: Build & Push Docker Image

@@ -352,6 +352,7 @@
 	</CardContent>
 </Card>
 
+<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
 {#snippet rowAction({ courses }: { courses: Course })}
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>

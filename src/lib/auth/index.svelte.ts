@@ -1,4 +1,5 @@
 import { goto } from "$app/navigation";
+import { resolve } from "$app/paths";
 import { PUBLIC_API_URL } from "$env/static/public";
 import type { AuthUser } from "./schemas";
 
@@ -124,7 +125,7 @@ export async function logout() {
 	clearRefreshTimer();
 	refreshPromise = null;
 
-	goto("/signin");
+	goto(resolve("/signin"));
 }
 
 export async function fetchUser(): Promise<void> {

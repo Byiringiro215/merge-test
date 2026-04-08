@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import { getAuthState, tryRestoreSession } from "$lib/auth/index.svelte";
 	import Navigation from "$lib/components/layout/Navigation.svelte";
@@ -16,7 +17,7 @@
 
 	$effect(() => {
 		if (!auth.isLoading && !auth.isAuthenticated) {
-			goto(`/signin?redirect=${encodeURIComponent(page.url.pathname)}`);
+			goto(resolve(`/signin?redirect=${encodeURIComponent(page.url.pathname)}`));
 		}
 	});
 </script>

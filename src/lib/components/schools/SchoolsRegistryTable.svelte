@@ -206,6 +206,7 @@
 	}
 </script>
 
+<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
 {#snippet rowAction({ school }: { school: School })}
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
