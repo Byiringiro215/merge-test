@@ -24,7 +24,7 @@
 
 	$effect(() => {
 		if (!auth.isLoading && !auth.isAuthenticated) {
-			goto("/signin");
+			goto(resolve("/signin"));
 		}
 	});
 

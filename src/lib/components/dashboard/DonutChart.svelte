@@ -197,19 +197,17 @@
 	headerClass="p-4 lg:p-6"
 	contentClass="flex flex-col items-center"
 >
-	{#snippet children()}
-		<div class="w-full flex items-center justify-center h-75!">
+	<div class="w-full flex items-center justify-center h-75!">
+		<div
+			class="relative flex w-full items-center justify-center"
+			style="height: {chartSize}px;"
+		>
 			<div
-				class="relative flex w-full items-center justify-center"
-				style="height: {chartSize}px;"
-			>
-				<div
-					bind:this={chartElement}
-					style="width: {chartSize}px; height: {chartSize}px;"
-				></div>
-			</div>
+				bind:this={chartElement}
+				style="width: {chartSize}px; height: {chartSize}px;"
+			></div>
 		</div>
-	{/snippet}
+	</div>
 
 	{#snippet legend()}
 		<div class="grid w-full grid-cols-2 gap-4">
