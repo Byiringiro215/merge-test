@@ -8,12 +8,9 @@
 		CardTitle,
 		CardContent,
 	} from "$lib/components/ui/card";
-	import { customFetcher } from "$lib/customFetcher";
+	import { api } from "$lib/api";
 	import type { Student } from "$lib/datamodel/student";
-	import {
-		studentDetailResponse,
-		type Meta,
-	} from "$lib/types/zod-schemas-api";
+	import { studentDetailResponse } from "$lib/types/zod-schemas-api";
 	import ArrowLeftIcon from "@lucide/svelte/icons/arrow-left";
 	import UserIcon from "@lucide/svelte/icons/user";
 	import SchoolIcon from "@lucide/svelte/icons/school";
@@ -33,21 +30,19 @@
 	const studentNumber = $derived(page.params.studentNumber);
 
 	const fetchStudent = async () => {
+		if (!studentNumber) return;
 		try {
 			isLoading = true;
 			error = null;
-			const { result } = await customFetcher<{
-				data: Student;
-				meta: Meta;
-			}>(`/v1/sdms/students/${studentNumber}`, {
-				method: "GET",
-				bodySchema: studentDetailResponse,
-			});
+			const result = await api.get("/sdms/students/{studentNumber}", {
+				params: { studentNumber },
+				responseSchema: studentDetailResponse,
+			}).result();
 			if (!result.ok) {
 				error = "Failed to fetch student details";
 				return;
 			}
-			student = result.value.data;
+			student = result.data.data;
 		} catch (err) {
 			console.error("Fetch error:", err);
 			error = "An error occurred while fetching student details";

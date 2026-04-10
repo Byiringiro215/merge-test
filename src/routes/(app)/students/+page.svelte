@@ -11,7 +11,7 @@
 	import { FACULTY_COLORS } from "$lib/components/students/types.js";
 	import { Button } from "$lib/components/ui/button";
 	import * as Sidebar from "$lib/components/ui/sidebar";
-	import { customFetcher } from "$lib/customFetcher";
+	import { api } from "$lib/api";
 	import type {
 		StudentFiltersState,
 		StudentSummary,
@@ -19,7 +19,6 @@
 	import {
 		createPaginatedResponseSchema,
 		studentSummary,
-		type Meta,
 	} from "$lib/types/zod-schemas-api";
 	import Building2Icon from "@lucide/svelte/icons/building-2";
 	import CircleCheckIcon from "@lucide/svelte/icons/circle-check";
@@ -29,7 +28,6 @@
 	import UserPlusIcon from "@lucide/svelte/icons/user-plus";
 	import UsersIcon from "@lucide/svelte/icons/users";
 	import { onMount } from "svelte";
-	import { SvelteURLSearchParams } from "svelte/reactivity";
 
 	// Sidebar filter state
 	let filters = $state<StudentFiltersState>({
@@ -138,34 +136,27 @@
 			const paginatedStudentSchema =
 				createPaginatedResponseSchema(studentSummary);
 
-			// Build query params including sidebar filters
-			const params = new SvelteURLSearchParams();
-			params.set("page", currentPage.toString());
-			params.set("limit", pageSize.toString());
-
-			// Add active filters from sidebar to query params
-			if (filters.gender) params.set("gender", filters.gender);
-			if (filters.schoolCode)
-				params.set("schoolCode", filters.schoolCode);
-			if (filters.status) params.set("status", filters.status);
-			if (filters.classGroup)
-				params.set("classGroup", filters.classGroup);
-
-			const { result } = await customFetcher<{
-				data: StudentSummary[];
-				meta: Meta;
-			}>(`/v1/sdms/students?${params.toString()}`, {
-				method: "GET",
-				bodySchema: paginatedStudentSchema,
-			});
+			const result = await api.get("/sdms/students", {
+				query: {
+					page: currentPage,
+					limit: pageSize,
+					...(filters.gender && { gender: filters.gender }),
+					...(filters.schoolCode && {
+						schoolCode: filters.schoolCode,
+					}),
+					...(filters.status && { status: filters.status }),
+					...(filters.classGroup && {
+						classGroup: filters.classGroup,
+					}),
+				},
+				responseSchema: paginatedStudentSchema,
+			}).result();
 			if (!result.ok) {
-				console.error("Failed to fetch students");
+				console.error("Failed to fetch students", result.error);
 				return;
 			}
-			students = Array.isArray(result.value.data)
-				? result.value.data
-				: [];
-			totalStudents = result.value.meta.page?.total ?? 0;
+			students = result.data.data;
+			totalStudents = result.data.meta.page?.total ?? 0;
 		} catch (error) {
 			console.error("Fetch error:", error);
 		} finally {

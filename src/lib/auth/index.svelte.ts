@@ -1,7 +1,13 @@
 import { goto } from "$app/navigation";
 import { resolve } from "$app/paths";
-import { PUBLIC_API_URL } from "$env/static/public";
-import type { AuthUser } from "./schemas";
+import { extractErrorMessage } from "@bajustone/fetcher";
+import { api } from "$lib/api";
+import type { Schema } from "$lib/api/paths";
+
+// -- Types --------------------------------------------------------------------
+
+export type AuthUser = Schema<"User">;
+export type Permission = Schema<"Permission">;
 
 // -- State --------------------------------------------------------------------
 
@@ -11,6 +17,10 @@ let user: AuthUser | null = $state(null);
 let isLoading: boolean = $state(true);
 const isAuthenticated: boolean = $derived(accessToken !== null);
 
+let permissions: Permission[] = $state([]);
+let permissionsLoaded: boolean = $state(false);
+const checkCache = new Map<string, boolean>();
+
 let refreshTimerId: ReturnType<typeof setTimeout> | null = null;
 let refreshPromise: Promise<boolean> | null = null;
 
@@ -19,164 +29,188 @@ const REFRESH_INTERVAL_MS = 4 * 60 * 1000;
 
 // -- Helpers ------------------------------------------------------------------
 
-async function authFetch<T>(
-	path: string,
-	options?: RequestInit,
-): Promise<{ ok: true; data: T } | { ok: false; error: string }> {
-	try {
-		const response = await fetch(`${PUBLIC_API_URL}${path}`, {
-			...options,
-			headers: {
-				"Content-Type": "application/json",
-				...options?.headers,
-			},
-		});
-
-		const json = await response.json();
-
-		if (!response.ok) {
-			const message =
-				json?.error?.message ?? json?.message ?? response.statusText;
-			return { ok: false, error: message };
-		}
-
-		return { ok: true, data: json as T };
-	} catch (err) {
-		return {
-			ok: false,
-			error: err instanceof Error ? err.message : "Network error",
-		};
-	}
-}
-
 function clearRefreshTimer() {
-	if (refreshTimerId !== null) {
-		clearTimeout(refreshTimerId);
-		refreshTimerId = null;
-	}
+  if (refreshTimerId !== null) {
+    clearTimeout(refreshTimerId);
+    refreshTimerId = null;
+  }
 }
 
 function scheduleRefresh() {
-	clearRefreshTimer();
-	refreshTimerId = setTimeout(() => {
-		refreshAccessToken();
-	}, REFRESH_INTERVAL_MS);
+  clearRefreshTimer();
+  refreshTimerId = setTimeout(() => {
+    refreshAccessToken();
+  }, REFRESH_INTERVAL_MS);
+}
+
+// -- Permissions --------------------------------------------------------------
+
+async function fetchPermissions(): Promise<void> {
+  if (!user) return;
+  const result = await api
+    .get("/iam/users/{id}/permissions", {
+      params: { id: String(user.id) },
+    })
+    .result();
+  if (result.ok) {
+    permissions = result.data;
+    permissionsLoaded = true;
+    checkCache.clear();
+  }
+}
+
+function evaluateLocal(resource: string, action: string): boolean {
+  const matching = permissions.filter(
+    (p) => p.resource === resource && p.action === action,
+  );
+  if (matching.length === 0) return false;
+  if (matching.some((p) => p.effect === "DENY")) return false;
+  return matching.some((p) => p.effect === "ALLOW");
+}
+
+export async function checkPermission(
+  resource: string,
+  action: string,
+): Promise<boolean> {
+  if (permissionsLoaded) {
+    return evaluateLocal(resource, action);
+  }
+  const key = `${resource}:${action}`;
+  if (checkCache.has(key)) return checkCache.get(key)!;
+  if (!user) return false;
+  const result = await api
+    .post("/iam/check", {
+      body: { userId: user.id, resource, action },
+    })
+    .result();
+  const allowed = result.ok ? result.data.allowed : false;
+  checkCache.set(key, allowed);
+  return allowed;
+}
+
+export function hasPermission(resource: string, action: string): boolean {
+  if (!permissionsLoaded) return false;
+  return evaluateLocal(resource, action);
 }
 
 // -- Public API ---------------------------------------------------------------
 
 export function getAuthState() {
-	return {
-		get user() {
-			return user;
-		},
-		get isAuthenticated() {
-			return isAuthenticated;
-		},
-		get isLoading() {
-			return isLoading;
-		},
-	};
+  return {
+    get user() {
+      return user;
+    },
+    get isAuthenticated() {
+      return isAuthenticated;
+    },
+    get isLoading() {
+      return isLoading;
+    },
+    get permissionsLoaded() {
+      return permissionsLoaded;
+    },
+  };
 }
 
 export function getAccessToken(): string | null {
-	return accessToken;
+  return accessToken;
 }
 
 export async function login(
-	email: string,
-	password: string,
+  email: string,
+  password: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-	const result = await authFetch<{
-		data: {
-			accessToken: string;
-			refreshToken: string;
-			user: AuthUser;
-		};
-	}>("/v1/auth/login", {
-		method: "POST",
-		body: JSON.stringify({ email, password }),
-	});
+  const result = await api.post("/auth/login", {
+    body: { identifier: email, password },
+  }).result();
 
-	if (!result.ok) {
-		return { ok: false, error: result.error };
-	}
+  if (!result.ok) {
+    return { ok: false, error: extractErrorMessage(result.error) };
+  }
 
-	accessToken = result.data.data.accessToken;
-	refreshToken = result.data.data.refreshToken;
+  // `AuthResponse` is a discriminated union over `status`. Only `success`
+  // hands out tokens — `pending` (email verification) and `impersonation`
+  // (admin acting-as) are deferred until product flows for them exist.
+  const body = result.data;
 
-	await fetchUser();
-	scheduleRefresh();
+  if (body.status !== "success") {
+    const message =
+      body.status === "pending"
+        ? "Account pending verification."
+        : "Impersonation login is not supported yet.";
+    return { ok: false, error: message };
+  }
 
-	return { ok: true };
+  accessToken = body.accessToken;
+  refreshToken = body.refreshToken;
+  user = body.user;
+  scheduleRefresh();
+  fetchPermissions();
+
+  return { ok: true };
 }
 
 export async function logout() {
-	if (refreshToken) {
-		await authFetch("/v1/auth/logout", {
-			method: "POST",
-			body: JSON.stringify({ refreshToken }),
-		});
-	}
+  if (refreshToken) {
+    await api.post("/auth/logout", {
+      body: { refreshToken },
+    });
+  }
 
-	accessToken = null;
-	refreshToken = null;
-	user = null;
-	clearRefreshTimer();
-	refreshPromise = null;
+  accessToken = null;
+  refreshToken = null;
+  user = null;
+  permissions = [];
+  permissionsLoaded = false;
+  checkCache.clear();
+  clearRefreshTimer();
+  refreshPromise = null;
 
-	goto(resolve("/signin"));
+  goto(resolve("/signin"));
 }
 
 export async function fetchUser(): Promise<void> {
-	if (!accessToken) return;
+  if (!accessToken) return;
 
-	const result = await authFetch<{
-		data: AuthUser;
-	}>("/v1/auth/me", {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
+  const result = await api.get("/auth/me").result();
 
-	if (result.ok) {
-		user = result.data.data;
-	}
+  if (result.ok) {
+    user = result.data;
+  }
 }
 
 export async function refreshAccessToken(): Promise<boolean> {
-	if (refreshPromise) return refreshPromise;
+  if (refreshPromise) return refreshPromise;
 
-	refreshPromise = doRefresh();
-	const result = await refreshPromise;
-	refreshPromise = null;
-	return result;
+  refreshPromise = doRefresh();
+  const result = await refreshPromise;
+  refreshPromise = null;
+  return result;
 }
 
 async function doRefresh(): Promise<boolean> {
-	if (!refreshToken) {
-		await logout();
-		return false;
-	}
+  if (!refreshToken) {
+    await logout();
+    return false;
+  }
 
-	const result = await authFetch<{
-		data: { accessToken: string; refreshToken: string };
-	}>("/v1/auth/refresh", {
-		method: "POST",
-		body: JSON.stringify({ refreshToken }),
-	});
+  const result = await api.post("/auth/refresh", {
+    body: { refreshToken },
+  }).result();
 
-	if (!result.ok) {
-		await logout();
-		return false;
-	}
+  if (!result.ok) {
+    await logout();
+    return false;
+  }
 
-	accessToken = result.data.data.accessToken;
-	refreshToken = result.data.data.refreshToken;
-	scheduleRefresh();
-	return true;
+  const body = result.data;
+  accessToken = body.accessToken;
+  refreshToken = body.refreshToken;
+  scheduleRefresh();
+  fetchPermissions();
+  return true;
 }
 
 export function tryRestoreSession() {
-	isLoading = false;
+  isLoading = false;
 }
