@@ -1,13 +1,13 @@
-import { studentSummary, student } from "$lib/types/zod-schemas-api"
-import z from "zod/v4"
+import type { student, studentSummary } from '$lib/types/zod-schemas-api';
+import type z from 'zod/v4';
 
 // Single student summary from the list
-export type StudentSummary = z.infer<typeof studentSummary>
+export type StudentSummary = z.infer<typeof studentSummary>;
 
 // Full student details
-export type Student = z.infer<typeof student>
+export type Student = z.infer<typeof student>;
 
-// Gender options 
+// Gender options
 export type Gender = 'MALE' | 'FEMALE';
 
 // Status options

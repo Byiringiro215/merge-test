@@ -1,13 +1,15 @@
-import { goto } from "$app/navigation";
-import { resolve } from "$app/paths";
-import { extractErrorMessage } from "@bajustone/fetcher";
-import { api } from "$lib/api";
-import type { Schema } from "$lib/api/paths";
+import type { Schema } from '$lib/api/paths';
+import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
+import { api } from '$lib/api';
+import { extractErrorMessage } from '@bajustone/fetcher';
 
 // -- Types --------------------------------------------------------------------
 
-export type AuthUser = Schema<"User">;
-export type Permission = Schema<"Permission">;
+export type AuthUser = Schema<'User'>;
+export type Permission = Schema<'Permission'>;
+export type Resource = Permission['resource'];
+export type Action = Permission['action'];
 
 // -- State --------------------------------------------------------------------
 
@@ -46,9 +48,10 @@ function scheduleRefresh() {
 // -- Permissions --------------------------------------------------------------
 
 async function fetchPermissions(): Promise<void> {
-  if (!user) return;
+  if (!user)
+return;
   const result = await api
-    .get("/iam/users/{id}/permissions", {
+    .get('/iam/users/{id}/permissions', {
       params: { id: String(user.id) },
     })
     .result();
@@ -59,27 +62,31 @@ async function fetchPermissions(): Promise<void> {
   }
 }
 
-function evaluateLocal(resource: string, action: string): boolean {
+function evaluateLocal(resource: Resource, action: Action): boolean {
   const matching = permissions.filter(
-    (p) => p.resource === resource && p.action === action,
+    p => p.resource === resource && p.action === action,
   );
-  if (matching.length === 0) return false;
-  if (matching.some((p) => p.effect === "DENY")) return false;
-  return matching.some((p) => p.effect === "ALLOW");
+  if (matching.length === 0)
+return false;
+  if (matching.some(p => p.effect === 'DENY'))
+return false;
+  return matching.some(p => p.effect === 'ALLOW');
 }
 
 export async function checkPermission(
-  resource: string,
-  action: string,
+  resource: Resource,
+  action: Action,
 ): Promise<boolean> {
   if (permissionsLoaded) {
     return evaluateLocal(resource, action);
   }
   const key = `${resource}:${action}`;
-  if (checkCache.has(key)) return checkCache.get(key)!;
-  if (!user) return false;
+  if (checkCache.has(key))
+return checkCache.get(key)!;
+  if (!user)
+return false;
   const result = await api
-    .post("/iam/check", {
+    .post('/iam/check', {
       body: { userId: user.id, resource, action },
     })
     .result();
@@ -88,8 +95,9 @@ export async function checkPermission(
   return allowed;
 }
 
-export function hasPermission(resource: string, action: string): boolean {
-  if (!permissionsLoaded) return false;
+export function hasPermission(resource: Resource, action: Action): boolean {
+  if (!permissionsLoaded)
+return false;
   return evaluateLocal(resource, action);
 }
 
@@ -120,7 +128,7 @@ export async function login(
   email: string,
   password: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  const result = await api.post("/auth/login", {
+  const result = await api.post('/auth/login', {
     body: { identifier: email, password },
   }).result();
 
@@ -133,11 +141,11 @@ export async function login(
   // (admin acting-as) are deferred until product flows for them exist.
   const body = result.data;
 
-  if (body.status !== "success") {
-    const message =
-      body.status === "pending"
-        ? "Account pending verification."
-        : "Impersonation login is not supported yet.";
+  if (body.status !== 'success') {
+    const message
+      = body.status === 'pending'
+        ? 'Account pending verification.'
+        : 'Impersonation login is not supported yet.';
     return { ok: false, error: message };
   }
 
@@ -152,7 +160,7 @@ export async function login(
 
 export async function logout() {
   if (refreshToken) {
-    await api.post("/auth/logout", {
+    await api.post('/auth/logout', {
       body: { refreshToken },
     });
   }
@@ -166,13 +174,14 @@ export async function logout() {
   clearRefreshTimer();
   refreshPromise = null;
 
-  goto(resolve("/signin"));
+  goto(resolve('/signin'));
 }
 
 export async function fetchUser(): Promise<void> {
-  if (!accessToken) return;
+  if (!accessToken)
+return;
 
-  const result = await api.get("/auth/me").result();
+  const result = await api.get('/auth/me').result();
 
   if (result.ok) {
     user = result.data;
@@ -180,7 +189,8 @@ export async function fetchUser(): Promise<void> {
 }
 
 export async function refreshAccessToken(): Promise<boolean> {
-  if (refreshPromise) return refreshPromise;
+  if (refreshPromise)
+return refreshPromise;
 
   refreshPromise = doRefresh();
   const result = await refreshPromise;
@@ -194,7 +204,7 @@ async function doRefresh(): Promise<boolean> {
     return false;
   }
 
-  const result = await api.post("/auth/refresh", {
+  const result = await api.post('/auth/refresh', {
     body: { refreshToken },
   }).result();
 
