@@ -1,14 +1,14 @@
-import { staffSummary, staff, staffSpeciality } from "$lib/types/zod-schemas-api"
-import z from "zod/v4"
+import type { staff, staffSpeciality, staffSummary } from '$lib/types/zod-schemas-api';
+import type z from 'zod/v4';
 
 // Staff summary from the list
-export type StaffSummary = z.infer<typeof staffSummary>
+export type StaffSummary = z.infer<typeof staffSummary>;
 
 // Full staff details
-export type Staff = z.infer<typeof staff>
+export type Staff = z.infer<typeof staff>;
 
 // Staff speciality
-export type StaffSpeciality = z.infer<typeof staffSpeciality>
+export type StaffSpeciality = z.infer<typeof staffSpeciality>;
 
 // Gender options for staff
 export type StaffGender = 'MALE' | 'FEMALE';

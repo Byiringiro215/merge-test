@@ -20,8 +20,22 @@ env:
   IMAGE_NAME: ghcr.io/rtb-rwanda-tvet-board/tdmp-web
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+      - name: Lint
+        run: bun run lint
+      - name: Type check
+        run: bun run check
+
   build-and-push:
     name: Build & Push Docker Image
+    needs: lint
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v5

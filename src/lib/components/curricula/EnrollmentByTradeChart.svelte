@@ -1,277 +1,282 @@
-<script lang="ts">
-	import { ChartContainer } from "$lib/components/ui/chart-container";
-	import {
-		select,
-		scaleBand,
-		scaleLinear,
-		easeQuadOut,
-		axisBottom,
-		axisLeft,
-	} from "d3";
-	import type { EnrollmentByTradeData } from "./types.js";
-	import { TRADE_COLORS } from "./types.js";
+<script lang='ts'>
+    import type { EnrollmentByTradeData } from './types.js';
+    import { ChartContainer } from '$lib/components/ui/chart-container';
+    import {
+        axisBottom,
+        axisLeft,
+        easeQuadOut,
+        scaleBand,
+        scaleLinear,
+        select,
+    } from 'd3';
+    import { TRADE_COLORS } from './types.js';
 
-	interface Props {
-		data?: EnrollmentByTradeData[];
-	}
+    interface Props {
+        data?: EnrollmentByTradeData[];
+    }
 
-	const defaultData: EnrollmentByTradeData[] = [
-		{ trade: "Software", enrollment: 480, color: TRADE_COLORS.Software },
-		{ trade: "Mechanics", enrollment: 380, color: TRADE_COLORS.Mechanics },
-		{
-			trade: "Automobile",
-			enrollment: 320,
-			color: TRADE_COLORS.Automobile,
-		},
-		{ trade: "Tourism", enrollment: 520, color: TRADE_COLORS.Tourism },
-		{
-			trade: "Electrical",
-			enrollment: 420,
-			color: TRADE_COLORS.Electrical,
-		},
-		{
-			trade: "Road Construction",
-			enrollment: 280,
-			color: TRADE_COLORS["Road Construction"],
-		},
-	];
+    const defaultData: EnrollmentByTradeData[] = [
+        { trade: 'Software', enrollment: 480, color: TRADE_COLORS.Software },
+        { trade: 'Mechanics', enrollment: 380, color: TRADE_COLORS.Mechanics },
+        {
+            trade: 'Automobile',
+            enrollment: 320,
+            color: TRADE_COLORS.Automobile,
+        },
+        { trade: 'Tourism', enrollment: 520, color: TRADE_COLORS.Tourism },
+        {
+            trade: 'Electrical',
+            enrollment: 420,
+            color: TRADE_COLORS.Electrical,
+        },
+        {
+            trade: 'Road Construction',
+            enrollment: 280,
+            color: TRADE_COLORS['Road Construction'],
+        },
+    ];
 
-	let { data = defaultData }: Props = $props();
+    const { data = defaultData }: Props = $props();
 
-	let chartContainerRef: ReturnType<typeof ChartContainer>;
+    let chartContainerRef: ReturnType<typeof ChartContainer>;
 
-	function showTooltip(
-		tooltip: HTMLDivElement,
-		container: HTMLDivElement,
-		event: PointerEvent,
-		content: string,
-	) {
-		const rect = container.getBoundingClientRect();
-		const x = event.clientX - rect.left;
-		const y = event.clientY - rect.top;
+    function showTooltip(
+        tooltip: HTMLDivElement,
+        container: HTMLDivElement,
+        event: PointerEvent,
+        content: string,
+    ) {
+        const rect = container.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
 
-		tooltip.textContent = content;
-		tooltip.style.left = `${x + 12}px`;
-		tooltip.style.top = `${y - 12}px`;
-		tooltip.style.display = "block";
-	}
+        tooltip.textContent = content;
+        tooltip.style.left = `${x + 12}px`;
+        tooltip.style.top = `${y - 12}px`;
+        tooltip.style.display = 'block';
+    }
 
-	function hideTooltip(tooltip: HTMLDivElement) {
-		tooltip.style.display = "none";
-	}
+    function hideTooltip(tooltip: HTMLDivElement) {
+        tooltip.style.display = 'none';
+    }
 
-	function createChart(
-		container: HTMLDivElement,
-		width: number,
-		height: number,
-	) {
-		if (!container || width === 0 || height === 0) return;
+    function createChart(
+        container: HTMLDivElement,
+        width: number,
+        height: number,
+    ) {
+        if (!container || width === 0 || height === 0)
+            return;
 
-		select(container).selectAll("*").remove();
+        select(container).selectAll('*').remove();
 
-		const tooltip = chartContainerRef?.getTooltipElement();
+        const tooltip = chartContainerRef?.getTooltipElement();
 
-		// Responsive margins and padding
-		const isMobile = width < 400;
-		const isSmall = width < 600;
-		const margin = {
-			top: 10,
-			right: isMobile ? 10 : 20,
-			left: isMobile ? 30 : 40,
-			bottom: isMobile ? 60 : 50,
-		};
-		const innerWidth = width - margin.left - margin.right;
-		const innerHeight = height - margin.top - margin.bottom;
+        // Responsive margins and padding
+        const isMobile = width < 400;
+        const isSmall = width < 600;
+        const margin = {
+            top: 10,
+            right: isMobile ? 10 : 20,
+            left: isMobile ? 30 : 40,
+            bottom: isMobile ? 60 : 50,
+        };
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
 
-		const svg = select(container)
-			.append("svg")
-			.attr("width", width)
-			.attr("height", height);
+        const svg = select(container)
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height);
 
-		const g = svg
-			.append("g")
-			.attr("transform", `translate(${margin.left},${margin.top})`);
+        const g = svg
+            .append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
 
-		const yMax = 600;
-		const yTickValues = [0, 150, 300, 450, 600];
+        const yMax = 600;
+        const yTickValues = [0, 150, 300, 450, 600];
 
-		// Use abbreviated labels on mobile
-		const getLabel = (trade: string) => {
-			if (isMobile) {
-				const abbrevMap: Record<string, string> = {
-					Software: "Soft.",
-					Mechanics: "Mech.",
-					Automobile: "Auto.",
-					Tourism: "Tour.",
-					Electrical: "Elec.",
-					"Road Construction": "Road C.",
-				};
-				return abbrevMap[trade] || trade;
-			}
-			return trade === "Road Construction" ? "Road Const." : trade;
-		};
+        // Use abbreviated labels on mobile
+        const getLabel = (trade: string) => {
+            if (isMobile) {
+                const abbrevMap: Record<string, string> = {
+                    'Software': 'Soft.',
+                    'Mechanics': 'Mech.',
+                    'Automobile': 'Auto.',
+                    'Tourism': 'Tour.',
+                    'Electrical': 'Elec.',
+                    'Road Construction': 'Road C.',
+                };
+                return abbrevMap[trade] || trade;
+            }
+            return trade === 'Road Construction' ? 'Road Const.' : trade;
+        };
 
-		// Scales - increase padding on smaller screens
-		const padding = isMobile ? 0.5 : isSmall ? 0.4 : 0.3;
-		const xScale = scaleBand()
-			.domain(data.map((d) => getLabel(d.trade)))
-			.range([0, innerWidth])
-			.padding(padding);
+        // Scales - increase padding on smaller screens
+        const padding = isMobile ? 0.5 : isSmall ? 0.4 : 0.3;
+        const xScale = scaleBand()
+            .domain(data.map(d => getLabel(d.trade)))
+            .range([0, innerWidth])
+            .padding(padding);
 
-		const yScale = scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
+        const yScale = scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
 
-		// Y-axis grid lines
-		g.append("g")
-			.attr("class", "grid")
-			.selectAll("line")
-			.data(yTickValues)
-			.enter()
-			.append("line")
-			.attr("x1", 0)
-			.attr("x2", innerWidth)
-			.attr("y1", (d: number) => yScale(d))
-			.attr("y2", (d: number) => yScale(d))
-			.attr("stroke", "#e5e7eb")
-			.attr("stroke-dasharray", "4,4");
+        // Y-axis grid lines
+        g.append('g')
+            .attr('class', 'grid')
+            .selectAll('line')
+            .data(yTickValues)
+            .enter()
+            .append('line')
+            .attr('x1', 0)
+            .attr('x2', innerWidth)
+            .attr('y1', (d: number) => yScale(d))
+            .attr('y2', (d: number) => yScale(d))
+            .attr('stroke', '#e5e7eb')
+            .attr('stroke-dasharray', '4,4');
 
-		// Draw bars with rounded top corners
-		const maxBarWidth = isMobile ? 35 : 60;
-		const barWidth = Math.min(xScale.bandwidth(), maxBarWidth);
-		const barOffset = (xScale.bandwidth() - barWidth) / 2;
-		const cornerRadius = isMobile ? 3 : 4;
+        // Draw bars with rounded top corners
+        const maxBarWidth = isMobile ? 35 : 60;
+        const barWidth = Math.min(xScale.bandwidth(), maxBarWidth);
+        const barOffset = (xScale.bandwidth() - barWidth) / 2;
+        const cornerRadius = isMobile ? 3 : 4;
 
-		const bars = g
-			.selectAll<SVGPathElement, EnrollmentByTradeData>(".bar")
-			.data(data)
-			.enter()
-			.append("path")
-			.attr("class", "bar")
-			.attr("fill", (d: EnrollmentByTradeData) => d.color)
-			.style("cursor", "pointer")
-			.attr("d", (d: EnrollmentByTradeData) => {
-				const label = getLabel(d.trade);
-				const x = (xScale(label) || 0) + barOffset;
-				return `M${x},${innerHeight} L${x},${innerHeight} L${x + barWidth},${innerHeight} L${x + barWidth},${innerHeight} Z`;
-			});
+        const bars = g
+            .selectAll<SVGPathElement, EnrollmentByTradeData>('.bar')
+            .data(data)
+            .enter()
+            .append('path')
+            .attr('class', 'bar')
+            .attr('fill', (d: EnrollmentByTradeData) => d.color)
+            .style('cursor', 'pointer')
+            .attr('d', (d: EnrollmentByTradeData) => {
+                const label = getLabel(d.trade);
+                const x = (xScale(label) || 0) + barOffset;
+                return `M${x},${innerHeight} L${x},${innerHeight} L${x + barWidth},${innerHeight} L${x + barWidth},${innerHeight} Z`;
+            });
 
-		bars.transition()
-			.duration(800)
-			.delay((_: EnrollmentByTradeData, i: number) => i * 100)
-			.attr("d", (d: EnrollmentByTradeData) => {
-				const label = getLabel(d.trade);
-				const x = (xScale(label) || 0) + barOffset;
-				const y = yScale(d.enrollment);
-				const h = innerHeight - y;
-				const r = Math.min(cornerRadius, h / 2, barWidth / 2);
+        bars.transition()
+            .duration(800)
+            .delay((_: EnrollmentByTradeData, i: number) => i * 100)
+            .attr('d', (d: EnrollmentByTradeData) => {
+                const label = getLabel(d.trade);
+                const x = (xScale(label) || 0) + barOffset;
+                const y = yScale(d.enrollment);
+                const h = innerHeight - y;
+                const r = Math.min(cornerRadius, h / 2, barWidth / 2);
 
-				return `M${x},${innerHeight}
-					L${x},${y + r}
-					Q${x},${y} ${x + r},${y}
-					L${x + barWidth - r},${y}
-					Q${x + barWidth},${y} ${x + barWidth},${y + r}
-					L${x + barWidth},${innerHeight} Z`;
-			});
+                return `M${x},${innerHeight}
+          L${x},${y + r}
+          Q${x},${y} ${x + r},${y}
+          L${x + barWidth - r},${y}
+          Q${x + barWidth},${y} ${x + barWidth},${y + r}
+          L${x + barWidth},${innerHeight} Z`;
+            });
 
-		// Bar hover effects
-		bars.on(
-			"pointerenter",
-			function (
-				this: SVGPathElement,
-				event: PointerEvent,
-				d: EnrollmentByTradeData,
-			) {
-				select(this)
-					.transition()
-					.duration(200)
-					.ease(easeQuadOut)
-					.attr("opacity", 0.8);
+        // Bar hover effects
+        bars.on(
+            'pointerenter',
+            function (
+                this: SVGPathElement,
+                event: PointerEvent,
+                d: EnrollmentByTradeData,
+            ) {
+                select(this)
+                    .transition()
+                    .duration(200)
+                    .ease(easeQuadOut)
+                    .attr('opacity', 0.8);
 
-				if (!tooltip) return;
+                if (!tooltip)
+                    return;
 
-				showTooltip(
-					tooltip,
-					container,
-					event,
-					`${d.trade}: ${d.enrollment.toLocaleString()} students`,
-				);
-			},
-		)
-			.on(
-				"pointermove",
-				function (
-					this: SVGPathElement,
-					event: PointerEvent,
-					d: EnrollmentByTradeData,
-				) {
-					if (!tooltip) return;
+                showTooltip(
+                    tooltip,
+                    container,
+                    event,
+                    `${d.trade}: ${d.enrollment.toLocaleString()} students`,
+                );
+            },
+        )
+            .on(
+                'pointermove',
+                function (
+                    this: SVGPathElement,
+                    event: PointerEvent,
+                    d: EnrollmentByTradeData,
+                ) {
+                    if (!tooltip)
+                        return;
 
-					showTooltip(
-						tooltip,
-						container,
-						event,
-						`${d.trade}: ${d.enrollment.toLocaleString()} students`,
-					);
-				},
-			)
-			.on("pointerleave", function (this: SVGPathElement) {
-				select(this)
-					.transition()
-					.duration(200)
-					.ease(easeQuadOut)
-					.attr("opacity", 1);
+                    showTooltip(
+                        tooltip,
+                        container,
+                        event,
+                        `${d.trade}: ${d.enrollment.toLocaleString()} students`,
+                    );
+                },
+            )
+            .on('pointerleave', function (this: SVGPathElement) {
+                select(this)
+                    .transition()
+                    .duration(200)
+                    .ease(easeQuadOut)
+                    .attr('opacity', 1);
 
-				if (!tooltip) return;
-				hideTooltip(tooltip);
-			});
+                if (!tooltip)
+                    return;
+                hideTooltip(tooltip);
+            });
 
-		// X Axis
-		const xAxis = g
-			.append("g")
-			.attr("transform", `translate(0,${innerHeight})`)
-			.call(axisBottom(xScale).tickSize(0));
+        // X Axis
+        const xAxis = g
+            .append('g')
+            .attr('transform', `translate(0,${innerHeight})`)
+            .call(axisBottom(xScale).tickSize(0));
 
-		xAxis.select(".domain").remove();
+        xAxis.select('.domain').remove();
 
-		// Style x-axis labels - rotate on mobile for better readability
-		if (isMobile) {
-			xAxis
-				.selectAll("text")
-				.attr("fill", "#565D6D")
-				.attr("font-size", "10px")
-				.attr("text-anchor", "end")
-				.attr("dx", "-0.5em")
-				.attr("dy", "0.5em")
-				.attr("transform", "rotate(-35)");
-		} else {
-			xAxis
-				.selectAll("text")
-				.attr("fill", "#565D6D")
-				.attr("font-size", isSmall ? "10px" : "12px")
-				.attr("dy", "1.5em");
-		}
+        // Style x-axis labels - rotate on mobile for better readability
+        if (isMobile) {
+            xAxis
+                .selectAll('text')
+                .attr('fill', '#565D6D')
+                .attr('font-size', '10px')
+                .attr('text-anchor', 'end')
+                .attr('dx', '-0.5em')
+                .attr('dy', '0.5em')
+                .attr('transform', 'rotate(-35)');
+        }
+        else {
+            xAxis
+                .selectAll('text')
+                .attr('fill', '#565D6D')
+                .attr('font-size', isSmall ? '10px' : '12px')
+                .attr('dy', '1.5em');
+        }
 
-		// Y Axis
-		const yAxis = g.append("g").call(
-			axisLeft(yScale)
-				.tickValues(yTickValues)
-				.tickFormat((d) => d.toString())
-				.tickSize(0),
-		);
+        // Y Axis
+        const yAxis = g.append('g').call(
+            axisLeft(yScale)
+                .tickValues(yTickValues)
+                .tickFormat(d => d.toString())
+                .tickSize(0),
+        );
 
-		yAxis.select(".domain").remove();
-		yAxis
-			.selectAll("text")
-			.attr("fill", "#565D6D")
-			.attr("font-size", isMobile ? "10px" : "12px")
-			.attr("dx", "-0.5em");
-	}
+        yAxis.select('.domain').remove();
+        yAxis
+            .selectAll('text')
+            .attr('fill', '#565D6D')
+            .attr('font-size', isMobile ? '10px' : '12px')
+            .attr('dx', '-0.5em');
+    }
 </script>
 
 <ChartContainer
-	bind:this={chartContainerRef}
-	title="Enrollment by Trade"
-	description="Aggregate student count per technical specialization."
-	bare
-	fillHeight
-	onResize={createChart}
+    bind:this={chartContainerRef}
+    title='Enrollment by Trade'
+    description='Aggregate student count per technical specialization.'
+    bare
+    fillHeight
+    onResize={createChart}
 />

@@ -1,55 +1,56 @@
-<script lang="ts">
-	import { goto } from "$app/navigation";
-	import { resolve } from "$app/paths";
-	import { page } from "$app/state";
-	import { getAuthState, hasPermission, tryRestoreSession } from "$lib/auth/index.svelte";
-	import Navigation from "$lib/components/layout/Navigation.svelte";
-	import Footer from "$lib/components/layout/Footer.svelte";
-	import { LoaderCircle } from "@lucide/svelte";
+<script lang='ts'>
+    import type { Resource } from '$lib/auth/index.svelte';
+    import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
+    import { page } from '$app/state';
+    import { getAuthState, hasPermission, tryRestoreSession } from '$lib/auth/index.svelte';
+    import Footer from '$lib/components/layout/Footer.svelte';
+    import Navigation from '$lib/components/layout/Navigation.svelte';
+    import { LoaderCircle } from '@lucide/svelte';
 
-	let { children } = $props();
+    const { children } = $props();
 
-	const auth = getAuthState();
+    const auth = getAuthState();
 
-	$effect(() => {
-		tryRestoreSession();
-	});
+    $effect(() => {
+        tryRestoreSession();
+    });
 
-	const routeResourceMap: Record<string, string> = {
-		"/dashboard": "dashboard",
-		"/students": "students",
-		"/teachers": "staff",
-		"/schools": "schools",
-		"/curricula": "curricula",
-	};
+    const routeResourceMap: Record<string, Resource> = {
+        '/dashboard': 'sdms:schools',
+        '/students': 'sdms:students',
+        '/teachers': 'sdms:staff',
+        '/schools': 'sdms:schools',
+        '/curricula': 'sdms:schools',
+    };
 
-	$effect(() => {
-		if (!auth.isLoading && !auth.isAuthenticated) {
-			goto(resolve(`/signin?redirect=${encodeURIComponent(page.url.pathname)}`));
-		}
-	});
+    $effect(() => {
+        if (!auth.isLoading && !auth.isAuthenticated) {
+            goto(resolve(`/signin?redirect=${encodeURIComponent(page.url.pathname)}` as any));
+        }
+    });
 
-	$effect(() => {
-		if (!auth.isLoading && auth.isAuthenticated && auth.permissionsLoaded) {
-			const base = "/" + page.url.pathname.split("/").filter(Boolean)[0];
-			const resource = routeResourceMap[base];
-			if (resource && !hasPermission(resource, "read")) {
-				goto(resolve("/dashboard"));
-			}
-		}
-	});
+    $effect(() => {
+        if (!auth.isLoading && auth.isAuthenticated && auth.permissionsLoaded) {
+            const base = `/${page.url.pathname.split('/').filter(Boolean)[0]}`;
+            const resource = routeResourceMap[base];
+            if (resource && !hasPermission(resource, 'read')) {
+                goto(resolve('/dashboard'));
+            }
+        }
+    });
 </script>
 
 {#if auth.isLoading}
-	<div class="flex min-h-screen items-center justify-center bg-white">
-		<LoaderCircle class="h-8 w-8 animate-spin text-primary" />
-	</div>
+    <div class='flex min-h-screen items-center justify-center bg-white'>
+        <LoaderCircle class='h-8 w-8 animate-spin text-primary' />
+    </div>
 {:else if auth.isAuthenticated}
-	<div class="flex min-h-screen flex-col bg-white">
-		<Navigation />
-		<main class="flex-1">
-			{@render children()}
-		</main>
-		<Footer />
-	</div>
+    <div class='flex min-h-screen flex-col bg-white'>
+        <Navigation />
+        <main class='flex-1'>
+            {@render children()}
+        </main>
+        <Footer />
+    </div>
 {/if}
