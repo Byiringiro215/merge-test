@@ -23,3 +23,9 @@ export const api = createFetch<paths>({
         }),
     ],
 });
+
+/** API client without auth middleware — safe for server-side use (remote functions). */
+export const serverApi = createFetch<paths>({
+    baseUrl: `${PUBLIC_API_URL}/v1`,
+    routes,
+});

@@ -2,10 +2,9 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { page } from '$app/state';
-    import { login } from '$lib/auth/index.svelte';
+    import { setSession } from '$lib/auth/index.svelte';
     import { Button } from '$lib/components/ui/button';
     import { Card } from '$lib/components/ui/card';
-    import { Input } from '$lib/components/ui/input';
     import {
         ArrowRight,
         LifeBuoy,
@@ -13,29 +12,10 @@
         Lock,
         Mail,
     } from '@lucide/svelte';
+    import { loginForm } from './login.remote';
 
-    let email = $state('');
-    let password = $state('');
     let isSubmitting = $state(false);
     let errorMessage = $state('');
-
-    async function handleSignIn() {
-        errorMessage = '';
-        isSubmitting = true;
-
-        const result = await login(email, password);
-
-        if (result.ok) {
-            const redirect
-                = page.url.searchParams.get('redirect') || '/';
-            goto(resolve(redirect as any));
-        }
-        else {
-            errorMessage = result.error;
-        }
-
-        isSubmitting = false;
-    }
 
     function handleMicrosoftSignIn() {
     // Microsoft SSO — coming soon
@@ -136,10 +116,27 @@
 
                 <!-- Form -->
                 <form
-                    onsubmit={(e) => {
-                        e.preventDefault();
-                        handleSignIn();
-                    }}
+                    {...loginForm.enhance(async ({ submit }) => {
+                        errorMessage = '';
+                        isSubmitting = true;
+
+                        try {
+                            await submit();
+                            const result = loginForm.result;
+                            if (result) {
+                                setSession(result);
+                                const redirect
+                                    = page.url.searchParams.get('redirect') || '/';
+                                goto(resolve(redirect as any));
+                            }
+                        }
+                        catch (e) {
+                            errorMessage = e instanceof Error ? e.message : 'Sign in failed. Please try again.';
+                        }
+                        finally {
+                            isSubmitting = false;
+                        }
+                    })}
                 >
                     <!-- Error Message -->
                     {#if errorMessage}
@@ -150,10 +147,10 @@
                         </div>
                     {/if}
 
-                    <!-- Email Field -->
+                    <!-- Identifier Field -->
                     <div class='mb-4'>
                         <label
-                            for='email'
+                            for='identifier'
                             class='block text-sm font-inter font-medium text-[#181B20] leading-6 tracking-normal mb-2'
                         >
                             Email
@@ -164,13 +161,12 @@
                             <Mail
                                 class='absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]'
                             />
-                            <Input
-                                id='email'
-                                type='email'
+                            <input
+                                {...loginForm.fields.identifier.as('text')}
+                                id='identifier'
                                 placeholder='jane@rtb.rw'
-                                bind:value={email}
                                 disabled={isSubmitting}
-                                class='pl-10 h-11 w-full border-[#DEE1E6]! bg-[#F9FAFB] rounded-lg text-sm placeholder:text-[#171A1F] font-inter focus-visible:ring-2'
+                                class='pl-10 h-11 w-full border border-[#DEE1E6] bg-[#F9FAFB] rounded-lg text-sm placeholder:text-[#171A1F] font-inter focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring outline-none px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50'
                             />
                         </div>
                     </div>
@@ -197,13 +193,12 @@
                             <Lock
                                 class='absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]'
                             />
-                            <Input
+                            <input
+                                {...loginForm.fields._password.as('password')}
                                 id='password'
-                                type='password'
                                 placeholder='••••••••'
-                                bind:value={password}
                                 disabled={isSubmitting}
-                                class='pl-10 h-11 w-full  border-[#DEE1E6]! bg-[#F9FAFB] rounded-xl text-sm placeholder:text-black placeholder:tracking-normal font-inter focus-visible:ring-2'
+                                class='pl-10 h-11 w-full border border-[#DEE1E6] bg-[#F9FAFB] rounded-xl text-sm placeholder:text-black placeholder:tracking-normal font-inter focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring outline-none px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50'
                             />
                         </div>
                     </div>
