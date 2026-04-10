@@ -221,6 +221,14 @@ async function doRefresh(): Promise<boolean> {
   return true;
 }
 
+export function setSession(data: { accessToken: string; refreshToken: string; user: AuthUser }) {
+  accessToken = data.accessToken;
+  refreshToken = data.refreshToken;
+  user = data.user;
+  scheduleRefresh();
+  fetchPermissions();
+}
+
 export function tryRestoreSession() {
   isLoading = false;
 }
