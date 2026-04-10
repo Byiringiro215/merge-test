@@ -23,6 +23,8 @@ jobs:
   lint:
     name: Lint
     runs-on: self-hosted
+    env:
+      PUBLIC_API_URL: http://localhost
     steps:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
