@@ -2,7 +2,7 @@
 	import { goto } from "$app/navigation";
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
-	import { getAuthState, tryRestoreSession } from "$lib/auth/index.svelte";
+	import { getAuthState, hasPermission, tryRestoreSession } from "$lib/auth/index.svelte";
 	import Navigation from "$lib/components/layout/Navigation.svelte";
 	import Footer from "$lib/components/layout/Footer.svelte";
 	import { LoaderCircle } from "@lucide/svelte";
@@ -15,9 +15,27 @@
 		tryRestoreSession();
 	});
 
+	const routeResourceMap: Record<string, string> = {
+		"/dashboard": "dashboard",
+		"/students": "students",
+		"/teachers": "staff",
+		"/schools": "schools",
+		"/curricula": "curricula",
+	};
+
 	$effect(() => {
 		if (!auth.isLoading && !auth.isAuthenticated) {
 			goto(resolve(`/signin?redirect=${encodeURIComponent(page.url.pathname)}`));
+		}
+	});
+
+	$effect(() => {
+		if (!auth.isLoading && auth.isAuthenticated && auth.permissionsLoaded) {
+			const base = "/" + page.url.pathname.split("/").filter(Boolean)[0];
+			const resource = routeResourceMap[base];
+			if (resource && !hasPermission(resource, "read")) {
+				goto(resolve("/dashboard"));
+			}
 		}
 	});
 </script>

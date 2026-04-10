@@ -16,7 +16,7 @@
 	import { slide } from "svelte/transition";
 	import { cubicOut } from "svelte/easing";
 	import { resolve } from "$app/paths";
-	import { getAuthState, logout } from "$lib/auth/index.svelte";
+	import { getAuthState, hasPermission, logout } from "$lib/auth/index.svelte";
 	import {
 		DropdownMenu,
 		DropdownMenuContent,
@@ -26,18 +26,24 @@
 		DropdownMenuTrigger,
 	} from "$lib/components/ui/dropdown-menu";
 
-	const navItems = [
-		{ label: "General", href: "/dashboard", icon: LayoutGrid },
-		{ label: "Students", href: "/students", icon: Users },
-		{ label: "Teachers", href: "/teachers", icon: GraduationCap },
-		{ label: "Schools", href: "/schools", icon: Building2 },
-		{ label: "Curricula", href: "/curricula", icon: BookOpen },
+	const auth = getAuthState();
+
+	const allNavItems = [
+		{ label: "General", href: "/dashboard", icon: LayoutGrid, resource: "dashboard" },
+		{ label: "Students", href: "/students", icon: Users, resource: "students" },
+		{ label: "Teachers", href: "/teachers", icon: GraduationCap, resource: "staff" },
+		{ label: "Schools", href: "/schools", icon: Building2, resource: "schools" },
+		{ label: "Curricula", href: "/curricula", icon: BookOpen, resource: "curricula" },
 	] as const;
+
+	const navItems = $derived(
+		auth.permissionsLoaded
+			? allNavItems.filter((item) => hasPermission(item.resource, "read"))
+			: [...allNavItems],
+	);
 
 	let searchQuery = $state("");
 	let mobileMenuOpen = $state(false);
-
-	const auth = getAuthState();
 
 	const userInitials = $derived(
 		auth.user?.name
