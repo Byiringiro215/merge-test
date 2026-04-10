@@ -2,9 +2,17 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { fetcherPlugin } from '@bajustone/fetcher/vite';
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit()],
+	plugins: [
+		tailwindcss(),
+		fetcherPlugin({
+			spec: './src/lib/api/openapi.json',
+			url: process.env.OPENAPI_SPEC_URL,
+		}),
+		sveltekit(),
+	],
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

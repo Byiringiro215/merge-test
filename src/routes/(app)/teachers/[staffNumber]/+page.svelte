@@ -10,9 +10,9 @@
 		CardHeader,
 		CardTitle,
 	} from "$lib/components/ui/card";
-	import { customFetcher } from "$lib/customFetcher";
+	import { api } from "$lib/api";
 	import type { Staff, StaffSpeciality } from "$lib/datamodel/staff";
-	import { staffDetailResponse, type Meta } from "$lib/types/zod-schemas-api";
+	import { staffDetailResponse } from "$lib/types/zod-schemas-api";
 	import ArrowLeftIcon from "@lucide/svelte/icons/arrow-left";
 	import BookOpenIcon from "@lucide/svelte/icons/book-open";
 	import BriefcaseIcon from "@lucide/svelte/icons/briefcase";
@@ -29,21 +29,19 @@
 	const staffNumber = $derived(page.params.staffNumber);
 
 	const fetchStaff = async () => {
+		if (!staffNumber) return;
 		try {
 			isLoading = true;
 			error = null;
-			const { result } = await customFetcher<{
-				data: Staff;
-				meta: Meta;
-			}>(`/v1/sdms/staff/${staffNumber}`, {
-				method: "GET",
-				bodySchema: staffDetailResponse,
-			});
+			const result = await api.get("/sdms/staff/{staffNumber}", {
+				params: { staffNumber },
+				responseSchema: staffDetailResponse,
+			}).result();
 			if (!result.ok) {
 				error = "Failed to fetch staff details";
 				return;
 			}
-			staffMember = result.value.data;
+			staffMember = result.data.data;
 		} catch (err) {
 			console.error("Fetch error:", err);
 			error = "An error occurred while fetching staff details";
