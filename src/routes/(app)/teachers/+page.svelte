@@ -16,15 +16,13 @@
 		TeacherProvinceAssistance,
 		FacultySuccessData,
 	} from "$lib/components/teachers/types.js";
-	import { customFetcher } from "$lib/customFetcher";
+	import { api } from "$lib/api";
 	import type { StaffSummary, StaffFiltersState } from "$lib/datamodel/staff";
 	import {
 		createPaginatedResponseSchema,
 		staffSummary,
-		type Meta,
 	} from "$lib/types/zod-schemas-api";
 	import { onMount } from "svelte";
-	import { SvelteURLSearchParams } from "svelte/reactivity";
 
 	// Sidebar filter state (maps to backend query parameters)
 	let filters = $state<StaffFiltersState>({
@@ -143,30 +141,24 @@
 			const paginatedStaffSchema =
 				createPaginatedResponseSchema(staffSummary);
 
-			// Build query params including sidebar filters
-			const params = new SvelteURLSearchParams();
-			params.set("page", currentPage.toString());
-			params.set("limit", pageSize.toString());
-
-			// Add active filters from sidebar to query params
-			if (filters.schoolCode)
-				params.set("schoolCode", filters.schoolCode);
-			if (filters.position) params.set("position", filters.position);
-			if (filters.gender) params.set("gender", filters.gender);
-
-			const { result } = await customFetcher<{
-				data: StaffSummary[];
-				meta: Meta;
-			}>(`/v1/sdms/staff?${params.toString()}`, {
-				method: "GET",
-				bodySchema: paginatedStaffSchema,
-			});
+			const result = await api.get("/sdms/staff", {
+				query: {
+					page: currentPage,
+					limit: pageSize,
+					...(filters.schoolCode && {
+						schoolCode: filters.schoolCode,
+					}),
+					...(filters.position && { position: filters.position }),
+					...(filters.gender && { gender: filters.gender }),
+				},
+				responseSchema: paginatedStaffSchema,
+			}).result();
 			if (!result.ok) {
-				console.error("Failed to fetch staff");
+				console.error("Failed to fetch staff", result.error);
 				return;
 			}
-			staff = Array.isArray(result.value.data) ? result.value.data : [];
-			totalStaff = result.value.meta.page?.total ?? 0;
+			staff = result.data.data;
+			totalStaff = result.data.meta.page?.total ?? 0;
 		} catch (error) {
 			console.error("Fetch error:", error);
 		} finally {
