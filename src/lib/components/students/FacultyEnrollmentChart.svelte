@@ -206,10 +206,10 @@
     });
 
     // Legend items for ChartLegend component
-    const legendItems = data.map(item => ({
+    const legendItems = $derived(data.map(item => ({
         label: item.faculty,
         color: item.color,
-    }));
+    })));
 </script>
 
 <ChartContainer

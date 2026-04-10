@@ -186,12 +186,12 @@
                             >
                                 Password
                             </label>
-                            <a
-                                href='#'
+                            <button
+                                type='button'
                                 class='text-sm text-[#4770EB] hover:text-[#2563EB] font-medium font-inter leading-6 tracking-normal'
                             >
                                 Forgot password?
-                            </a>
+                            </button>
                         </div>
                         <div class='relative'>
                             <Lock
