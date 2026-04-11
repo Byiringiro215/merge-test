@@ -126,7 +126,7 @@
         arcs.transition()
             .duration(800)
             .delay((_: PieArcData, i: number) => i * 100)
-            .attrTween('d', (d: PieArcData) => {
+            .attrTween('d', function (d: PieArcData) {
                 const angleInterpolate = interpolate(d.startAngle, d.endAngle);
                 return (t: number) =>
                     arcGenerator({
@@ -138,7 +138,11 @@
         // Hover effects
         arcs.on(
             'pointerenter',
-            function (this: SVGPathElement, event: PointerEvent, d: PieArcData) {
+            function (
+                this: SVGPathElement,
+                event: PointerEvent,
+                d: PieArcData,
+            ) {
                 select(this)
                     .transition()
                     .duration(200)
@@ -206,10 +210,10 @@
     });
 
     // Legend items for ChartLegend component
-    const legendItems = $derived(data.map(item => ({
+    const legendItems = data.map(item => ({
         label: item.faculty,
         color: item.color,
-    })));
+    }));
 </script>
 
 <ChartContainer

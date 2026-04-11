@@ -47,3 +47,45 @@ export const DISTRICT_COLORS: Record<District, string> = {
     Ngororero: '#A855F7',
     Gasabo: '#67E8F9',
 };
+
+// Curriculum General Page Types
+export interface CurriculumFiltersState {
+    dateRange: string;
+    province: string;
+    district: string;
+    schoolType: string;
+    trade: string;
+}
+
+export interface CurriculumRecord {
+    idCode: string;
+    name: string;
+    tradeArea: string;
+    level: string;
+    status: 'Active' | 'Under Review' | 'Draft' | 'Archived';
+    lastUpdated: string;
+}
+
+export interface StatBreakdown {
+    label: string;
+    value: string | number;
+    subStats?: { label: string; value: string | number }[];
+}
+
+export interface DevelopmentTrendPoint {
+    month: string;
+    developed: number;
+    reviewed: number;
+}
+
+export interface TradeAreaData {
+    trade: string;
+    count: number;
+}
+
+export interface DemographicData {
+    label: string;
+    value: number;
+    percentage: number;
+    color: string;
+}
