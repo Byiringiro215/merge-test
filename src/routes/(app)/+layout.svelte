@@ -3,7 +3,7 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { page } from '$app/state';
-    import { getAuthState, hasPermission, tryRestoreSession } from '$lib/auth/index.svelte';
+    import { getAuthState, hasPermission } from '$lib/auth/index.svelte';
     import Footer from '$lib/components/layout/Footer.svelte';
     import Navigation from '$lib/components/layout/Navigation.svelte';
     import { LoaderCircle } from '@lucide/svelte';
@@ -11,10 +11,6 @@
     const { children } = $props();
 
     const auth = getAuthState();
-
-    $effect(() => {
-        tryRestoreSession();
-    });
 
     const routeResourceMap: Record<string, Resource> = {
         '/dashboard': 'sdms:schools',

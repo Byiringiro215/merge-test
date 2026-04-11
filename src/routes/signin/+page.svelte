@@ -1,8 +1,7 @@
 <script lang='ts'>
-    import { goto } from '$app/navigation';
+    import { goto, invalidateAll } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { page } from '$app/state';
-    import { setSession } from '$lib/auth/index.svelte';
     import { Button } from '$lib/components/ui/button';
     import { Card } from '$lib/components/ui/card';
     import {
@@ -122,18 +121,13 @@
 
                         try {
                             await submit();
-                            const result = loginForm.result;
-                            if (result) {
-                                setSession(result);
-                                const redirect
-                                    = page.url.searchParams.get('redirect') || '/';
-                                goto(resolve(redirect as any));
-                            }
+                            await invalidateAll();
+                            const redirect
+                                = page.url.searchParams.get('redirect') || '/';
+                            goto(resolve(redirect as any));
                         }
                         catch (e) {
                             errorMessage = e instanceof Error ? e.message : 'Sign in failed. Please try again.';
-                        }
-                        finally {
                             isSubmitting = false;
                         }
                     })}

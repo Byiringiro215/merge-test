@@ -1,8 +1,7 @@
 import type { Schema } from '$lib/api/paths';
-import { goto } from '$app/navigation';
+import { goto, invalidateAll } from '$app/navigation';
 import { resolve } from '$app/paths';
 import { api } from '$lib/api';
-import { extractErrorMessage } from '@bajustone/fetcher';
 
 // -- Types --------------------------------------------------------------------
 
@@ -14,7 +13,6 @@ export type Action = Permission['action'];
 // -- State --------------------------------------------------------------------
 
 let accessToken: string | null = $state(null);
-let refreshToken: string | null = $state(null);
 let user: AuthUser | null = $state(null);
 let isLoading: boolean = $state(true);
 const isAuthenticated: boolean = $derived(accessToken !== null);
@@ -22,28 +20,6 @@ const isAuthenticated: boolean = $derived(accessToken !== null);
 let permissions: Permission[] = $state([]);
 let permissionsLoaded: boolean = $state(false);
 const checkCache = new Map<string, boolean>();
-
-let refreshTimerId: ReturnType<typeof setTimeout> | null = null;
-let refreshPromise: Promise<boolean> | null = null;
-
-// Refresh 1 minute before expiry (access token is 5 min = 300s)
-const REFRESH_INTERVAL_MS = 4 * 60 * 1000;
-
-// -- Helpers ------------------------------------------------------------------
-
-function clearRefreshTimer() {
-  if (refreshTimerId !== null) {
-    clearTimeout(refreshTimerId);
-    refreshTimerId = null;
-  }
-}
-
-function scheduleRefresh() {
-  clearRefreshTimer();
-  refreshTimerId = setTimeout(() => {
-    refreshAccessToken();
-  }, REFRESH_INTERVAL_MS);
-}
 
 // -- Permissions --------------------------------------------------------------
 
@@ -124,111 +100,42 @@ export function getAccessToken(): string | null {
   return accessToken;
 }
 
-export async function login(
-  email: string,
-  password: string,
-): Promise<{ ok: true } | { ok: false; error: string }> {
-  const result = await api.post('/auth/login', {
-    body: { identifier: email, password },
-  }).result();
+export function setAccessToken(token: string) {
+  accessToken = token;
+}
 
-  if (!result.ok) {
-    return { ok: false, error: extractErrorMessage(result.error) };
+export function initialize(data: { user: AuthUser | null; accessToken: string | null }) {
+  accessToken = data.accessToken;
+  user = data.user;
+  isLoading = false;
+
+  if (user && !permissionsLoaded) {
+    fetchPermissions();
   }
-
-  // `AuthResponse` is a discriminated union over `status`. Only `success`
-  // hands out tokens — `pending` (email verification) and `impersonation`
-  // (admin acting-as) are deferred until product flows for them exist.
-  const body = result.data;
-
-  if (body.status !== 'success') {
-    const message
-      = body.status === 'pending'
-        ? 'Account pending verification.'
-        : 'Impersonation login is not supported yet.';
-    return { ok: false, error: message };
-  }
-
-  accessToken = body.accessToken;
-  refreshToken = body.refreshToken;
-  user = body.user;
-  scheduleRefresh();
-  fetchPermissions();
-
-  return { ok: true };
 }
 
 export async function logout() {
-  if (refreshToken) {
-    await api.post('/auth/logout', {
-      body: { refreshToken },
-    });
-  }
+  await fetch('/api/auth/logout', { method: 'POST' });
 
   accessToken = null;
-  refreshToken = null;
   user = null;
   permissions = [];
   permissionsLoaded = false;
   checkCache.clear();
-  clearRefreshTimer();
-  refreshPromise = null;
 
+  await invalidateAll();
   goto(resolve('/signin'));
 }
 
-export async function fetchUser(): Promise<void> {
-  if (!accessToken)
-return;
-
-  const result = await api.get('/auth/me').result();
-
-  if (result.ok) {
-    user = result.data;
-  }
-}
-
 export async function refreshAccessToken(): Promise<boolean> {
-  if (refreshPromise)
-return refreshPromise;
+  const res = await fetch('/api/auth/refresh', { method: 'POST' });
 
-  refreshPromise = doRefresh();
-  const result = await refreshPromise;
-  refreshPromise = null;
-  return result;
-}
-
-async function doRefresh(): Promise<boolean> {
-  if (!refreshToken) {
+  if (!res.ok) {
     await logout();
     return false;
   }
 
-  const result = await api.post('/auth/refresh', {
-    body: { refreshToken },
-  }).result();
-
-  if (!result.ok) {
-    await logout();
-    return false;
-  }
-
-  const body = result.data;
-  accessToken = body.accessToken;
-  refreshToken = body.refreshToken;
-  scheduleRefresh();
-  fetchPermissions();
-  return true;
-}
-
-export function setSession(data: { accessToken: string; refreshToken: string; user: AuthUser }) {
+  const data = await res.json();
   accessToken = data.accessToken;
-  refreshToken = data.refreshToken;
-  user = data.user;
-  scheduleRefresh();
-  fetchPermissions();
-}
-
-export function tryRestoreSession() {
-  isLoading = false;
+  return true;
 }

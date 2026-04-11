@@ -1,8 +1,16 @@
 <script lang='ts'>
     import favicon from '$lib/assets/favicon.svg';
+    import { initialize } from '$lib/auth/index.svelte';
+    import { untrack } from 'svelte';
     import './layout.css';
 
-    const { children } = $props();
+    const { data, children } = $props();
+
+    $effect(() => {
+        const user = data.user;
+        const accessToken = data.accessToken;
+        untrack(() => initialize({ user, accessToken }));
+    });
 </script>
 
 <svelte:head>
