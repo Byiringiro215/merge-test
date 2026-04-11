@@ -1,5 +1,6 @@
-import { form } from '$app/server';
+import { form, getRequestEvent } from '$app/server';
 import { serverApi as api } from '$lib/api';
+import { setAuthCookies } from '$lib/auth/cookies';
 import { extractErrorMessage } from '@bajustone/fetcher';
 import { error } from '@sveltejs/kit';
 
@@ -22,9 +23,11 @@ export const loginForm = form('unchecked', async ({ identifier, _password }: { i
         error(400, message);
     }
 
-    return {
+    const event = getRequestEvent();
+    setAuthCookies(event.cookies, {
         accessToken: body.accessToken,
         refreshToken: body.refreshToken,
-        user: body.user,
-    };
+    });
+
+    return { user: body.user };
 });

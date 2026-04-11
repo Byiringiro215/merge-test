@@ -1,6 +1,6 @@
 import type { paths } from './paths';
 import { PUBLIC_API_URL } from '$env/static/public';
-import { getAccessToken, refreshAccessToken } from '$lib/auth/index.svelte';
+import { getAccessToken, setAccessToken } from '$lib/auth/index.svelte';
 import { bearerWithRefresh, createFetch } from '@bajustone/fetcher';
 import { routes } from 'virtual:fetcher';
 
@@ -11,13 +11,12 @@ export const api = createFetch<paths>({
         bearerWithRefresh<paths>({
             getToken: getAccessToken,
             refresh: async () => {
-                const ok = await refreshAccessToken();
-                if (!ok)
+                const res = await fetch('/api/auth/refresh', { method: 'POST' });
+                if (!res.ok)
                     throw new Error('token refresh failed');
-                const token = getAccessToken();
-                if (!token)
-                    throw new Error('token refresh produced no token');
-                return token;
+                const { accessToken } = await res.json();
+                setAccessToken(accessToken);
+                return accessToken;
             },
             exclude: ['/auth/login', '/auth/logout', '/auth/refresh'],
         }),
