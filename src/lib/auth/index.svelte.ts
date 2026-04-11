@@ -28,7 +28,7 @@ async function fetchPermissions(): Promise<void> {
 return;
   const result = await api
     .get('/iam/users/{id}/permissions', {
-      params: { id: String(user.id) },
+      params: { id: user.id },
     })
     .result();
   if (result.ok) {
