@@ -1,46 +1,45 @@
 <script lang='ts'>
     import type { PieArcDatum } from 'd3';
-    import type { FacultyEnrollment } from './types.js';
     import { ChartContainer } from '$lib/components/ui/chart-container';
     import ChartLegend from '$lib/components/ui/chart-container/chart-legend.svelte';
     import { arc, easeQuadOut, interpolate, pie, select } from 'd3';
     import { onMount } from 'svelte';
-    import { FACULTY_COLORS } from './types.js';
 
-    interface Props {
-        data?: FacultyEnrollment[];
+    interface TradeData {
+        trade: string;
+        count: number;
+        color: string;
     }
 
-    const defaultData: FacultyEnrollment[] = [
+    const TRADE_COLORS: Record<string, string> = {
+        'Software development': '#3B82F6',
+        'Mechanics': '#4ADE80',
+        'Automobile': '#F59E0B',
+        'Tourism': '#A855F7',
+        'Electrical engineering': '#06B6D4',
+        'Road construction': '#EF4444',
+    };
+
+    const data: TradeData[] = [
         {
-            faculty: 'Software development',
+            trade: 'Software development',
             count: 3200,
-            color: FACULTY_COLORS['Software development'],
+            color: TRADE_COLORS['Software development'],
         },
+        { trade: 'Mechanics', count: 2100, color: TRADE_COLORS.Mechanics },
+        { trade: 'Automobile', count: 1800, color: TRADE_COLORS.Automobile },
+        { trade: 'Tourism', count: 2400, color: TRADE_COLORS.Tourism },
         {
-            faculty: 'Mechanics',
-            count: 2100,
-            color: FACULTY_COLORS.Mechanics,
-        },
-        {
-            faculty: 'Automobile',
-            count: 1800,
-            color: FACULTY_COLORS.Automobile,
-        },
-        { faculty: 'Tourism', count: 2400, color: FACULTY_COLORS.Tourism },
-        {
-            faculty: 'Electrical engineering',
+            trade: 'Electrical engineering',
             count: 1950,
-            color: FACULTY_COLORS['Electrical engineering'],
+            color: TRADE_COLORS['Electrical engineering'],
         },
         {
-            faculty: 'Road construction',
+            trade: 'Road construction',
             count: 1000,
-            color: FACULTY_COLORS['Road construction'],
+            color: TRADE_COLORS['Road construction'],
         },
     ];
-
-    const { data = defaultData }: Props = $props();
 
     let chartContainerRef: ReturnType<typeof ChartContainer>;
     let chartElement: HTMLDivElement;
@@ -48,7 +47,8 @@
 
     const chartSize = 200;
     const radius = chartSize / 2;
-    const innerRadius = radius * 0.55;
+    const innerRadius = radius * 0.58;
+    const height = 200;
 
     function showTooltip(
         tooltip: HTMLDivElement,
@@ -100,8 +100,8 @@
         const arcGenerator = arc<PieArcData>()
             .innerRadius(innerRadius)
             .outerRadius(radius)
-            .cornerRadius(4)
-            .padAngle(0.02);
+            .cornerRadius(3)
+            .padAngle(0.015);
 
         // Draw arcs with animation
         const arcs = g
@@ -158,7 +158,7 @@
                     tooltip,
                     chartElement,
                     event,
-                    `${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
+                    `${d.data.trade}: ${d.data.count.toLocaleString()} (${percent}%)`,
                 );
             },
         )
@@ -181,7 +181,7 @@
                         tooltip,
                         chartElement,
                         event,
-                        `${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
+                        `${d.data.trade}: ${d.data.count.toLocaleString()} (${percent}%)`,
                     );
                 },
             )
@@ -211,18 +211,19 @@
 
     // Legend items for ChartLegend component
     const legendItems = data.map(item => ({
-        label: item.faculty,
+        label: item.trade,
         color: item.color,
     }));
 </script>
 
 <ChartContainer
     bind:this={chartContainerRef}
-    title='Faculty Enrollment'
+    title='Trades Distribution'
     description='Breakdown by specialized vocational tracks'
-    cardClass='h-full'
-    headerClass='p-4 lg:p-6'
-    contentClass='p-4 pt-0 lg:p-6 lg:pt-0'
+    {height}
+    cardClass='h-full rounded-2xl border border-[#DEE1E6] shadow-none'
+    headerClass='p-5'
+    contentClass='p-5 pt-0'
 >
     <div class='flex flex-col items-center'>
         <!-- Donut Chart -->

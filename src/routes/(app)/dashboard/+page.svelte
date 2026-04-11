@@ -1,98 +1,144 @@
 <script lang='ts'>
-    import ActivityFeed from '$lib/components/dashboard/ActivityFeed.svelte';
-    import DistrictChart from '$lib/components/dashboard/DistrictChart.svelte';
-    import DonutChart from '$lib/components/dashboard/DonutChart.svelte';
-    import PerformanceChart from '$lib/components/dashboard/PerformanceChart.svelte';
-    import RecordsTable from '$lib/components/dashboard/RecordsTable.svelte';
+    import type { DGFiltersState } from '$lib/components/dg-general/types.js';
     import StatsCard from '$lib/components/dashboard/StatsCard.svelte';
+    import CrossDepartmentRecordsTable from '$lib/components/dg-general/CrossDepartmentRecordsTable.svelte';
+    import CrossDepartmentTrendsChart from '$lib/components/dg-general/CrossDepartmentTrendsChart.svelte';
+    import DGFiltersContent from '$lib/components/dg-general/DGFiltersContent.svelte';
+    import RwandaRegionalMap from '$lib/components/dg-general/RwandaRegionalMap.svelte';
+    import { AppLayout } from '$lib/components/layout';
     import { Button } from '$lib/components/ui/button';
+    import { Card } from '$lib/components/ui/card';
     import {
         BookOpen,
+        Briefcase,
         Building2,
-        CheckCircle,
-        Clock,
-        IdCard,
-        TrendingUp,
+        GraduationCap,
+        HardHat,
         Users,
     } from '@lucide/svelte';
+    import FilterIcon from '@lucide/svelte/icons/filter';
+
+    let appLayout: ReturnType<typeof AppLayout>;
+
+    let filters = $state<DGFiltersState>({
+        dateRange: '',
+        province: '',
+        district: '',
+        schoolType: '',
+        faculty: '',
+    });
+
+    function handleFiltersChange(newFilters: DGFiltersState) {
+        filters = newFilters;
+    }
+
+    function handleExport() {
+    // TODO: implement export
+    }
+
+    function resetFilters() {
+        filters = {
+            dateRange: '',
+            province: '',
+            district: '',
+            schoolType: '',
+            faculty: '',
+        };
+    }
 
     const statsCards = [
         {
-            title: 'Total Students',
-            value: '4,280',
-            change: '+12.5%',
+            title: 'Total Schools',
+            value: '452',
+            change: '+12%',
             changeType: 'positive' as const,
-            icon: Users,
+            icon: Building2,
+            iconBgColor: 'bg-blue-50',
         },
         {
             title: 'Total Teachers',
-            value: '342',
-            change: '+4.2%',
+            value: '12,450',
+            change: '+5.2%',
             changeType: 'positive' as const,
-            icon: IdCard,
+            icon: Users,
+            iconBgColor: 'bg-green-50',
         },
         {
-            title: 'High Schools',
-            value: '51',
-            change: 'Stable',
+            title: 'Total Students',
+            value: '145,280',
+            change: '+8.1%',
             changeType: 'positive' as const,
-            icon: Building2,
+            icon: GraduationCap,
+            iconBgColor: 'bg-amber-50',
         },
         {
-            title: 'Avg Score',
-            value: '76.4%',
-            change: '+3.1%',
+            title: 'Training Programs',
+            value: '124',
+            change: '+2.4%',
             changeType: 'positive' as const,
-            icon: TrendingUp,
-        },
-        {
-            title: 'Success Rate',
-            value: '86.5%',
-            change: '+5.0%',
-            changeType: 'positive' as const,
-            icon: CheckCircle,
-        },
-        {
-            title: 'Trades',
-            value: '6',
-            change: 'Targeted',
-            changeType: 'targeted' as const,
             icon: BookOpen,
+            iconBgColor: 'bg-purple-50',
+        },
+        {
+            title: 'Infra Projects',
+            value: '89',
+            change: '-1.5%',
+            changeType: 'negative' as const,
+            icon: HardHat,
+            iconBgColor: 'bg-red-50',
+        },
+        {
+            title: 'SPIU Projects',
+            value: '15',
+            change: '0%',
+            changeType: 'neutral' as const,
+            icon: Briefcase,
+            iconBgColor: 'bg-cyan-50',
         },
     ];
 </script>
 
-<div class='mx-auto max-w-375 px-4 py-6 sm:px-6'>
+<AppLayout
+    bind:this={appLayout}
+    isRightSidebar={true}
+    sidebarWidth={288}
+    sidebarTitle='Filters'
+    onReset={resetFilters}
+>
     <!-- Header Section -->
     <div
-        class='mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'
+        class='mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'
     >
         <div>
-            <h1 class='text-xl font-inter font-bold text-gray-900 sm:text-3xl'>
-                General Overview
+            <h1 class='text-[24px] font-bold text-gray-900 leading-tight'>
+                Director General Overview
             </h1>
-            <p class='mt-0.5 text-xs text-primary-gray sm:mt-1 sm:text-sm'>
-                Real-time performance metrics for High Schools across Rwanda's
-                key districts.
+            <p class='mt-1 text-sm text-gray-500'>
+                High-level insights and aggregates across all departments.
             </p>
         </div>
         <div class='flex items-center gap-3'>
-            <button
-                class='inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50'
+            <Card
+                class='px-4 py-1.5 rounded-[6px] bg-[#FAFAFB] border border-gray-100 '
             >
-                <Clock class='h-4 w-4' />
-                Last 30 Days
-            </button>
-            <Button class='bg-primary hover:bg-blue-700'>
-                Generate System Report
+                <span class='text-sm leading-5 text-[#565D6D] font-normal'>
+                    Data synced: <span>Just now</span>
+                </span>
+            </Card>
+            <!-- Mobile filter trigger -->
+            <Button
+                variant='outline'
+                class='lg:hidden gap-2 rounded-[6px]'
+                onclick={() => appLayout?.openSheet()}
+            >
+                <FilterIcon class='h-4 w-4' />
+                Filters
             </Button>
         </div>
     </div>
 
     <!-- Stats Cards -->
-    <div
-        class='mb-7 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6'
-    >
+    <div class='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6'>
         {#each statsCards as card, index (index)}
             <StatsCard
                 title={card.title}
@@ -100,26 +146,32 @@
                 change={card.change}
                 changeType={card.changeType}
                 icon={card.icon}
+                iconBgColor={card.iconBgColor}
             />
         {/each}
     </div>
 
-    <!-- Charts Section -->
-    <div class='mb-7 grid grid-cols-1 gap-6 lg:grid-cols-3'>
-        <div class='lg:col-span-2'>
-            <PerformanceChart />
+    <!-- Charts Section - Map and Trends -->
+    <div class='mb-5 grid grid-cols-1 gap-5 lg:grid-cols-12'>
+        <div class='lg:col-span-4'>
+            <RwandaRegionalMap />
         </div>
-        <div>
-            <DonutChart />
+        <div class='lg:col-span-8 h-105'>
+            <CrossDepartmentTrendsChart />
         </div>
-    </div>
-
-    <!-- District Chart & Activity Feed -->
-    <div class='mb-7 grid grid-cols-1 gap-6 lg:grid-cols-2'>
-        <DistrictChart />
-        <ActivityFeed />
     </div>
 
     <!-- Records Table -->
-    <RecordsTable />
-</div>
+    <div class='mb-6'>
+        <CrossDepartmentRecordsTable />
+    </div>
+
+    <!-- Right Sidebar Content -->
+    {#snippet rightSidebarContent()}
+        <DGFiltersContent
+            {filters}
+            onFiltersChange={handleFiltersChange}
+            onExport={handleExport}
+        />
+    {/snippet}
+</AppLayout>

@@ -1,54 +1,31 @@
 <script lang='ts'>
     import type { PieArcDatum } from 'd3';
-    import type { FacultyEnrollment } from './types.js';
     import { ChartContainer } from '$lib/components/ui/chart-container';
-    import ChartLegend from '$lib/components/ui/chart-container/chart-legend.svelte';
     import { arc, easeQuadOut, interpolate, pie, select } from 'd3';
     import { onMount } from 'svelte';
-    import { FACULTY_COLORS } from './types.js';
 
-    interface Props {
-        data?: FacultyEnrollment[];
+    interface TradeData {
+        trade: string;
+        percentage: number;
+        color: string;
     }
 
-    const defaultData: FacultyEnrollment[] = [
-        {
-            faculty: 'Software development',
-            count: 3200,
-            color: FACULTY_COLORS['Software development'],
-        },
-        {
-            faculty: 'Mechanics',
-            count: 2100,
-            color: FACULTY_COLORS.Mechanics,
-        },
-        {
-            faculty: 'Automobile',
-            count: 1800,
-            color: FACULTY_COLORS.Automobile,
-        },
-        { faculty: 'Tourism', count: 2400, color: FACULTY_COLORS.Tourism },
-        {
-            faculty: 'Electrical engineering',
-            count: 1950,
-            color: FACULTY_COLORS['Electrical engineering'],
-        },
-        {
-            faculty: 'Road construction',
-            count: 1000,
-            color: FACULTY_COLORS['Road construction'],
-        },
+    const data: TradeData[] = [
+        { trade: 'Masonry', percentage: 35, color: '#3B82F6' },
+        { trade: 'Carpentry', percentage: 25, color: '#4ADE80' },
+        { trade: 'IT & Software', percentage: 20, color: '#F97316' },
+        { trade: 'Automotive', percentage: 15, color: '#A855F7' },
+        { trade: 'Culinary Arts', percentage: 5, color: '#67E8F9' },
     ];
-
-    const { data = defaultData }: Props = $props();
 
     let chartContainerRef: ReturnType<typeof ChartContainer>;
     let chartElement: HTMLDivElement;
     let mounted = $state(false);
 
-    const chartSize = 200;
+    const chartSize = 220;
     const radius = chartSize / 2;
-    const innerRadius = radius * 0.55;
+    const innerRadius = radius * 0.6;
+    const height = 240;
 
     function showTooltip(
         tooltip: HTMLDivElement,
@@ -92,7 +69,7 @@
         type PieArcData = PieArcDatum<ChartData>;
 
         const pieGenerator = pie<ChartData>()
-            .value((d: ChartData) => d.count)
+            .value((d: ChartData) => d.percentage)
             .sort(null)
             .startAngle(-Math.PI / 2)
             .endAngle(Math.PI * 1.5);
@@ -100,8 +77,8 @@
         const arcGenerator = arc<PieArcData>()
             .innerRadius(innerRadius)
             .outerRadius(radius)
-            .cornerRadius(4)
-            .padAngle(0.02);
+            .cornerRadius(3)
+            .padAngle(0.015);
 
         // Draw arcs with animation
         const arcs = g
@@ -135,6 +112,35 @@
                     } as PieArcData) || '';
             });
 
+        // Add center text
+        const centerText = g
+            .append('text')
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'middle')
+            .attr('y', -8);
+
+        centerText
+            .append('tspan')
+            .attr('font-size', '28px')
+            .attr('font-weight', 'bold')
+            .attr('fill', '#171A1F')
+            .text('100');
+
+        centerText
+            .append('tspan')
+            .attr('font-size', '14px')
+            .attr('font-weight', 'normal')
+            .attr('fill', '#171A1F')
+            .text('%');
+
+        g.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'middle')
+            .attr('y', 18)
+            .attr('font-size', '12px')
+            .attr('fill', '#9CA3AF')
+            .text('Total');
+
         // Hover effects
         arcs.on(
             'pointerenter',
@@ -152,13 +158,11 @@
                 if (!tooltip)
                     return;
 
-                const total = data.reduce((sum, item) => sum + item.count, 0);
-                const percent = ((d.data.count / total) * 100).toFixed(1);
                 showTooltip(
                     tooltip,
                     chartElement,
                     event,
-                    `${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
+                    `${d.data.trade}: ${d.data.percentage}%`,
                 );
             },
         )
@@ -172,16 +176,11 @@
                     if (!tooltip)
                         return;
 
-                    const total = data.reduce(
-                        (sum, item) => sum + item.count,
-                        0,
-                    );
-                    const percent = ((d.data.count / total) * 100).toFixed(1);
                     showTooltip(
                         tooltip,
                         chartElement,
                         event,
-                        `${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
+                        `${d.data.trade}: ${d.data.percentage}%`,
                     );
                 },
             )
@@ -209,20 +208,22 @@
         }
     });
 
-    // Legend items for ChartLegend component
+    // Legend items with percentages
     const legendItems = data.map(item => ({
-        label: item.faculty,
+        label: item.trade,
         color: item.color,
+        value: `${item.percentage}%`,
     }));
 </script>
 
 <ChartContainer
     bind:this={chartContainerRef}
-    title='Faculty Enrollment'
-    description='Breakdown by specialized vocational tracks'
-    cardClass='h-full'
-    headerClass='p-4 lg:p-6'
-    contentClass='p-4 pt-0 lg:p-6 lg:pt-0'
+    title='Enrollment by Trade Area'
+    description='Top 5 popular disciplines'
+    {height}
+    cardClass='h-full rounded-2xl border border-[#DEE1E6] shadow-none'
+    headerClass='p-5'
+    contentClass='p-5 pt-0'
 >
     <div class='flex flex-col items-center'>
         <!-- Donut Chart -->
@@ -234,11 +235,21 @@
     </div>
 
     {#snippet legend()}
-        <ChartLegend
-            items={legendItems}
-            direction='vertical'
-            shape='circle'
-            size='md'
-        />
+        <div class='grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 mt-4'>
+            {#each legendItems as item (item.label)}
+                <div class='flex items-center justify-between gap-2'>
+                    <div class='flex items-center gap-2'>
+                        <span
+                            class='w-2.5 h-2.5 rounded-full'
+                            style='background-color: {item.color}'
+                        ></span>
+                        <span class='text-xs text-gray-600'>{item.label}</span>
+                    </div>
+                    <span class='text-xs font-medium text-gray-900'
+                    >{item.value}</span
+                    >
+                </div>
+            {/each}
+        </div>
     {/snippet}
 </ChartContainer>

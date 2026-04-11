@@ -1,5 +1,6 @@
 <script lang='ts'>
     import type { Resource } from '$lib/auth/index.svelte';
+    import type { Component } from 'svelte';
     import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { getAuthState, hasPermission, logout } from '$lib/auth/index.svelte';
@@ -12,29 +13,83 @@
         DropdownMenuTrigger,
     } from '$lib/components/ui/dropdown-menu';
     import {
-        Bell,
         BookOpen,
-        Building2,
         GraduationCap,
         LayoutGrid,
         LogOut,
         Menu,
+        Monitor,
         Search,
         Settings,
-        Users,
         X,
     } from '@lucide/svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { cubicOut } from 'svelte/easing';
     import { slide } from 'svelte/transition';
 
+    interface SubNavItem {
+        label: string;
+        href: string;
+    }
+
+    interface NavItem {
+        id: string;
+        label: string;
+        href: string;
+        icon: Component;
+        resource: Resource;
+        subNav?: SubNavItem[];
+    }
+
     const auth = getAuthState();
 
-    const allNavItems: ReadonlyArray<{ label: string; href: string; icon: typeof LayoutGrid; resource: Resource }> = [
-        { label: 'General', href: '/dashboard', icon: LayoutGrid, resource: 'sdms:schools' },
-        { label: 'Students', href: '/students', icon: Users, resource: 'sdms:students' },
-        { label: 'Teachers', href: '/teachers', icon: GraduationCap, resource: 'sdms:staff' },
-        { label: 'Schools', href: '/schools', icon: Building2, resource: 'sdms:schools' },
-        { label: 'Curricula', href: '/curricula', icon: BookOpen, resource: 'sdms:schools' },
+    const allNavItems: NavItem[] = [
+        {
+            id: 'dg-general',
+            label: 'DG General',
+            href: '/dashboard',
+            icon: LayoutGrid,
+            resource: 'sdms:schools',
+        },
+        {
+            id: 'curriculum',
+            label: 'Curriculum',
+            href: '/curricula',
+            icon: BookOpen,
+            resource: 'sdms:schools',
+            subNav: [
+                { label: 'General', href: '/curricula' },
+                { label: 'Curriculum', href: '/curricula/curriculum' },
+                { label: 'Schools', href: '/curricula/schools' },
+            ],
+        },
+        {
+            id: 'training',
+            label: 'Training',
+            href: '/training',
+            icon: GraduationCap,
+            resource: 'sdms:staff',
+            subNav: [
+                { label: 'General', href: '/training' },
+                { label: 'Schools', href: '/training/schools' },
+                { label: 'Students', href: '/training/students' },
+                { label: 'Trades', href: '/training/trades' },
+                { label: 'Courses', href: '/training/courses' },
+            ],
+        },
+        {
+            id: 'digital-tech',
+            label: 'Digital Tech',
+            href: '/digitalTech',
+            icon: Monitor,
+            resource: 'sdms:schools',
+            subNav: [
+                { label: 'General', href: '/digitalTech' },
+                { label: 'Schools', href: '/digitalTech/schools' },
+                { label: 'Devices', href: '/digitalTech/Devices' },
+                { label: 'E-learning', href: '/digitalTech/e-learning' },
+            ],
+        },
     ];
 
     const navItems = $derived(
@@ -43,8 +98,28 @@
             : [...allNavItems],
     );
 
+    const subNavRefs: HTMLAnchorElement[] = [];
+    let indicatorStyle = $state('');
+
     let searchQuery = $state('');
     let mobileMenuOpen = $state(false);
+    let expandedMobileNav = $state<string | null>(null);
+
+    const activeDepartment = $derived.by(() => {
+        const path = page.url.pathname;
+        for (const item of navItems) {
+            if (
+                item?.subNav
+                && item.subNav.some(
+                    sub =>
+                        path === sub.href || path.startsWith(`${sub.href}/`),
+                )
+            ) {
+                return item;
+            }
+        }
+        return navItems[0];
+    });
 
     const userInitials = $derived(
         auth.user?.name
@@ -57,10 +132,18 @@
 
     function toggleMobileMenu() {
         mobileMenuOpen = !mobileMenuOpen;
+        if (!mobileMenuOpen) {
+            expandedMobileNav = null;
+        }
     }
 
     function closeMobileMenu() {
         mobileMenuOpen = false;
+        expandedMobileNav = null;
+    }
+
+    function toggleMobileNavExpand(itemId: string) {
+        expandedMobileNav = expandedMobileNav === itemId ? null : itemId;
     }
 
     function handleKeydown(event: KeyboardEvent) {
@@ -68,35 +151,92 @@
             closeMobileMenu();
         }
     }
+
+    function isSubNavActive(subHref: string): boolean {
+        const path = page.url.pathname;
+
+        if (path === subHref)
+            return true;
+
+        if (path.startsWith(`${subHref}/`)) {
+            const allSubHrefs
+                = activeDepartment?.subNav?.map(s => s.href) ?? [];
+
+            const hasMoreSpecificMatch = allSubHrefs.some(
+                href =>
+                    href !== subHref
+                        && (path === href || path.startsWith(`${href}/`)),
+            );
+
+            return !hasMoreSpecificMatch;
+        }
+
+        return false;
+    }
+
+    function updateIndicator() {
+        const subNav = activeDepartment?.subNav;
+        if (!subNav)
+            return;
+
+        const activeIndex = subNav.findIndex(item =>
+            isSubNavActive(item.href),
+        );
+
+        if (activeIndex >= 0 && subNavRefs[activeIndex]) {
+            const activeLink = subNavRefs[activeIndex];
+            const left = activeLink.offsetLeft;
+            const width = activeLink.offsetWidth;
+            indicatorStyle = `transform: translateX(${left}px); width: ${width}px; opacity: 1;`;
+        }
+        else {
+            indicatorStyle = 'opacity: 0;';
+        }
+    }
+
+    $effect(() => {
+        void page.url.pathname;
+        setTimeout(updateIndicator, 0);
+    });
+
+    onMount(() => {
+        updateIndicator();
+        window.addEventListener('resize', updateIndicator);
+    });
+
+    onDestroy(() => {
+        window.removeEventListener('resize', updateIndicator);
+    });
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
-<nav class='sticky top-0 z-10 w-full border-b border-gray-200 bg-white'>
-    <div class='flex h-16 items-center justify-between px-6 lg:px-8'>
+<nav class='sticky top-0 z-10 w-full bg-white'>
+    <!-- Main Navigation Bar -->
+    <div
+        class='flex h-16 items-center justify-between border-b border-gray-200 px-6 lg:px-15'
+    >
         <!-- Logo -->
-        <a href={resolve('/')} class='flex items-center'>
-            <div class='h-12 w-12 flex items-center'>
+        <a href={resolve('/')} class='flex items-center gap-1'>
+            <div class='h-10 w-10 flex items-center'>
                 <img
                     src='/rtb-logo.png'
-                    alt='RTB Rwanda Logo'
+                    alt='RTB Logo'
                     class='w-full object-cover'
                 />
             </div>
-            <span class='text-lg leading-4 font-semibold mt-1 text-primary'
-            >RTB Rwanda</span
-            >
+            <span class='text-lg font-semibold text-primary'>RTB</span>
         </a>
 
         <!-- Navigation Links - Hidden on mobile -->
         <div class='hidden items-center gap-1 md:flex'>
-            {#each navItems as item, i (i)}
-                {@const isActive = page.url.pathname === item.href}
+            {#each navItems as item (item.id)}
+                {@const isActive = activeDepartment?.id === item.id}
                 <a
                     href={resolve(item.href as any)}
-                    class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-normal leading-6 transition-colors {isActive
-                        ? 'bg-blue-50 text-primary'
-                        : 'text-[#565D6D] hover:bg-gray-100 hover:text-gray-900'}"
+                    class="flex items-center gap-2 rounded-[6px] px-4 py-2 text-sm font-normal transition-colors {isActive
+                        ? 'bg-[#205FAD1A] text-[#205FAD]'
+                        : 'text-[#565D6D] hover:bg-gray-50 hover:text-gray-900'}"
                 >
                     <item.icon class='h-4 w-4' />
                     {item.label}
@@ -113,23 +253,11 @@
                 />
                 <input
                     type='text'
-                    placeholder='Search data...'
+                    placeholder='Search across dashboards...'
                     bind:value={searchQuery}
-                    class='h-9 w-64 rounded-lg border border-gray-200 bg-gray-50 pl-9 pr-4 text-sm placeholder-gray-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500'
+                    class='h-9 w-64 rounded-lg border border-gray-200 bg-white pl-9 pr-4 text-sm placeholder-gray-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
                 />
             </div>
-
-            <!-- Icon Buttons -->
-            <button
-                type='button'
-                class='relative rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700'
-                aria-label='Notifications'
-            >
-                <Bell class='h-5 w-5' />
-                <span
-                    class='absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500'
-                ></span>
-            </button>
 
             <button
                 type='button'
@@ -191,6 +319,33 @@
         </div>
     </div>
 
+    <!-- Sub Navigation - Desktop -->
+    {#if activeDepartment?.subNav && activeDepartment.subNav.length > 1}
+        <div
+            class='hidden border-b bg-[#F2F7FD4D] border-gray-200 px-6 md:block lg:px-21'
+        >
+            <div class='relative flex items-center gap-6'>
+                {#each activeDepartment.subNav as subItem, index (subItem.href)}
+                    {@const isActive = isSubNavActive(subItem.href)}
+                    <a
+                        bind:this={subNavRefs[index]}
+                        href={resolve(subItem.href as any)}
+                        class="relative py-3 text-sm font-normal transition-colors duration-200 {isActive
+                            ? 'text-primary'
+                            : 'text-gray-500 hover:text-gray-900'}"
+                    >
+                        {subItem.label}
+                    </a>
+                {/each}
+                <!-- Sliding indicator -->
+                <span
+                    class='absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ease-out'
+                    style={indicatorStyle}
+                ></span>
+            </div>
+        </div>
+    {/if}
+
     <!-- Mobile Navigation Menu -->
     {#if mobileMenuOpen}
         <div
@@ -205,27 +360,88 @@
                     />
                     <input
                         type='text'
-                        placeholder='Search data...'
+                        placeholder='Search across dashboards...'
                         bind:value={searchQuery}
-                        class='h-10 w-full rounded-lg border border-gray-200 bg-gray-50 pl-9 pr-4 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500'
+                        class='h-10 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-4 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
                     />
                 </div>
             </div>
 
-            <!-- Mobile Nav Links -->
-            <div class='space-y-1 px-4 pb-4'>
-                {#each navItems as item, i (i)}
-                    {@const isActive = page.url.pathname === item.href}
-                    <a
-                        href={resolve(item.href as any)}
-                        onclick={closeMobileMenu}
-                        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors {isActive
-                            ? 'bg-blue-50 text-primary'
-                            : 'text-[#565D6D] hover:bg-gray-100 hover:text-gray-900'}"
-                    >
-                        <item.icon class='h-5 w-5' />
-                        {item.label}
-                    </a>
+            <!-- Mobile Nav Links with Sub-nav -->
+            <div class='px-4 pb-4'>
+                {#each navItems as item (item.id)}
+                    {@const isActive = activeDepartment?.id === item.id}
+                    {@const hasSubNav = item.subNav && item.subNav.length > 1}
+                    {@const isExpanded = expandedMobileNav === item.id}
+                    <div class='mb-1'>
+                        {#if hasSubNav}
+                            <!-- Department with sub-nav: toggle on click -->
+                            <button
+                                type='button'
+                                onclick={() => toggleMobileNavExpand(item.id)}
+                                class="flex w-full items-center justify-between rounded-[6px] px-3 py-2.5 text-sm font-medium transition-colors {isActive
+                                    ? 'bg-[#205FAD1A] text-primary'
+                                    : 'text-[#565D6D] hover:bg-gray-100 hover:text-gray-900'}"
+                            >
+                                <span class='flex items-center gap-3'>
+                                    <item.icon class='h-5 w-5' />
+                                    {item.label}
+                                </span>
+                                <svg
+                                    class="h-4 w-4 transition-transform {isExpanded
+                                        ? 'rotate-180'
+                                        : ''}"
+                                    fill='none'
+                                    viewBox='0 0 24 24'
+                                    stroke='currentColor'
+                                >
+                                    <path
+                                        stroke-linecap='round'
+                                        stroke-linejoin='round'
+                                        stroke-width='2'
+                                        d='M19 9l-7 7-7-7'
+                                    />
+                                </svg>
+                            </button>
+                            <!-- Collapsible sub-nav items -->
+                            {#if isExpanded}
+                                <div
+                                    class='mt-1 space-y-1 pl-11'
+                                    transition:slide={{
+                                        duration: 200,
+                                        easing: cubicOut,
+                                    }}
+                                >
+                                    {#each item.subNav as subItem (subItem.href)}
+                                        {@const isSubActive = isSubNavActive(
+                                            subItem.href,
+                                        )}
+                                        <a
+                                            href={resolve(subItem.href as any)}
+                                            onclick={closeMobileMenu}
+                                            class="block rounded-[6px] px-3 py-2 text-sm transition-colors {isSubActive
+                                                ? 'text-[#205FAD] font-normal bg-[#205FAD1A]'
+                                                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}"
+                                        >
+                                            {subItem.label}
+                                        </a>
+                                    {/each}
+                                </div>
+                            {/if}
+                        {:else}
+                            <!-- Department without sub-nav: navigate directly -->
+                            <a
+                                href={resolve(item.href as any)}
+                                onclick={closeMobileMenu}
+                                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-normal transition-colors {isActive
+                                    ? 'bg-[#205FAD1A] text-[#205FAD]'
+                                    : 'text-[#565D6D] hover:bg-gray-100 hover:text-gray-900'}"
+                            >
+                                <item.icon class='h-5 w-5' />
+                                {item.label}
+                            </a>
+                        {/if}
+                    </div>
                 {/each}
             </div>
         </div>
