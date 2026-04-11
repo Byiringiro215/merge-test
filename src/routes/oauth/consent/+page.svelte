@@ -6,7 +6,6 @@
     import {
         getAccessToken,
         getAuthState,
-        tryRestoreSession,
     } from '$lib/auth/index.svelte';
     import { Button } from '$lib/components/ui/button';
     import { Card } from '$lib/components/ui/card';
@@ -23,10 +22,6 @@
     const auth = getAuthState();
 
     // Inline auth guard (this page is outside (app) layout)
-    $effect(() => {
-        tryRestoreSession();
-    });
-
     $effect(() => {
         if (!auth.isLoading && !auth.isAuthenticated) {
             goto(resolve(`/signin?redirect=${encodeURIComponent(page.url.pathname + page.url.search)}` as any));
