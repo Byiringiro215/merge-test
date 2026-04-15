@@ -211,3 +211,65 @@ export const staffDetailResponse = z.object({
 });
 
 export type Meta = z.infer<typeof paginationMeta>;
+
+// -- Admin / IAM schemas ------------------------------------------------------
+
+export const userSchema = z.object({
+    id: z.number(),
+    email: z.email(),
+    name: z.string().min(1, 'Name is required'),
+    isActive: z.boolean(),
+    emailVerified: z.boolean().optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+});
+
+export const roleSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    description: z.string().nullable().optional(),
+    isSystem: z.boolean().optional(),
+});
+
+export const permissionConditionSchema = z.object({
+    field: z.string(),
+    operator: z.enum(['eq', 'neq', 'in', 'startsWith']),
+    value: z.string(),
+});
+
+export const permissionSchema = z.object({
+    id: z.number(),
+    resource: z.string(),
+    action: z.string(),
+    effect: z.enum(['ALLOW', 'DENY']),
+    conditions: z.array(permissionConditionSchema).nullable().optional(),
+    description: z.string().nullable().optional(),
+});
+
+export const groupSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    description: z.string().nullable().optional(),
+});
+
+export const sessionSchema = z.object({
+    id: z.number(),
+    ipAddress: z.string().nullable().optional(),
+    userAgent: z.string().nullable().optional(),
+    deviceName: z.string().nullable().optional(),
+    createdAt: z.string(),
+    lastActiveAt: z.string().nullable().optional(),
+});
+
+// Admin list response wrappers
+export const userListResponseSchema = z.object({
+    users: z.array(userSchema),
+    total: z.number(),
+});
+export const groupListResponseSchema = z.object({
+    groups: z.array(groupSchema),
+    total: z.number(),
+});
+export const roleListResponseSchema = z.array(roleSchema);
+export const permissionListResponseSchema = z.array(permissionSchema);
+export const sessionListResponseSchema = z.array(sessionSchema);
