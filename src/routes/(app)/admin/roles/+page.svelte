@@ -1,86 +1,99 @@
 <script lang='ts'>
     import type { Role } from '$lib/datamodel/admin';
     import type { ColumnDef } from '@tanstack/table-core';
-    import { api } from '$lib/api';
+    import { goto } from '$app/navigation';
+    import { page } from '$app/state';
     import { ConfirmDialog } from '$lib/components/admin';
-    import RoleBindingSheet from '$lib/components/admin/RoleBindingSheet.svelte';
-    import RoleFormDialog from '$lib/components/admin/RoleFormDialog.svelte';
+    import AddPermissionDialog from '$lib/components/admin/role/AddPermissionRoleDialog.svelte';
+    import RoleBindingSheet from '$lib/components/admin/role/RoleBindingSheet.svelte';
+    import RoleFormDialog from '$lib/components/admin/role/RoleFormDialog.svelte';
     import DataTable from '$lib/components/data-table/data-table.svelte';
     import AppLayout from '$lib/components/layout/AppLayout.svelte';
     import { Badge } from '$lib/components/ui/badge';
     import { Button } from '$lib/components/ui/button';
-    import {
-        Card,
-        CardContent,
-        CardDescription,
-        CardHeader,
-        CardTitle,
-    } from '$lib/components/ui/card';
     import { renderSnippet } from '$lib/components/ui/data-table/index.js';
     import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
     import { Input } from '$lib/components/ui/input';
-    import { roleListResponseSchema } from '$lib/types/zod-schemas-api';
     import {
-        Edit,
-        LoaderCircle,
         MoreHorizontal,
+        Pencil,
         Plus,
         Search,
+        Shield,
         Trash2,
         Users,
     } from '@lucide/svelte';
-    import { createRawSnippet, onMount } from 'svelte';
+    import { createRawSnippet, untrack } from 'svelte';
+    import { deleteRole, fetchAllRoles } from './role.remote';
 
-    let roles = $state<Role[]>([]);
-    let isLoading = $state(false);
-    let searchQuery = $state('');
+    const searchParams = $derived(page.url.searchParams);
+    const searchParam = $derived(searchParams.get('search') ?? '');
+
+    const rolesQuery = $derived(fetchAllRoles());
+    const roles = $derived(rolesQuery.current ?? []);
+
+    const filteredRoles = $derived(
+        searchParam
+            ? roles.filter(
+                (r: Role) =>
+                    r.name
+                        .toLowerCase()
+                        .includes(searchParam.toLowerCase())
+                        || (r.description ?? '')
+                            .toLowerCase()
+                            .includes(searchParam.toLowerCase()),
+            )
+            : roles,
+    );
+
+    let searchInput = $state(untrack(() => searchParams.get('search') ?? ''));
+    let searchDebounce: ReturnType<typeof setTimeout> | undefined;
 
     // Sheet states
     let openRoleDialog = $state(false);
     let editingRole = $state<Role | null>(null);
     let bindingSheetOpen = $state(false);
     let bindingRole = $state<Role | null>(null);
+    let addPermissionDialogOpen = $state(false);
+    let addPermissionRole = $state<Role | null>(null);
 
     // Delete dialog state
     let deleteDialogOpen = $state(false);
     let deletingRole = $state<Role | null>(null);
     let isDeleting = $state(false);
+    let deleteError = $state('');
 
-    const filteredRoles = $derived(
-        searchQuery
-            ? roles.filter(
-                r =>
-                    r.name
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase())
-                        || (r.description ?? '')
-                            .toLowerCase()
-                            .includes(searchQuery.toLowerCase()),
-            )
-            : roles,
-    );
-
-    const fetchRoles = async () => {
-        isLoading = true;
-        try {
-            const result = await api.get('/iam/roles', {
-                responseSchema: roleListResponseSchema,
-            }).result();
-            if (result.ok) {
-                roles = result.data;
+    function updateUrl(updates: Record<string, string | null>) {
+        const url = new URL(page.url);
+        for (const [key, value] of Object.entries(updates)) {
+            if (value === null || value === '') {
+                url.searchParams.delete(key);
+            }
+            else {
+                url.searchParams.set(key, value);
             }
         }
-        finally {
-            isLoading = false;
-        }
+        goto(`${url.pathname}${url.search}`, {
+            replaceState: true,
+            keepFocus: true,
+            noScroll: true,
+        });
+    }
+
+    function handleSearchInput() {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => {
+            updateUrl({ search: searchInput.trim() || null });
+        }, 300);
+    }
+
+    const refetchRoles = async () => {
+        await rolesQuery.refresh();
     };
 
     const handleOpenRole = (role?: Role) => {
-        editingRole = null;
+        editingRole = role ?? null;
         openRoleDialog = true;
-        if (role) {
-            editingRole = role;
-        }
     };
 
     const openBindingSheet = (role: Role) => {
@@ -88,8 +101,14 @@
         bindingSheetOpen = true;
     };
 
+    const openAddPermissionDialog = (role: Role) => {
+        addPermissionRole = role;
+        addPermissionDialogOpen = true;
+    };
+
     const openDeleteDialog = (role: Role) => {
         deletingRole = role;
+        deleteError = '';
         deleteDialogOpen = true;
     };
 
@@ -97,13 +116,16 @@
         if (!deletingRole)
             return;
         isDeleting = true;
+        deleteError = '';
         try {
-            await api.delete('/iam/roles/{id}', {
-                params: { id: deletingRole.id },
-            }).result();
+            await deleteRole({ id: deletingRole.id });
+            await refetchRoles();
             deleteDialogOpen = false;
             deletingRole = null;
-            await fetchRoles();
+        }
+        catch (err) {
+            deleteError
+                = err instanceof Error ? err.message : 'Failed to delete role';
         }
         finally {
             isDeleting = false;
@@ -126,7 +148,7 @@
             accessorKey: 'description',
             header: 'Description',
             cell: ({ row }) => {
-                const desc = row.original.description ?? '—';
+                const desc = row.original.description ?? '\u2014';
                 const snippet = createRawSnippet(() => ({
                     render: () =>
                         `<span class="text-sm text-muted-foreground">${desc}</span>`,
@@ -144,15 +166,11 @@
         },
         {
             id: 'actions',
-            header: '',
+            header: 'Actions',
             cell: ({ row }) =>
                 renderSnippet(actionsCell, { role: row.original }),
         },
     ];
-
-    onMount(() => {
-        fetchRoles();
-    });
 </script>
 
 {#snippet typeCell({ isSystem }: { isSystem: boolean })}
@@ -172,24 +190,31 @@
                         {...props}
                         variant='ghost'
                         size='icon'
-                        class='cursor-pointer'
+                        class='h-8 w-8 cursor-pointer'
                     >
                         <MoreHorizontal class='h-4 w-4' />
                     </Button>
                 {/snippet}
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content align='end'>
+            <DropdownMenu.Content align='end' class='w-48'>
                 <DropdownMenu.Item
                     onclick={() => handleOpenRole(role)}
                     disabled={role.isSystem}
                 >
-                    <Edit class='mr-2 h-4 w-4' />
+                    <Pencil class='mr-2 h-4 w-4' />
                     Edit
                 </DropdownMenu.Item>
                 <DropdownMenu.Item onclick={() => openBindingSheet(role)}>
                     <Users class='mr-2 h-4 w-4' />
-                    Manage Bindings
+                    Manage assignments
                 </DropdownMenu.Item>
+                <DropdownMenu.Item
+                    onclick={() => openAddPermissionDialog(role)}
+                >
+                    <Shield class='mr-2 h-4 w-4' />
+                    Add permission
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
                 <DropdownMenu.Item
                     class='text-destructive'
                     onclick={() => openDeleteDialog(role)}
@@ -203,75 +228,59 @@
     </div>
 {/snippet}
 
-<AppLayout containerClass='lg:pl-10 px-6'>
+<AppLayout containerClass='px-4 sm:px-6 lg:px-10'>
     <div
-        class='mb-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'
+        class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-5'
     >
-        <div>
-            <h1 class='text-[24px] font-bold text-gray-900 leading-tight'>
-                Roles Management
-            </h1>
-            <p class='mt-1 text-sm text-gray-500'>
-                Define and manage access roles
-            </p>
+        <div class='relative w-full sm:max-w-xs'>
+            <Search
+                class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400'
+            />
+            <Input
+                type='text'
+                placeholder='Search roles...'
+                bind:value={searchInput}
+                oninput={handleSearchInput}
+                class='pl-10'
+            />
         </div>
-        <Button onclick={() => handleOpenRole()}>
-            <Plus class='mr-2 h-4 w-4' />
-            Create Role
-        </Button>
+
+        <div class='flex items-center gap-3'>
+            <Button class='gap-2' onclick={() => handleOpenRole()}>
+                <Plus class='h-4 w-4' />
+                Create Role
+            </Button>
+        </div>
     </div>
 
-    <Card class='py-10'>
-        <CardHeader>
-            <div class='flex items-center justify-between'>
-                <div>
-                    <CardTitle>Roles ({roles.length})</CardTitle>
-                    <CardDescription>
-                        All roles available in the system.
-                    </CardDescription>
-                </div>
-                <div class='relative w-64'>
-                    <Search
-                        class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400'
-                    />
-                    <Input
-                        type='text'
-                        placeholder='Search roles...'
-                        bind:value={searchQuery}
-                        class='pl-10'
-                    />
-                </div>
-            </div>
-        </CardHeader>
-        <CardContent class='py-5'>
-            {#if isLoading}
-                <div class='flex items-center justify-center py-12'>
-                    <LoaderCircle class='h-8 w-8 animate-spin text-primary' />
-                </div>
-            {:else}
-                <DataTable {columns} data={filteredRoles} />
-            {/if}
-        </CardContent>
-    </Card>
+    <DataTable {columns} data={filteredRoles} />
 </AppLayout>
 
 <RoleFormDialog
     open={openRoleDialog}
     role={editingRole}
-    onOpenChange={v => (openRoleDialog = v)}
-    onSuccess={fetchRoles}
+    onOpenChange={(v: boolean) => (openRoleDialog = v)}
+    onSuccess={refetchRoles}
 />
 
 <RoleBindingSheet
     open={bindingSheetOpen}
     role={bindingRole}
-    onOpenChange={v => (bindingSheetOpen = v)}
+    onOpenChange={(v: boolean) => (bindingSheetOpen = v)}
+/>
+
+<AddPermissionDialog
+    open={addPermissionDialogOpen}
+    role={addPermissionRole}
+    onOpenChange={(v: boolean) => (addPermissionDialogOpen = v)}
+    onSuccess={refetchRoles}
 />
 
 <ConfirmDialog
     open={deleteDialogOpen}
     message='This will permanently delete this role and remove all its bindings. This action cannot be undone.'
     isLoading={isDeleting}
-    onOpenChange={v => (deleteDialogOpen = v)}
+    error={deleteError}
+    onOpenChange={(v: boolean) => (deleteDialogOpen = v)}
     onConfirm={handleDelete}
 />

@@ -1,18 +1,6 @@
 <script lang='ts'>
-    import type { HTMLInputAttributes, HTMLInputTypeAttribute } from 'svelte/elements';
+    import type { InputProps } from '$lib/utils';
     import type { FormPath, SuperForm } from 'sveltekit-superforms';
-
-    type InputProps = {
-        type?: Exclude<HTMLInputTypeAttribute, 'file'>;
-        placeholder?: string;
-        disabled?: boolean;
-        readonly?: boolean;
-        autocomplete?: HTMLInputAttributes['autocomplete'];
-        min?: string | number;
-        max?: string | number;
-        step?: string | number;
-    };
-
     import * as Command from '$lib/components/ui/command';
     import * as Form from '$lib/components/ui/form/index.js';
     import Input from '$lib/components/ui/input/input.svelte';
@@ -41,24 +29,28 @@
         errorClass?: string;
         textareaInput?: boolean;
     };
+    type SelectOption = { label: string; value: string | number };
     type InputModeProps<T extends Record<string, unknown>> = BaseProps<T> & {
         selectInput?: false;
         options?: never;
         searchSelectInput?: false;
         onSearch?: never;
+        onSelect?: never;
     };
     type SelectModeProps<T extends Record<string, unknown>> = BaseProps<T> & {
         selectInput: true;
-        options: { label: string; value: string | number }[];
+        options: SelectOption[];
         searchSelectInput?: false;
         onSearch?: never;
+        onSelect?: (option: SelectOption) => void;
     };
     type SearchInputModeProps<T extends Record<string, unknown>>
         = BaseProps<T> & {
             searchSelectInput: true;
-            options: { label: string; value: string | number }[];
+            options: SelectOption[];
             selectInput?: never;
             onSearch?: (searchTerm: string) => void;
+            onSelect?: (option: SelectOption) => void;
         };
 
     type Props<T extends Record<string, unknown>>
@@ -78,6 +70,7 @@
         errorClass = '',
         searchSelectInput,
         onSearch = undefined,
+        onSelect = undefined,
         textareaInput,
         value = $bindable(),
         ...inputProps
@@ -94,11 +87,34 @@
             document.getElementById(triggerId)?.focus();
         });
     }
+
+    function handleSelectValueChange(val: string | undefined) {
+        if (val === undefined) {
+            return;
+        }
+        const match = options?.find((o: SelectOption) => {
+            return o.value.toString() === val;
+        });
+        if (match) {
+            onSelect?.(match);
+        }
+    }
+
+    function handleCommandSelect(option: SelectOption) {
+        if (onSelect) {
+            onSelect(option);
+        }
+        else {
+            $formData[name] = option.value as T[FormPath<T>];
+        }
+        closeAndFocusTrigger(triggerId);
+    }
 </script>
 
 <div class='relative my-1.25 h-fit'>
     {#if searchSelectInput}
-        <Form.Field form={formStore} {name} class='flex flex-col'>
+        <!-- autocomplete select input -->
+        <Form.Field form={formStore} {name} class='flex flex-col my-4'>
             <Form.Control>
                 {#snippet children({ props })}
                     <Popover.Root bind:open>
@@ -128,7 +144,10 @@
                             {name}
                         />
 
-                        <Popover.Content class='min-w-[320px] p-0'>
+                        <Popover.Content class='min-w-[320px] p-0' side='bottom'
+                                         align='start'
+                                         sideOffset={4}
+                                         avoidCollisions={false}>
                             <Command.Root>
                                 <Command.Input
                                     oninput={(e) => {
@@ -147,11 +166,7 @@
                                             <Command.Item
                                                 value={option.label}
                                                 onSelect={() => {
-                                                    $formData[name]
-                                                        = option.value as T[FormPath<T>];
-                                                    closeAndFocusTrigger(
-                                                        triggerId,
-                                                    );
+                                                    handleCommandSelect(option);
                                                 }}
                                             >
                                                 {option.label}
@@ -175,13 +190,15 @@
             <Form.FieldErrors />
         </Form.Field>
     {:else if selectInput}
-        <Form.Field form={formStore} {name}>
+        <!-- simple select input -->
+        <Form.Field form={formStore} {name} class='my-4'>
             <Form.Control>
                 {#snippet children({ props })}
                     <Label class={labelClass}>{label}</Label>
                     <Select.Root
                         type='single'
                         bind:value={$formData[name] as string}
+                        onValueChange={handleSelectValueChange}
                     >
                         <Select.Trigger
                             {...props}
@@ -237,7 +254,7 @@
             />
         </Form.Field>
     {:else if textareaInput}
-        <Form.Field form={formStore} {name}>
+        <Form.Field form={formStore} {name} class='my-4'>
             <Form.Control>
                 {#snippet children({ props })}
                     <Label class={labelClass}>{label}</Label>
