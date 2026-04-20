@@ -232,8 +232,8 @@ export const roleSchema = z.object({
 });
 
 export const permissionConditionSchema = z.object({
-    field: z.string(),
-    operator: z.enum(['eq', 'neq', 'in', 'startsWith']),
+    field: z.string().optional(),
+    operator: z.enum(['eq', 'neq', 'in', 'startsWith']).optional(),
     value: z.string(),
 });
 
@@ -244,6 +244,12 @@ export const permissionSchema = z.object({
     effect: z.enum(['ALLOW', 'DENY']),
     conditions: z.array(permissionConditionSchema).nullable().optional(),
     description: z.string().nullable().optional(),
+});
+
+export const roleRequestSchema = z.object({
+    name: z.string().min(1, 'Name is required'),
+    permissions: z.array(permissionSchema).min(1, 'At least one permission is required'),
+    description: z.string().optional(),
 });
 
 export const groupSchema = z.object({
@@ -273,3 +279,11 @@ export const groupListResponseSchema = z.object({
 export const roleListResponseSchema = z.array(roleSchema);
 export const permissionListResponseSchema = z.array(permissionSchema);
 export const sessionListResponseSchema = z.array(sessionSchema);
+//  main role with permission
+export const rolePermissionResponseSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    permissions: z.array(permissionSchema),
+    description: z.string().nullable().optional(),
+    isSystem: z.boolean().optional(),
+});

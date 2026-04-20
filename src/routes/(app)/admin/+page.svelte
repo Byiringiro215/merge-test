@@ -282,10 +282,10 @@
     </div>
 {/snippet}
 
-<AppLayout containerClass='px-4 sm:px-6 lg:px-10'>
+<AppLayout containerClass=' border '>
     <!-- Toolbar: Search + Filter + Create User -->
     <div
-        class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-5'
+        class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-5'
     >
         <div class='relative w-full sm:max-w-xs'>
             <Search
@@ -296,7 +296,7 @@
                 placeholder='Search by email...'
                 bind:value={searchInput}
                 oninput={handleSearchInput}
-                class='pl-10'
+                class='pl-10 rounded'
             />
         </div>
 
@@ -304,7 +304,7 @@
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
                     {#snippet child({ props })}
-                        <Button {...props} variant='outline' class='gap-2'>
+                        <Button {...props} variant='outline' class='gap-2 rounded'>
                             <Filter class='h-4 w-4' />
                             Filter
                         </Button>
@@ -338,8 +338,8 @@
                     {/each}
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
-            <Button class='gap-2' onclick={() => openUserDialog()}>
-                <Plus class='h-4 w-4' />
+            <Button class='gap-2 text-xs rounded' onclick={() => openUserDialog()}>
+                <Plus class='h-3 w-3' />
                 Create User
             </Button>
         </div>

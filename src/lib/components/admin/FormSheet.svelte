@@ -33,9 +33,10 @@
         if (!isSubmitting)
             onOpenChange(v);
     }}
+
 >
-    <Dialog.Content class='sm:max-w-md'>
-        <Dialog.Header>
+    <Dialog.Content class='sm:max-w-2xl p-10'>
+        <Dialog.Header class='py-2'>
             <Dialog.Title>{title}</Dialog.Title>
             {#if description}
                 <Dialog.Description>{description}</Dialog.Description>

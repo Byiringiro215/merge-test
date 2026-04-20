@@ -1,26 +1,14 @@
 <script lang='ts'>
-    import type { Schema } from '$lib/api/paths';
-    import type { Permission, Role } from '$lib/datamodel/admin';
-    import { api } from '$lib/api';
+    import type { PermissionRes, Role } from '$lib/datamodel/admin';
     import FormField from '$lib/components/form-field/form-field.svelte';
     import { Badge } from '$lib/components/ui/badge';
     import { Button } from '$lib/components/ui/button';
-    import {
-        permissionListResponseSchema,
-        roleSchema,
-    } from '$lib/types/zod-schemas-api';
-    import { extractErrorMessage } from '@bajustone/fetcher';
+    import { roleRequestSchema } from '$lib/types/zod-schemas-api';
     import { X } from '@lucide/svelte';
     import { defaults, superForm } from 'sveltekit-superforms';
-    import { zod } from 'sveltekit-superforms/adapters';
-    import { z } from 'zod/v3';
-    import FormSheet from './FormSheet.svelte';
-
-    const roleFormSchema = z.object({
-        name: z.string().min(1, 'Role name is required'),
-        description: z.string().optional().default(''),
-        selectedPermission: z.string().optional().default(''),
-    });
+    import { zod4 } from 'sveltekit-superforms/adapters';
+    import { createRole, fetchAllPermissions, fetchRoleById, updateRole } from '../../../../routes/(app)/admin/roles/role.remote';
+    import FormSheet from '../FormSheet.svelte';
 
     interface Props {
         open: boolean;
@@ -32,80 +20,78 @@
     const { open, role, onOpenChange, onSuccess }: Props = $props();
 
     // Superforms setup (SPA mode)
-    const form = superForm(defaults(zod(roleFormSchema)), {
+    const form = superForm(defaults(zod4(roleRequestSchema)), {
         SPA: true,
-        validators: zod(roleFormSchema),
+        validators: zod4(roleRequestSchema),
     });
 
     const { form: formData, validateForm } = form;
 
-    // Permission state
-    let availablePermissions = $state<Permission[]>([]);
-    let selectedPermissions = $state<Permission[]>([]);
     let isSubmitting = $state(false);
     let errorMessage = $state('');
+    let originalPermissionIds = $state<Set<number>>(new Set());
 
     const isEditing = $derived(role !== null);
 
+    const permissionsQuery = $derived(fetchAllPermissions());
+    const availablePermissions = $derived(
+        (permissionsQuery.current ?? []) as unknown as PermissionRes[],
+    );
+
     const permissionOptions = $derived(
         availablePermissions
-            .filter(p => !selectedPermissions.some(s => s.id === p.id))
+            .filter(p => !$formData.permissions.some(s => s.id === p.id))
             .map(p => ({
                 label: `${p.resource}:${p.action} (${p.effect})`,
                 value: String(p.id),
             })),
     );
 
-    // Watch for permission selection from the searchSelectInput
-    $effect(() => {
-        const selectedId = $formData.selectedPermission;
-        if (selectedId) {
-            const permission = availablePermissions.find(
-                p => String(p.id) === selectedId,
-            );
-            if (
-                permission
-                && !selectedPermissions.some(s => s.id === permission.id)
-            ) {
-                selectedPermissions = [...selectedPermissions, permission];
-            }
-            $formData.selectedPermission = '';
-        }
-    });
+    const addPermission = (permissionId: string) => {
+        // Add a permission (looked up by id in the latest server result) to the form state.
+        const id = Number(permissionId);
 
-    const fetchPermissions = async () => {
-        try {
-            const result = await api.get('/iam/permissions', {
-                responseSchema: permissionListResponseSchema,
-            }).result();
-            if (result.ok) {
-                availablePermissions = result.data as typeof availablePermissions;
-            }
-        }
-        catch {
-        // silently fail - permissions list will be empty
-        }
+        const permission = availablePermissions.find(p => p.id === id);
+        if (!permission)
+            return;
+
+        if ($formData.permissions.some(p => p.id === id))
+            return;
+
+        $formData.permissions = [...$formData.permissions, permission];
     };
 
     $effect(() => {
-        if (open) {
-            fetchPermissions();
-            if (role) {
-                $formData.name = role.name;
-                $formData.description = role.description ?? '';
-            }
-            else {
-                $formData.name = '';
-                $formData.description = '';
-            }
-            selectedPermissions = [];
-            $formData.selectedPermission = '';
-            errorMessage = '';
+        if (!open)
+            return;
+
+        errorMessage = '';
+
+        if (role) {
+            // Pre-populate name/description from the row data for instant feedback,
+            // then async-fetch the full role detail for its permissions.
+            $formData.name = role.name;
+            $formData.description = role.description ?? '';
+            $formData.permissions = [];
+            originalPermissionIds = new Set();
+
+            void (async () => {
+                const detail = await fetchRoleById(role.id);
+                const loaded = (detail.permissions ?? []) as PermissionRes[];
+                $formData.permissions = loaded;
+                originalPermissionIds = new Set(loaded.map(p => p.id));
+            })();
+        }
+        else {
+            $formData.name = '';
+            $formData.description = '';
+            $formData.permissions = [];
+            originalPermissionIds = new Set();
         }
     });
 
     const removePermission = (permissionId: number) => {
-        selectedPermissions = selectedPermissions.filter(
+        $formData.permissions = $formData.permissions.filter(
             p => p.id !== permissionId,
         );
     };
@@ -113,57 +99,42 @@
     const handleSubmit = async () => {
         errorMessage = '';
 
-        const result = await validateForm({ update: true });
-        if (!result.valid)
-            return;
-
-        if (!isEditing && selectedPermissions.length === 0) {
-            errorMessage = 'Select at least one permission for the role';
+        const validated = await validateForm({ update: true });
+        if (!validated.valid) {
             return;
         }
 
+        const data = validated.data;
+        const permissions = (data.permissions ?? []) as PermissionRes[];
+
         isSubmitting = true;
         try {
-            const permissionInputs = selectedPermissions.map(p => ({
-                resource: p.resource,
-                action: p.action,
-                effect: p.effect,
-                ...(p.conditions?.length ? { conditions: p.conditions } : {}),
-            })) as Schema<'PermissionInput'>[];
+            if (role) {
+                const addedPermissions = permissions.filter(
+                    p => !originalPermissionIds.has(p.id),
+                );
 
-            if (isEditing && role) {
-                const result = await api.put('/iam/roles/{id}', {
-                    params: { id: role.id },
-                    body: {
-                        name: $formData.name,
-                        description: $formData.description || undefined,
-                    },
-                    responseSchema: roleSchema,
-                }).result();
-                if (!result.ok) {
-                    errorMessage
-                        = extractErrorMessage(result.error) || 'Failed to update role';
-                    return;
-                }
+                await updateRole({
+                    id: role.id,
+                    name: data.name,
+                    description: data.description,
+                    addedPermissions: addedPermissions as never,
+                });
             }
             else {
-                const result = await api.post('/iam/roles', {
-                    body: {
-                        name: $formData.name,
-                        permissions: permissionInputs,
-                        description: $formData.description || undefined,
-                    },
-                    responseSchema: roleSchema,
-                }).result();
-                if (!result.ok) {
-                    errorMessage
-                        = extractErrorMessage(result.error) || 'Failed to create role';
-                    return;
-                }
+                await createRole({
+                    name: data.name,
+                    description: data.description,
+                    permissions: permissions as never,
+                });
             }
 
-            onOpenChange(false);
             onSuccess();
+            onOpenChange(false);
+        }
+        catch (err) {
+            errorMessage
+                = err instanceof Error ? err.message : 'Failed to save role';
         }
         finally {
             isSubmitting = false;
@@ -203,24 +174,26 @@
             formStore={form}
             name='description'
             label='Description'
+            containerClass=""
             placeholder='Optional description'
+            textareaInput={true}
             disabled={isSubmitting}
         />
 
         <div class='space-y-2'>
             <FormField
                 formStore={form}
-                name='selectedPermission'
+                name='permissions'
                 label='Permissions'
                 searchSelectInput={true}
                 options={permissionOptions}
                 placeholder='Search and select permissions...'
-                disabled={isSubmitting}
+                onSelect={option => addPermission(String(option.value))}
             />
 
-            {#if selectedPermissions.length > 0}
+            {#if $formData.permissions.length > 0}
                 <div class='space-y-2 max-h-48 overflow-y-auto'>
-                    {#each selectedPermissions as permission (permission.id)}
+                    {#each $formData.permissions as permission, i(i)}
                         <div
                             class='flex items-start justify-between gap-2 rounded-md border p-2.5'
                         >
