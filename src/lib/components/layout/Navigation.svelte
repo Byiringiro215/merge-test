@@ -1,9 +1,8 @@
 <script lang='ts'>
-    import type { Resource } from '$lib/auth/index.svelte';
-    import type { Component } from 'svelte';
+    import type { NavItem } from '$lib/types/nav';
     import { resolve } from '$app/paths';
     import { page } from '$app/state';
-    import { getAuthState, hasPermission, logout } from '$lib/auth/index.svelte';
+    import { getAuthState, logout } from '$lib/auth/index.svelte';
     import {
         DropdownMenu,
         DropdownMenuContent,
@@ -13,90 +12,22 @@
         DropdownMenuTrigger,
     } from '$lib/components/ui/dropdown-menu';
     import {
-        BookOpen,
-        GraduationCap,
-        LayoutGrid,
         LogOut,
         Menu,
-        Monitor,
         Search,
-        Settings,
         X,
     } from '@lucide/svelte';
     import { onDestroy, onMount } from 'svelte';
     import { cubicOut } from 'svelte/easing';
     import { slide } from 'svelte/transition';
 
-    interface SubNavItem {
-        label: string;
-        href: string;
+    interface Props {
+        navItems: NavItem[];
     }
 
-    interface NavItem {
-        id: string;
-        label: string;
-        href: string;
-        icon: Component;
-        resource: Resource;
-        subNav?: SubNavItem[];
-    }
+    const { navItems }: Props = $props();
 
     const auth = getAuthState();
-
-    const allNavItems: NavItem[] = [
-        {
-            id: 'dg-general',
-            label: 'DG General',
-            href: '/dashboard',
-            icon: LayoutGrid,
-            resource: 'sdms:schools',
-        },
-        {
-            id: 'curriculum',
-            label: 'Curriculum',
-            href: '/curricula',
-            icon: BookOpen,
-            resource: 'sdms:schools',
-            subNav: [
-                { label: 'General', href: '/curricula' },
-                { label: 'Curriculum', href: '/curricula/curriculum' },
-                { label: 'Schools', href: '/curricula/schools' },
-            ],
-        },
-        {
-            id: 'training',
-            label: 'Training',
-            href: '/training',
-            icon: GraduationCap,
-            resource: 'sdms:staff',
-            subNav: [
-                { label: 'General', href: '/training' },
-                { label: 'Schools', href: '/training/schools' },
-                { label: 'Students', href: '/training/students' },
-                { label: 'Trades', href: '/training/trades' },
-                { label: 'Courses', href: '/training/courses' },
-            ],
-        },
-        {
-            id: 'digital-tech',
-            label: 'Digital Tech',
-            href: '/digitalTech',
-            icon: Monitor,
-            resource: 'sdms:schools',
-            subNav: [
-                { label: 'General', href: '/digitalTech' },
-                { label: 'Schools', href: '/digitalTech/schools' },
-                { label: 'Devices', href: '/digitalTech/Devices' },
-                { label: 'E-learning', href: '/digitalTech/e-learning' },
-            ],
-        },
-    ];
-
-    const navItems = $derived(
-        auth.permissionsLoaded
-            ? allNavItems.filter(item => hasPermission(item.resource, 'read'))
-            : [...allNavItems],
-    );
 
     const subNavRefs: HTMLAnchorElement[] = [];
     let indicatorStyle = $state('');
@@ -258,14 +189,6 @@
                     class='h-9 w-64 rounded-lg border border-gray-200 bg-white pl-9 pr-4 text-sm placeholder-gray-400 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
                 />
             </div>
-
-            <button
-                type='button'
-                class='rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700'
-                aria-label='Settings'
-            >
-                <Settings class='h-5 w-5' />
-            </button>
 
             <!-- User Avatar Dropdown -->
             <DropdownMenu>
