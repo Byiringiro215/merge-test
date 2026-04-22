@@ -11,7 +11,7 @@
         CardHeader,
         CardTitle,
     } from '$lib/components/ui/card';
-    import { studentDetailResponse } from '$lib/types/zod-schemas-api';
+    import { studentDetailResponse } from '$lib/types/api-schemas';
     import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
     import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
     import BookOpenIcon from '@lucide/svelte/icons/book-open';
