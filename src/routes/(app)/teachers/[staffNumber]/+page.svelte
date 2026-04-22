@@ -13,7 +13,7 @@
         CardHeader,
         CardTitle,
     } from '$lib/components/ui/card';
-    import { staffDetailResponse } from '$lib/types/zod-schemas-api';
+    import { staffDetailResponse } from '$lib/types/api-schemas';
     import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
     import BookOpenIcon from '@lucide/svelte/icons/book-open';
     import BriefcaseIcon from '@lucide/svelte/icons/briefcase';

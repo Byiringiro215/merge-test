@@ -15,7 +15,7 @@
     import {
         createPaginatedResponseSchema,
         staffSummary,
-    } from '$lib/types/zod-schemas-api';
+    } from '$lib/types/api-schemas';
     import BookOpenIcon from '@lucide/svelte/icons/book-open';
     import FileTextIcon from '@lucide/svelte/icons/file-text';
     import HeartIcon from '@lucide/svelte/icons/heart';

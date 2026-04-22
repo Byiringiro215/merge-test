@@ -1,11 +1,11 @@
-import type { student, studentSummary } from '$lib/types/zod-schemas-api';
-import type z from 'zod/v4';
+import type { student, studentSummary } from '$lib/types/api-schemas';
+import type { Infer } from '@bajustone/fetcher/schema';
 
 // Single student summary from the list
-export type StudentSummary = z.infer<typeof studentSummary>;
+export type StudentSummary = Infer<typeof studentSummary>;
 
 // Full student details
-export type Student = z.infer<typeof student>;
+export type Student = Infer<typeof student>;
 
 // Gender options
 export type Gender = 'MALE' | 'FEMALE';

@@ -20,7 +20,7 @@
     import {
         createPaginatedResponseSchema,
         studentSummary,
-    } from '$lib/types/zod-schemas-api';
+    } from '$lib/types/api-schemas';
     import Building2Icon from '@lucide/svelte/icons/building-2';
     import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
     import CircleXIcon from '@lucide/svelte/icons/circle-x';
