@@ -1,7 +1,13 @@
 import { command, getRequestEvent, query } from '$app/server';
 import { serverApi as api } from '$lib/api';
 import { getAuthCookies } from '$lib/auth/cookies';
-import { extractErrorMessage } from '@bajustone/fetcher';
+import {
+    createUserBodySchema,
+    deleteUserSchema,
+    fetchUsersQuerySchema,
+    updateUserCommandSchema,
+} from '$lib/types/form-schemas';
+import * as fetcher from '@bajustone/fetcher';
 import { error } from '@sveltejs/kit';
 
 function authHeader() {
@@ -10,15 +16,7 @@ function authHeader() {
     return { Authorization: `Bearer ${accessToken}` };
 }
 
-export interface FetchUsersArgs {
-    limit?: number;
-    offset?: number;
-    search?: string;
-    sortBy?: string;
-    sortDirection?: 'asc' | 'desc';
-}
-
-export const fetchAllUsers = query('unchecked', async (args: FetchUsersArgs = {}) => {
+export const fetchAllUsers = query(fetchUsersQuerySchema, async (args) => {
     const result = await api.get('/auth/users', {
         query: {
             ...(args.limit !== undefined && { limit: args.limit }),
@@ -37,31 +35,20 @@ export const fetchAllUsers = query('unchecked', async (args: FetchUsersArgs = {}
     return result.data;
 });
 
-export interface CreateUserInput {
-    name: string;
-    email: string;
-    password?: string;
-    isActive?: boolean;
-}
-
-export interface UpdateUserInput extends CreateUserInput {
-    id: number;
-}
-
-export const createUser = command('unchecked', async (input: CreateUserInput) => {
+export const createUser = command(createUserBodySchema, async (body) => {
     const result = await api.post('/auth/users', {
-        body: input,
+        body,
         headers: authHeader(),
     }).result();
 
     if (!result.ok) {
-        error(400, extractErrorMessage(result.error) || 'Failed to create user');
+        error(400, fetcher.extractErrorMessage(result.error) || 'Failed to create user');
     }
 
     return result.data;
 });
 
-export const updateUser = command('unchecked', async ({ id, ...body }: UpdateUserInput) => {
+export const updateUser = command(updateUserCommandSchema, async ({ id, ...body }) => {
     const result = await api.put('/auth/users/{id}', {
         params: { id },
         body,
@@ -69,20 +56,20 @@ export const updateUser = command('unchecked', async ({ id, ...body }: UpdateUse
     }).result();
 
     if (!result.ok) {
-        error(400, extractErrorMessage(result.error) || 'Failed to update user');
+        error(400, fetcher.extractErrorMessage(result.error) || 'Failed to update user');
     }
 
     return result.data;
 });
 
-export const deleteUser = command('unchecked', async ({ id }: { id: number }) => {
+export const deleteUser = command(deleteUserSchema, async ({ id }) => {
     const result = await api.delete('/auth/users/{id}', {
         params: { id },
         headers: authHeader(),
     }).result();
 
     if (!result.ok) {
-        error(400, extractErrorMessage(result.error) || 'Failed to delete user');
+        error(400, fetcher.extractErrorMessage(result.error) || 'Failed to delete user');
     }
 
     return result.data;

@@ -3,10 +3,7 @@
     import FormField from '$lib/components/form-field/form-field.svelte';
     import { Button } from '$lib/components/ui/button';
     import * as Dialog from '$lib/components/ui/dialog';
-    import * as s from '@bajustone/fetcher/schema';
     import { LoaderCircle } from '@lucide/svelte';
-    import { defaults, superForm } from 'sveltekit-superforms';
-    import { standard } from 'sveltekit-superforms/adapters';
     import {
         bindRoleToGroup,
         bindRoleToUser,
@@ -23,25 +20,8 @@
 
     const { open, role, onOpenChange }: Props = $props();
 
-    const subjectSchema = s.object({
-        subjectId: s.default_(s.string(), ''),
-    });
-
-    const subjectDefaults = { subjectId: '' };
-    const subjectAdapter = standard(subjectSchema, { defaults: subjectDefaults });
-
-    const userForm = superForm(
-        defaults(subjectDefaults, subjectAdapter),
-        { SPA: true, validators: subjectAdapter },
-    );
-
-    const groupForm = superForm(
-        defaults(subjectDefaults, subjectAdapter),
-        { SPA: true, validators: subjectAdapter },
-    );
-
-    const { form: userFormData, reset: resetUserForm } = userForm;
-    const { form: groupFormData, reset: resetGroupForm } = groupForm;
+    let userSubjectId = $state('');
+    let groupSubjectId = $state('');
 
     let userSearchTerm = $state('');
     let groupFilterTerm = $state('');
@@ -96,8 +76,8 @@
 
     $effect(() => {
         if (!open) {
-            resetUserForm({ data: { subjectId: '' } });
-            resetGroupForm({ data: { subjectId: '' } });
+            userSubjectId = '';
+            groupSubjectId = '';
             userSearchTerm = '';
             groupFilterTerm = '';
             userError = '';
@@ -110,8 +90,8 @@
     async function handleUserAction(action: 'assign' | 'unassign') {
         if (!role)
             return;
-        const raw = $userFormData.subjectId;
-        const userId = Number(raw);
+
+        const userId = Number(userSubjectId);
         if (!userId) {
             userError = 'Please select a user first';
             userSuccess = '';
@@ -149,8 +129,8 @@
     async function handleGroupAction(action: 'assign' | 'unassign') {
         if (!role)
             return;
-        const raw = $groupFormData.subjectId;
-        const groupId = Number(raw);
+
+        const groupId = Number(groupSubjectId);
         if (!groupId) {
             groupError = 'Please select a group first';
             groupSuccess = '';
@@ -220,11 +200,12 @@
                 {/if}
 
                 <FormField
-                    formStore={userForm}
-                    name='subjectId'
+                    name='userSubjectId'
                     label='Select user'
                     searchSelectInput={true}
                     options={userOptions}
+                    value={userSubjectId}
+                    onSelect={option => (userSubjectId = String(option.value))}
                     onSearch={debouncedUserSearch}
                     placeholder='Search users by email...'
                     disabled={isUserAssigning}
@@ -276,11 +257,12 @@
                 {/if}
 
                 <FormField
-                    formStore={groupForm}
-                    name='subjectId'
+                    name='groupSubjectId'
                     label='Select group'
                     searchSelectInput={true}
                     options={groupOptions}
+                    value={groupSubjectId}
+                    onSelect={option => (groupSubjectId = String(option.value))}
                     onSearch={debouncedGroupSearch}
                     placeholder='Search groups by name...'
                     disabled={isGroupAssigning}
