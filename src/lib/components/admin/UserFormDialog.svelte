@@ -3,23 +3,13 @@
     import FormField from '$lib/components/form-field/form-field.svelte';
     import { Checkbox } from '$lib/components/ui/checkbox';
     import { Label } from '$lib/components/ui/label';
-    import { userSchema } from '$lib/types/api-schemas';
-    import * as s from '@bajustone/fetcher/schema';
-    import { defaults, superForm } from 'sveltekit-superforms';
-    import { standard } from 'sveltekit-superforms/adapters';
     import {
-        createUser,
-        updateUser,
-    } from '../../../routes/(app)/admin/page.remote';
+        createUserBodySchema,
+        updateUserCommandSchema,
+    } from '$lib/types/form-schemas';
+    import * as s from '@bajustone/fetcher/schema';
+    import { createUser, updateUser } from '../../../routes/(app)/admin/page.remote';
     import FormSheet from './FormSheet.svelte';
-
-    const userFormSchema = s.extend(
-        s.pick(userSchema, ['name', 'email', 'isActive'] as const),
-        { password: s.default_(s.string(), '') },
-    );
-
-    const userFormDefaults = { name: '', email: '', isActive: true, password: '' };
-    const userFormAdapter = standard(userFormSchema, { defaults: userFormDefaults });
 
     interface Props {
         open: boolean;
@@ -30,16 +20,15 @@
 
     const { open, user, onOpenChange, onSuccess }: Props = $props();
 
-    const form = superForm(
-        defaults(userFormDefaults, userFormAdapter),
-        {
-            SPA: true,
-            validators: userFormAdapter,
-        },
-    );
+    const emptyValues = {
+        name: '',
+        email: '',
+        isActive: true,
+        password: '',
+    };
 
-    const { form: formData, validateForm, reset } = form;
-
+    let values = $state({ ...emptyValues });
+    let errors = $state<Record<string, string>>({});
     let isSubmitting = $state(false);
     let errorMessage = $state('');
 
@@ -47,75 +36,54 @@
 
     $effect(() => {
         if (open) {
-            if (user) {
-                reset({
-                    data: {
-                        name: user.name,
-                        email: user.email,
-                        isActive: user.isActive,
-                        password: '',
-                    },
-                });
-            }
-            else {
-                reset({
-                    data: {
-                        name: '',
-                        email: '',
-                        isActive: true,
-                        password: '',
-                    },
-                });
-            }
-            errorMessage = '';
-        }
-        else {
-            reset({
-                data: { name: '', email: '', isActive: true, password: '' },
-            });
+            values = user
+                ? { name: user.name, email: user.email, isActive: user.isActive, password: '' }
+                : { ...emptyValues };
+            errors = {};
             errorMessage = '';
         }
     });
 
     async function handleSubmit() {
         errorMessage = '';
+        errors = {};
 
-        const result = await validateForm({ update: true });
-        if (!result.valid)
-            return;
+        // Mirrors each command's server-side schema. On edit, omit `password`
+        // when left blank ("keep existing"); on create, send whatever was typed.
+        const base = {
+            name: values.name,
+            email: values.email,
+            isActive: values.isActive,
+            ...(values.password ? { password: values.password } : {}),
+        };
 
         isSubmitting = true;
         try {
-            if (isEditing && user) {
-                await updateUser({
-                    id: user.id,
-                    name: $formData.name,
-                    email: $formData.email,
-                    isActive: $formData.isActive,
-                    ...($formData.password
-                        ? { password: $formData.password }
-                        : {}),
-                });
+            if (user) {
+                const result = s.parseForm(updateUserCommandSchema, { id: user.id, ...base });
+                if (!result.ok) {
+                    errors = result.errors;
+                    return;
+                }
+                await updateUser(result.value);
             }
             else {
-                await createUser({
-                    name: $formData.name,
-                    email: $formData.email,
-                    isActive: $formData.isActive,
-                    ...($formData.password
-                        ? { password: $formData.password }
-                        : {}),
-                });
+                const result = s.parseForm(createUserBodySchema, base);
+                if (!result.ok) {
+                    errors = result.errors;
+                    return;
+                }
+                await createUser(result.value);
             }
 
             onOpenChange(false);
             onSuccess();
         }
         catch (err) {
-            const fallback = isEditing
-                ? 'Failed to update user'
-                : 'Failed to create user';
-            errorMessage = err instanceof Error ? err.message : fallback;
+            errorMessage
+                = err instanceof Error
+                    ? err.message
+                    : isEditing ? 'Failed to update user' : 'Failed to create user';
         }
         finally {
             isSubmitting = false;
@@ -144,38 +112,44 @@
 
     <div class='space-y-4'>
         <FormField
-            formStore={form}
             name='name'
             label='Name'
             placeholder='Full name'
+            value={values.name}
+            onInput={v => (values.name = v)}
+            error={errors.name}
             disabled={isSubmitting}
         />
 
         <FormField
-            formStore={form}
             name='email'
             label='Email'
             type='email'
             placeholder='user@example.com'
+            value={values.email}
+            onInput={v => (values.email = v)}
+            error={errors.email}
             disabled={isSubmitting}
         />
 
         <FormField
-            formStore={form}
             name='password'
             label={isEditing ? 'Password (leave blank to keep)' : 'Password(Optional)'}
             type='password'
             placeholder='Enter password'
+            value={values.password}
+            onInput={v => (values.password = v)}
+            error={errors.password}
             disabled={isSubmitting}
         />
 
         <div class='flex items-center gap-2'>
             <Checkbox
                 id='user-active'
-                checked={$formData.isActive}
+                checked={values.isActive}
                 onCheckedChange={(v) => {
                     if (typeof v === 'boolean')
-                        $formData.isActive = v;
+                        values.isActive = v;
                 }}
                 disabled={isSubmitting}
             />
