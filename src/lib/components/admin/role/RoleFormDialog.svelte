@@ -3,10 +3,9 @@
     import FormField from '$lib/components/form-field/form-field.svelte';
     import { Badge } from '$lib/components/ui/badge';
     import { Button } from '$lib/components/ui/button';
-    import { roleRequestSchema } from '$lib/types/api-schemas';
+    import { roleFormSchema } from '$lib/types/form-schemas';
+    import * as s from '@bajustone/fetcher/schema';
     import { X } from '@lucide/svelte';
-    import { defaults, superForm } from 'sveltekit-superforms';
-    import { standard } from 'sveltekit-superforms/adapters';
     import { createRole, fetchAllPermissions, fetchRoleById, updateRole } from '../../../../routes/(app)/admin/roles/role.remote';
     import FormSheet from '../FormSheet.svelte';
 
@@ -19,25 +18,18 @@
 
     const { open, role, onOpenChange, onSuccess }: Props = $props();
 
-    // Superforms setup (SPA mode)
-    const roleFormDefaults = {
+    const emptyValues = {
         name: '',
-        permissions: [] as PermissionRes[],
         description: '',
+        permissions: [] as PermissionRes[],
     };
-    const roleFormAdapter = standard(roleRequestSchema, {
-        defaults: roleFormDefaults,
-    });
-    const form = superForm(defaults(roleFormDefaults, roleFormAdapter), {
-        SPA: true,
-        validators: roleFormAdapter,
-    });
 
-    const { form: formData, validateForm } = form;
+    let values = $state({ ...emptyValues });
+    let errors = $state<Record<string, string>>({});
+    let originalPermissionIds = $state<Set<number>>(new Set());
 
     let isSubmitting = $state(false);
     let errorMessage = $state('');
-    let originalPermissionIds = $state<Set<number>>(new Set());
 
     const isEditing = $derived(role !== null);
 
@@ -48,7 +40,7 @@
 
     const permissionOptions = $derived(
         availablePermissions
-            .filter(p => !$formData.permissions.some(s => s.id === p.id))
+            .filter(p => !values.permissions.some(sel => sel.id === p.id))
             .map(p => ({
                 label: `${p.resource}:${p.action} (${p.effect})`,
                 value: String(p.id),
@@ -58,15 +50,12 @@
     const addPermission = (permissionId: string) => {
         // Add a permission (looked up by id in the latest server result) to the form state.
         const id = Number(permissionId);
-
         const permission = availablePermissions.find(p => p.id === id);
         if (!permission)
             return;
-
-        if ($formData.permissions.some(p => p.id === id))
+        if (values.permissions.some(p => p.id === id))
             return;
-
-        $formData.permissions = [...$formData.permissions, permission];
+        values.permissions = [...values.permissions, permission];
     };
 
     $effect(() => {
@@ -74,51 +63,64 @@
             return;
 
         errorMessage = '';
+        errors = {};
 
         if (role) {
             // Pre-populate name/description from the row data for instant feedback,
             // then async-fetch the full role detail for its permissions.
-            $formData.name = role.name;
-            $formData.description = role.description ?? '';
-            $formData.permissions = [];
+            values = {
+                name: role.name,
+                description: role.description ?? '',
+                permissions: [],
+            };
             originalPermissionIds = new Set();
 
             void (async () => {
                 const detail = await fetchRoleById(role.id);
                 const loaded = (detail.permissions ?? []) as PermissionRes[];
-                $formData.permissions = loaded;
+                values.permissions = loaded;
                 originalPermissionIds = new Set(loaded.map(p => p.id));
             })();
         }
         else {
-            $formData.name = '';
-            $formData.description = '';
-            $formData.permissions = [];
+            values = { ...emptyValues };
             originalPermissionIds = new Set();
         }
     });
 
     const removePermission = (permissionId: number) => {
-        $formData.permissions = $formData.permissions.filter(
+        values.permissions = values.permissions.filter(
             p => p.id !== permissionId,
         );
     };
 
     const handleSubmit = async () => {
         errorMessage = '';
+        errors = {};
 
-        const validated = await validateForm({ update: true });
-        if (!validated.valid) {
+        const result = s.parseForm(roleFormSchema, {
+            ...(role ? { id: role.id } : {}),
+            name: values.name,
+            description: values.description || undefined,
+            permissions: values.permissions,
+        });
+
+        if (!result.ok) {
+            errors = result.errors;
             return;
         }
 
-        const data = validated.data;
-        const permissions = (data.permissions ?? []) as PermissionRes[];
+        if (result.value.permissions.length === 0) {
+            errors.permissions = 'Select at least one permission for this role.';
+            return;
+        }
+
+        const data = result.value;
 
         isSubmitting = true;
         try {
             if (role) {
-                const addedPermissions = permissions.filter(
+                const addedPermissions = (data.permissions as PermissionRes[]).filter(
                     p => !originalPermissionIds.has(p.id),
                 );
 
@@ -133,7 +135,7 @@
                 await createRole({
                     name: data.name,
                     description: data.description,
-                    permissions: permissions as never,
+                    permissions: data.permissions as never,
                 });
             }
 
@@ -171,37 +173,42 @@
 
     <div class='space-y-4'>
         <FormField
-            formStore={form}
             name='name'
             label='Name'
             placeholder='Role name'
+            value={values.name}
+            onInput={v => (values.name = v)}
+            error={errors.name}
             disabled={isSubmitting}
         />
 
         <FormField
-            formStore={form}
             name='description'
             label='Description'
-            containerClass=""
             placeholder='Optional description'
             textareaInput={true}
+            containerClass=''
+            value={values.description}
+            onInput={v => (values.description = v)}
+            error={errors.description}
             disabled={isSubmitting}
         />
 
         <div class='space-y-2'>
             <FormField
-                formStore={form}
                 name='permissions'
                 label='Permissions'
                 searchSelectInput={true}
                 options={permissionOptions}
+                value=""
                 placeholder='Search and select permissions...'
                 onSelect={option => addPermission(String(option.value))}
+                error={errors.permissions}
             />
 
-            {#if $formData.permissions.length > 0}
+            {#if values.permissions.length > 0}
                 <div class='space-y-2 max-h-48 overflow-y-auto'>
-                    {#each $formData.permissions as permission, i(i)}
+                    {#each values.permissions as permission, i(i)}
                         <div
                             class='flex items-start justify-between gap-2 rounded-md border p-2.5'
                         >
@@ -237,8 +244,7 @@
                                 variant='ghost'
                                 size='icon'
                                 class='h-6 w-6 shrink-0 cursor-pointer'
-                                onclick={() =>
-                                    removePermission(permission.id)}
+                                onclick={() => removePermission(permission.id)}
                                 disabled={isSubmitting}
                             >
                                 <X class='h-3.5 w-3.5' />
