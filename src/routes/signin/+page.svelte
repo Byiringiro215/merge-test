@@ -1,9 +1,12 @@
 <script lang='ts'>
+    import type { LoginInput } from '$lib/types/form-schemas';
+    import type { StandardSchemaV1 } from '@bajustone/fetcher';
     import { goto, invalidateAll } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Button } from '$lib/components/ui/button';
     import { Card } from '$lib/components/ui/card';
+    import { loginSchema } from '$lib/types/form-schemas';
     import {
         ArrowRight,
         LifeBuoy,
@@ -14,7 +17,6 @@
     import { loginForm } from './login.remote';
 
     let isSubmitting = $state(false);
-    let errorMessage = $state('');
 
     function handleMicrosoftSignIn() {
     // Microsoft SSO — coming soon
@@ -115,29 +117,33 @@
 
                 <!-- Form -->
                 <form
-                    {...loginForm.enhance(async ({ submit }) => {
-                        errorMessage = '';
-                        isSubmitting = true;
-
-                        try {
-                            await submit();
-                            await invalidateAll();
-                            const redirect
-                                = page.url.searchParams.get('redirect') || '/';
-                            goto(resolve(redirect as any));
-                        }
-                        catch (e) {
-                            errorMessage = e instanceof Error ? e.message : 'Sign in failed. Please try again.';
-                            isSubmitting = false;
-                        }
-                    })}
+                    {...loginForm
+                        .preflight(loginSchema as unknown as StandardSchemaV1<LoginInput, LoginInput>)
+                        .enhance(async ({ submit }) => {
+                            isSubmitting = true;
+                            try {
+                                await submit();
+                                // If `invalid()` was called server-side or preflight
+                                // rejected, issues will be present on the form.
+                                if ((loginForm.fields.allIssues()?.length ?? 0) > 0)
+                                    return;
+                                await invalidateAll();
+                                const redirect = page.url.searchParams.get('redirect') || '/';
+                                await goto(resolve(redirect as any));
+                            }
+                            finally {
+                                isSubmitting = false;
+                            }
+                        })}
                 >
-                    <!-- Error Message -->
-                    {#if errorMessage}
+                    <!-- Error Message (form-level issues from invalid() or schema failures) -->
+                    {#if (loginForm.fields.allIssues()?.length ?? 0) > 0}
                         <div
                             class='mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-inter'
                         >
-                            {errorMessage}
+                            {#each loginForm.fields.allIssues() ?? [] as issue, i (i)}
+                                <div>{issue.message}</div>
+                            {/each}
                         </div>
                     {/if}
 

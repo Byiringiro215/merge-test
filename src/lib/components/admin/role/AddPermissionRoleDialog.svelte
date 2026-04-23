@@ -3,10 +3,9 @@
     import FormField from '$lib/components/form-field/form-field.svelte';
     import { Button } from '$lib/components/ui/button';
     import * as Dialog from '$lib/components/ui/dialog';
+    import { permissionPickerSchema } from '$lib/types/form-schemas';
     import * as s from '@bajustone/fetcher/schema';
     import { LoaderCircle } from '@lucide/svelte';
-    import { defaults, superForm } from 'sveltekit-superforms';
-    import { standard } from 'sveltekit-superforms/adapters';
     import {
         addPermissionToRole,
         fetchAllPermissions,
@@ -21,25 +20,10 @@
 
     const { open, role, onOpenChange, onSuccess }: Props = $props();
 
-    const permissionFormSchema = s.object({
-        permissionId: s.refined(
-            s.string(),
-            v => v.length >= 1,
-            'Please select a permission',
-        ),
-    });
-
-    const permissionFormDefaults = { permissionId: '' };
-    const permissionFormAdapter = standard(permissionFormSchema, {
-        defaults: permissionFormDefaults,
-    });
-
-    const form = superForm(
-        defaults(permissionFormDefaults, permissionFormAdapter),
-        { SPA: true, validators: permissionFormAdapter },
-    );
-
-    const { form: formData, validateForm, reset } = form;
+    let values = $state({ permissionId: '' });
+    let errors = $state<Record<string, string>>({});
+    let isSubmitting = $state(false);
+    let errorMessage = $state('');
 
     const permissionsQuery = $derived(fetchAllPermissions());
     const permissions = $derived<Permission[]>(
@@ -53,27 +37,29 @@
         })),
     );
 
-    let isSubmitting = $state(false);
-    let errorMessage = $state('');
-
     $effect(() => {
         if (!open) {
-            reset({ data: { permissionId: '' } });
+            values = { permissionId: '' };
+            errors = {};
             errorMessage = '';
         }
     });
 
     async function handleSubmit() {
         errorMessage = '';
+        errors = {};
+
         if (!role)
             return;
 
-        const validation = await validateForm({ update: true });
-        if (!validation.valid)
+        const result = s.parseForm(permissionPickerSchema, values);
+        if (!result.ok) {
+            errors = result.errors;
             return;
+        }
 
         const selectedPermission = permissions.find(
-            p => String(p.id) === $formData.permissionId,
+            p => String(p.id) === result.value.permissionId,
         );
         if (!selectedPermission) {
             errorMessage = 'Selected permission not found';
@@ -89,7 +75,7 @@
                     action: selectedPermission.action,
                     effect: selectedPermission.effect,
                     conditions: selectedPermission.conditions,
-                } as never,
+                },
             });
             onOpenChange(false);
             onSuccess?.();
@@ -132,12 +118,14 @@
             {/if}
 
             <FormField
-                formStore={form}
                 name='permissionId'
                 label='Permission'
                 searchSelectInput={true}
                 options={permissionOptions}
+                value={values.permissionId}
+                onSelect={option => (values.permissionId = String(option.value))}
                 placeholder='Search permissions...'
+                error={errors.permissionId}
                 disabled={isSubmitting}
             />
 
