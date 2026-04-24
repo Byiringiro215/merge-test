@@ -6,7 +6,7 @@
     import { ConfirmDialog, StatusBadge } from '$lib/components/admin';
     import UserFormDialog from '$lib/components/admin/UserFormDialog.svelte';
     import DataTable from '$lib/components/data-table/data-table.svelte';
-    import AppLayout from '$lib/components/layout/AppLayout.svelte';
+    import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import { Button } from '$lib/components/ui/button';
     import { Checkbox } from '$lib/components/ui/checkbox';
     import { renderComponent, renderSnippet } from '$lib/components/ui/data-table/index.js';
@@ -45,7 +45,7 @@
     const queryArgs = $derived({
         limit: PAGE_SIZE,
         offset: (currentPage - 1) * PAGE_SIZE,
-        search: searchParam || undefined,
+        ...(searchParam ? { search: searchParam } : {}),
         sortBy,
         sortDirection,
     });
@@ -54,6 +54,15 @@
     const users = $derived(usersQuery.current?.users ?? []);
     const totalUsers = $derived(usersQuery.current?.total ?? 0);
     const totalPages = $derived(Math.max(1, Math.ceil(totalUsers / PAGE_SIZE)));
+    // loading state
+    let isInitialLoad = $state(true);
+    $effect(() => {
+        if (!usersQuery.loading) {
+            isInitialLoad = false;
+        }
+    });
+
+    const showLoading = $derived(!isInitialLoad && usersQuery.loading);
 
     let searchInput = $state(untrack(() => searchParams.get('search') ?? ''));
     let searchDebounce: ReturnType<typeof setTimeout> | undefined;
@@ -68,7 +77,7 @@
     let isDeleting = $state(false);
     let deleteError = $state('');
 
-    function updateUrl(updates: Record<string, string | null>) {
+    const updateSearchParamUrl = (updates: Record<string, string | null>) => {
         const url = new URL(page.url);
         for (const [key, value] of Object.entries(updates)) {
             if (value === null || value === '') {
@@ -83,25 +92,25 @@
             keepFocus: true,
             noScroll: true,
         });
-    }
+    };
 
     function handleSearchInput() {
         clearTimeout(searchDebounce);
         searchDebounce = setTimeout(() => {
-            updateUrl({ search: searchInput.trim() || null, page: null });
+            updateSearchParamUrl({ search: searchInput.trim() || null, page: null });
         }, 300);
     }
 
     function handlePageChange(next: number) {
-        updateUrl({ page: next === 1 ? null : String(next) });
+        updateSearchParamUrl({ page: next === 1 ? null : String(next) });
     }
 
     function handleSortFieldChange(field: string) {
-        updateUrl({ sortBy: field === 'id' ? null : field, page: null });
+        updateSearchParamUrl({ sortBy: field === 'id' ? null : field, page: null });
     }
 
     function handleSortDirectionChange(direction: 'asc' | 'desc') {
-        updateUrl({ sortDirection: direction === 'desc' ? null : direction, page: null });
+        updateSearchParamUrl({ sortDirection: direction === 'desc' ? null : direction, page: null });
     }
 
     const refetchUsers = async () => {
@@ -282,81 +291,93 @@
     </div>
 {/snippet}
 
-<AppLayout containerClass=' border '>
-    <!-- Toolbar: Search + Filter + Create User -->
-    <div
-        class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-5'
-    >
-        <div class='relative w-full sm:max-w-xs'>
-            <Search
-                class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400'
-            />
-            <Input
-                type='text'
-                placeholder='Search by email...'
-                bind:value={searchInput}
-                oninput={handleSearchInput}
-                class='pl-10 rounded'
-            />
-        </div>
+<LoadingBar visible={showLoading} />
+<div class='sm:px-6 lg:px-10 pt-16   bg-[#FAFAFA] '>
 
-        <div class='flex items-center gap-3'>
-            <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                    {#snippet child({ props })}
-                        <Button {...props} variant='outline' class='gap-2 rounded'>
-                            <Filter class='h-4 w-4' />
-                            Filter
-                        </Button>
-                    {/snippet}
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align='end' class='w-56'>
-                    <DropdownMenu.Label>Sort direction</DropdownMenu.Label>
-                    <DropdownMenu.Item onclick={() => handleSortDirectionChange('asc')}>
-                        <ArrowUpAZ class='mr-2 h-4 w-4' />
-                        Ascending
-                        {#if sortDirection === 'asc'}
-                            <Check class='ml-auto h-4 w-4' />
-                        {/if}
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item onclick={() => handleSortDirectionChange('desc')}>
-                        <ArrowDownAZ class='mr-2 h-4 w-4' />
-                        Descending
-                        {#if sortDirection === 'desc'}
-                            <Check class='ml-auto h-4 w-4' />
-                        {/if}
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Separator />
-                    <DropdownMenu.Label>Sort by</DropdownMenu.Label>
-                    {#each SORT_FIELDS as field (field.value)}
-                        <DropdownMenu.Item onclick={() => handleSortFieldChange(field.value)}>
-                            {field.label}
-                            {#if sortBy === field.value}
+    <div class='border px-5 py-6 lg:py-8  lg:px-7'>
+        <div class='mb-10'>
+            <h1 class='text-[24px] font-bold text-gray-900 leading-tight'>
+                Users Management
+            </h1>
+            <p class='mt-1 text-sm text-gray-500'>
+                Manage system users. View, create, update, and remove user accounts.
+            </p>
+        </div>
+        <!-- Toolbar: Search + Filter + Create User -->
+        <div
+            class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-5'
+        >
+            <div class='relative w-full sm:max-w-xs'>
+                <Search
+                    class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400'
+                />
+                <Input
+                    type='text'
+                    placeholder='Search by email...'
+                    bind:value={searchInput}
+                    oninput={handleSearchInput}
+                    class='pl-10 rounded'
+                />
+            </div>
+
+            <div class='flex  justify-end items-center gap-3'>
+                <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                        {#snippet child({ props })}
+                            <Button {...props} variant='outline' class='gap-2 rounded'>
+                                <Filter class='h-4 w-4' />
+                                Filter
+                            </Button>
+                        {/snippet}
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content align='end' class='w-56'>
+                        <DropdownMenu.Label>Sort direction</DropdownMenu.Label>
+                        <DropdownMenu.Item onclick={() => handleSortDirectionChange('asc')}>
+                            <ArrowUpAZ class='mr-2 h-4 w-4' />
+                            Ascending
+                            {#if sortDirection === 'asc'}
                                 <Check class='ml-auto h-4 w-4' />
                             {/if}
                         </DropdownMenu.Item>
-                    {/each}
-                </DropdownMenu.Content>
-            </DropdownMenu.Root>
-            <Button class='gap-2 text-xs rounded' onclick={() => openUserDialog()}>
-                <Plus class='h-3 w-3' />
-                Create User
-            </Button>
+                        <DropdownMenu.Item onclick={() => handleSortDirectionChange('desc')}>
+                            <ArrowDownAZ class='mr-2 h-4 w-4' />
+                            Descending
+                            {#if sortDirection === 'desc'}
+                                <Check class='ml-auto h-4 w-4' />
+                            {/if}
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Separator />
+                        <DropdownMenu.Label>Sort by</DropdownMenu.Label>
+                        {#each SORT_FIELDS as field (field.value)}
+                            <DropdownMenu.Item onclick={() => handleSortFieldChange(field.value)}>
+                                {field.label}
+                                {#if sortBy === field.value}
+                                    <Check class='ml-auto h-4 w-4' />
+                                {/if}
+                            </DropdownMenu.Item>
+                        {/each}
+                    </DropdownMenu.Content>
+                </DropdownMenu.Root>
+                <Button class='gap-2 text-xs rounded' onclick={() => openUserDialog()}>
+                    <Plus class='h-3 w-3' />
+                    Create User
+                </Button>
+            </div>
+        </div>
+
+        <DataTable {columns} data={users} />
+
+        <div class='py-4'>
+            <Pagination
+                {currentPage}
+                {totalPages}
+                totalItems={totalUsers}
+                pageSize={PAGE_SIZE}
+                onPageChange={handlePageChange}
+            />
         </div>
     </div>
-
-    <DataTable {columns} data={users} />
-
-    <div class='py-4'>
-        <Pagination
-            {currentPage}
-            {totalPages}
-            totalItems={totalUsers}
-            pageSize={PAGE_SIZE}
-            onPageChange={handlePageChange}
-        />
-    </div>
-</AppLayout>
+</div>
 
 <UserFormDialog
     open={formDialogOpen}

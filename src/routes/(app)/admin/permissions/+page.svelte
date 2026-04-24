@@ -1,29 +1,39 @@
 <script lang='ts'>
-    import type { Permission } from '$lib/datamodel/admin';
+    import type { PermissionRes as Permission } from '$lib/datamodel/admin';
     import type { ColumnDef } from '@tanstack/table-core';
-    import { api } from '$lib/api';
+    import { goto } from '$app/navigation';
+    import { page } from '$app/state';
     import { ConfirmDialog } from '$lib/components/admin';
     import PermissionFormSheet from '$lib/components/admin/PermissionFormSheet.svelte';
     import DataTable from '$lib/components/data-table/data-table.svelte';
-    import AppLayout from '$lib/components/layout/AppLayout.svelte';
+    import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import { Badge } from '$lib/components/ui/badge';
     import { Button } from '$lib/components/ui/button';
-    import {
-        Card,
-        CardContent,
-        CardDescription,
-        CardHeader,
-        CardTitle,
-    } from '$lib/components/ui/card';
     import { renderSnippet } from '$lib/components/ui/data-table/index.js';
     import { Input } from '$lib/components/ui/input';
-    import { permissionListResponseSchema } from '$lib/types/api-schemas';
-    import { LoaderCircle, Plus, Search, Trash2 } from '@lucide/svelte';
-    import { createRawSnippet, onMount } from 'svelte';
+    import { Plus, Search, Trash2 } from '@lucide/svelte';
+    import { createRawSnippet, untrack } from 'svelte';
+    import { deletePermission, fetchAllPermissions } from './permission.remote';
 
-    let permissions = $state<Permission[]>([]);
-    let isLoading = $state(false);
-    let searchQuery = $state('');
+    const searchParams = $derived(page.url.searchParams);
+    const resourceParam = $derived(searchParams.get('resource') ?? '');
+
+    const queryArgs = $derived(resourceParam ? { resource: resourceParam } : {});
+    const permissionsQuery = $derived(fetchAllPermissions(queryArgs));
+    const permissions = $derived(permissionsQuery.current ?? []);
+
+    // loading state
+    let isInitialLoad = $state(true);
+    $effect(() => {
+        if (!permissionsQuery.loading) {
+            isInitialLoad = false;
+        }
+    });
+
+    const showLoading = $derived(!isInitialLoad && permissionsQuery.loading);
+
+    let searchInput = $state(untrack(() => searchParams.get('resource') ?? ''));
+    let searchDebounce: ReturnType<typeof setTimeout> | undefined;
 
     // Sheet state
     let formSheetOpen = $state(false);
@@ -32,38 +42,39 @@
     let deleteDialogOpen = $state(false);
     let deletingPermission = $state<Permission | null>(null);
     let isDeleting = $state(false);
+    let deleteError = $state('');
 
-    const filteredPermissions = $derived(
-        searchQuery
-            ? permissions.filter(
-                p =>
-                    p.resource
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase())
-                        || p.action
-                            .toLowerCase()
-                            .includes(searchQuery.toLowerCase()),
-            )
-            : permissions,
-    );
-
-    const fetchPermissions = async () => {
-        isLoading = true;
-        try {
-            const result = await api.get('/iam/permissions', {
-                responseSchema: permissionListResponseSchema,
-            }).result();
-            if (result.ok) {
-                permissions = result.data as typeof permissions;
+    function updateSearchParamUrl(updates: Record<string, string | null>) {
+        const url = new URL(page.url);
+        for (const [key, value] of Object.entries(updates)) {
+            if (value === null || value === '') {
+                url.searchParams.delete(key);
+            }
+            else {
+                url.searchParams.set(key, value);
             }
         }
-        finally {
-            isLoading = false;
-        }
+        goto(`${url.pathname}${url.search}`, {
+            replaceState: true,
+            keepFocus: true,
+            noScroll: true,
+        });
+    }
+
+    const handleSearchInput = () => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => {
+            updateSearchParamUrl({ resource: searchInput.trim() || null });
+        }, 300);
+    };
+
+    const refetchPermissions = async () => {
+        await permissionsQuery.refresh();
     };
 
     const openDeleteDialog = (permission: Permission) => {
         deletingPermission = permission;
+        deleteError = '';
         deleteDialogOpen = true;
     };
 
@@ -71,13 +82,16 @@
         if (!deletingPermission)
             return;
         isDeleting = true;
+        deleteError = '';
         try {
-            await api.delete('/iam/permissions/{id}', {
-                params: { id: deletingPermission.id },
-            }).result();
+            await deletePermission({ id: deletingPermission.id });
+            await refetchPermissions();
             deleteDialogOpen = false;
             deletingPermission = null;
-            await fetchPermissions();
+        }
+        catch (err) {
+            deleteError
+                = err instanceof Error ? err.message : 'Failed to delete permission';
         }
         finally {
             isDeleting = false;
@@ -132,10 +146,6 @@
                 renderSnippet(actionsCell, { permission: row.original }),
         },
     ];
-
-    onMount(() => {
-        fetchPermissions();
-    });
 </script>
 
 {#snippet effectCell({ effect }: { effect: 'ALLOW' | 'DENY' })}
@@ -164,11 +174,11 @@
     </div>
 {/snippet}
 
-<AppLayout containerClass='lg:pl-10 px-6'>
-    <div
-        class='mb-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'
-    >
-        <div>
+<LoadingBar visible={showLoading} />
+<div class='sm:px-6 lg:px-10 pt-16   bg-[#FAFAFA] '>
+
+    <div class='border px-5 py-6 lg:py-8 lg:px-7'>
+        <div class='mb-10'>
             <h1 class='text-[24px] font-bold text-gray-900 leading-tight'>
                 Permissions Management
             </h1>
@@ -176,56 +186,42 @@
                 Define resource-action permission rules
             </p>
         </div>
-        <Button onclick={() => (formSheetOpen = true)}>
-            <Plus class='mr-2 h-4 w-4' />
-            Create Permission
-        </Button>
-    </div>
-
-    <Card class='py-10'>
-        <CardHeader>
-            <div class='flex items-center justify-between'>
-                <div>
-                    <CardTitle>Permissions ({permissions.length})</CardTitle>
-                    <CardDescription>
-                        All permission rules in the system.
-                    </CardDescription>
-                </div>
-                <div class='relative w-64'>
-                    <Search
-                        class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400'
-                    />
-                    <Input
-                        type='text'
-                        placeholder='Search permissions...'
-                        bind:value={searchQuery}
-                        class='pl-10'
-                    />
-                </div>
+        <div
+            class='flex flex-col gap-3 sm:flex-row justify-end items-end sm:items-center sm:justify-between pb-5'
+        >
+            <div class='relative w-full sm:max-w-xs'>
+                <Search
+                    class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400'
+                />
+                <Input
+                    type='text'
+                    placeholder='Search by resource...'
+                    bind:value={searchInput}
+                    oninput={handleSearchInput}
+                    class='pl-10 rounded'
+                />
             </div>
-        </CardHeader>
-        <CardContent class='py-5'>
-            {#if isLoading}
-                <div class='flex items-center justify-center py-12'>
-                    <LoaderCircle class='h-8 w-8 animate-spin text-primary' />
-                </div>
-            {:else}
-                <DataTable {columns} data={filteredPermissions} />
-            {/if}
-        </CardContent>
-    </Card>
-</AppLayout>
+            <Button class='rounded' onclick={() => (formSheetOpen = true)}>
+                <Plus class='mr-2 h-4 w-4' />
+                Create Permission
+            </Button>
+        </div>
+
+        <DataTable {columns} data={permissions} />
+    </div>
+</div>
 
 <PermissionFormSheet
     open={formSheetOpen}
     onOpenChange={v => (formSheetOpen = v)}
-    onSuccess={fetchPermissions}
+    onSuccess={refetchPermissions}
 />
 
 <ConfirmDialog
     open={deleteDialogOpen}
     message='This will permanently delete this permission. Any roles or users using it will lose this access rule.'
     isLoading={isDeleting}
+    error={deleteError}
     onOpenChange={v => (deleteDialogOpen = v)}
     onConfirm={handleDelete}
 />

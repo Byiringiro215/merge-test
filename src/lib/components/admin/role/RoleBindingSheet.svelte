@@ -73,7 +73,7 @@
             groupFilterTerm = term;
         }, 300);
     }
-
+    // reset state
     $effect(() => {
         if (!open) {
             userSubjectId = '';
@@ -86,8 +86,8 @@
             groupSuccess = '';
         }
     });
-
-    async function handleUserAction(action: 'assign' | 'unassign') {
+    // Assign and Unassign user to a role
+    const handleUserAssignRoleAction = async (action: 'assign' | 'unassign') => {
         if (!role)
             return;
 
@@ -124,11 +124,12 @@
         finally {
             isUserAssigning = false;
         }
-    }
-
-    async function handleGroupAction(action: 'assign' | 'unassign') {
-        if (!role)
+    };
+    // Add and romove a  Role to a group
+    const handleRoleGroupAssignAction = async (action: 'assign' | 'unassign') => {
+        if (!role) {
             return;
+        }
 
         const groupId = Number(groupSubjectId);
         if (!groupId) {
@@ -163,7 +164,7 @@
         finally {
             isGroupAssigning = false;
         }
-    }
+    };
 </script>
 
 <Dialog.Root {open} onOpenChange={(v: boolean) => onOpenChange(v)}>
@@ -216,7 +217,7 @@
                         size='sm'
                         class='flex-1'
                         disabled={isUserAssigning}
-                        onclick={() => handleUserAction('assign')}
+                        onclick={() => handleUserAssignRoleAction('assign')}
                     >
                         {#if isUserAssigning}
                             <LoaderCircle class='mr-2 h-4 w-4 animate-spin' />
@@ -228,14 +229,14 @@
                         variant='outline'
                         class='flex-1'
                         disabled={isUserAssigning}
-                        onclick={() => handleUserAction('unassign')}
+                        onclick={() => handleUserAssignRoleAction('unassign')}
                     >
                         Unassign
                     </Button>
                 </div>
             </section>
 
-            <!-- Group binding section -->
+            <!-- Group Assign section -->
             <section
                 class='flex flex-col gap-3 rounded-lg border border-gray-200 p-4'
             >
@@ -273,7 +274,7 @@
                         size='sm'
                         class='flex-1'
                         disabled={isGroupAssigning}
-                        onclick={() => handleGroupAction('assign')}
+                        onclick={() => handleRoleGroupAssignAction('assign')}
                     >
                         {#if isGroupAssigning}
                             <LoaderCircle class='mr-2 h-4 w-4 animate-spin' />
@@ -285,7 +286,7 @@
                         variant='outline'
                         class='flex-1'
                         disabled={isGroupAssigning}
-                        onclick={() => handleGroupAction('unassign')}
+                        onclick={() => handleRoleGroupAssignAction('unassign')}
                     >
                         Unassign
                     </Button>
