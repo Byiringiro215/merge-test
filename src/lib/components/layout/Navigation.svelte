@@ -96,6 +96,7 @@
             const hasMoreSpecificMatch = allSubHrefs.some(
                 href =>
                     href !== subHref
+                        && href.length > subHref.length
                         && (path === href || path.startsWith(`${href}/`)),
             );
 
