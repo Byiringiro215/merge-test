@@ -3,26 +3,22 @@
         FacultySuccessData,
         TeacherProvinceAssistance,
     } from '$lib/components/teachers/types.js';
-    import type { StaffFiltersState, StaffSummary } from '$lib/datamodel/staff';
-    import { api } from '$lib/api';
+    import type { StaffFiltersState } from '$lib/datamodel/staff';
     import StatsCard from '$lib/components/dashboard/StatsCard.svelte';
+    import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import FacultySuccessRatesChart from '$lib/components/teachers/FacultySuccessRatesChart.svelte';
     import StudentAssistanceByProvinceChart from '$lib/components/teachers/StudentAssistanceByProvinceChart.svelte';
     import TeacherFilters from '$lib/components/teachers/TeacherFilters.svelte';
     import TeacherRegistryTable from '$lib/components/teachers/TeacherRegistryTable.svelte';
     import { Button } from '$lib/components/ui/button';
     import * as Sidebar from '$lib/components/ui/sidebar';
-    import {
-        createPaginatedResponseSchema,
-        staffSummary,
-    } from '$lib/types/api-schemas';
     import BookOpenIcon from '@lucide/svelte/icons/book-open';
     import FileTextIcon from '@lucide/svelte/icons/file-text';
     import HeartIcon from '@lucide/svelte/icons/heart';
     import SparklesIcon from '@lucide/svelte/icons/sparkles';
     import TargetIcon from '@lucide/svelte/icons/target';
     import UsersIcon from '@lucide/svelte/icons/users';
-    import { onMount } from 'svelte';
+    import { fetchTeachers, fetchTeacherStats } from './page.remote';
 
     // Sidebar filter state (maps to backend query parameters)
     let filters = $state<StaffFiltersState>({
@@ -33,40 +29,73 @@
 
     function handleFiltersChange(newFilters: StaffFiltersState) {
         filters = newFilters;
-        currentPage = 1; // Reset to first page when filters change
+        currentPage = 1;
     }
 
-    // Stats cards data - 4 cards as shown in design
-    const statsCards = [
+    let currentPage = $state(1);
+    const pageSize = 20;
+
+    const teachersQuery = $derived(
+        fetchTeachers({
+            page: currentPage,
+            limit: pageSize,
+            ...(filters.schoolCode && { schoolCode: filters.schoolCode }),
+            ...(filters.gender && { gender: filters.gender }),
+            ...(filters.position && { positionName: filters.position }),
+        }),
+    );
+    const statsQuery = $derived(fetchTeacherStats());
+
+    const staff = $derived(teachersQuery.current?.staff ?? []);
+    const totalStaff = $derived(teachersQuery.current?.total ?? 0);
+    const totalPages = $derived(Math.max(1, Math.ceil(totalStaff / pageSize)));
+
+    let isInitialLoad = $state(true);
+    $effect(() => {
+        if (!teachersQuery.loading && !statsQuery.loading) {
+            isInitialLoad = false;
+        }
+    });
+    const showLoading = $derived(
+        !isInitialLoad && (teachersQuery.loading || statsQuery.loading),
+    );
+    const isLoading = $derived(teachersQuery.loading);
+
+    const handlePageChange = (page: number) => {
+        currentPage = page;
+    };
+
+    function fmt(n: number): string {
+        return n.toLocaleString();
+    }
+
+    const stats = $derived(
+        statsQuery.current ?? { totalTeachers: 0, totalStudents: 0, byGender: {} as Record<string, number> },
+    );
+
+    const statsCards = $derived([
         {
             title: 'Total Teachers',
-            value: '1,248',
-            change: '+4.2%',
-            changeType: 'positive' as const,
+            value: fmt(stats.totalTeachers),
             icon: UsersIcon,
         },
+        // TODO: no API source for these — placeholder until backend exposes them.
         {
             title: 'Avg. Courses / Teacher',
-            value: '3.8',
-            change: '-0.5%',
-            changeType: 'negative' as const,
+            value: '—',
             icon: BookOpenIcon,
         },
         {
             title: 'Total Students Assisted',
-            value: '48,290',
-            change: '+12%',
-            changeType: 'positive' as const,
+            value: fmt(stats.totalStudents),
             icon: HeartIcon,
         },
         {
             title: 'Overall Success Rate',
-            value: '86.5%',
-            change: '+2.1%',
-            changeType: 'positive' as const,
+            value: '—',
             icon: TargetIcon,
         },
-    ];
+    ]);
 
     // Student Assistance by Province data
     const assistanceData: TeacherProvinceAssistance[] = [
@@ -126,63 +155,9 @@
         },
     ];
 
-    // Staff data and pagination state
-    let staff = $state<StaffSummary[]>([]);
-    let currentPage = $state(1);
-    const pageSize = $state(20);
-    let totalStaff = $state(0);
-    const totalPages = $derived(Math.max(1, Math.ceil(totalStaff / pageSize)));
-    let isLoading = $state(false);
-    let isMounted = $state(false);
-
-    const fetchStaff = async () => {
-        try {
-            isLoading = true;
-            const paginatedStaffSchema
-                = createPaginatedResponseSchema(staffSummary);
-
-            const result = await api.get('/sdms/staff', {
-                query: {
-                    page: currentPage,
-                    limit: pageSize,
-                    ...(filters.schoolCode && {
-                        schoolCode: filters.schoolCode,
-                    }),
-                    ...(filters.position && { position: filters.position }),
-                    ...(filters.gender && { gender: filters.gender }),
-                },
-                responseSchema: paginatedStaffSchema,
-            }).result();
-            if (!result.ok) {
-                console.error('Failed to fetch staff', result.error);
-                return;
-            }
-            staff = result.data.data;
-            totalStaff = result.data.meta.page?.total ?? 0;
-        }
-        catch (error) {
-            console.error('Fetch error:', error);
-        }
-        finally {
-            isLoading = false;
-        }
-    };
-
-    const handlePageChange = (page: number) => {
-        currentPage = page;
-    };
-
-    onMount(() => {
-        isMounted = true;
-    });
-
-    // Re-fetch when page or filters change
-    $effect(() => {
-        if (isMounted) {
-            fetchStaff();
-        }
-    });
 </script>
+
+<LoadingBar visible={showLoading} />
 
 <div class='w-full max-w-[100vw] overflow-x-hidden'>
     <Sidebar.Provider>
@@ -244,8 +219,6 @@
                         <StatsCard
                             title={card.title}
                             value={card.value}
-                            change={card.change}
-                            changeType={card.changeType}
                             icon={card.icon}
                         />
                     {/each}
