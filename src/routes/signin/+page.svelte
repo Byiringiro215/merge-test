@@ -1,6 +1,7 @@
 <script lang='ts'>
     import type { LoginInput } from '$lib/types/form-schemas';
     import type { StandardSchemaV1 } from '@bajustone/fetcher';
+    import type { Component } from 'svelte';
     import { goto, invalidateAll } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { page } from '$app/state';
@@ -9,6 +10,9 @@
     import { loginSchema } from '$lib/types/form-schemas';
     import {
         ArrowRight,
+        BarChart3,
+        ChartPie,
+        Check,
         Eye,
         EyeOff,
         LifeBuoy,
@@ -18,10 +22,73 @@
     } from '@lucide/svelte';
     import { loginForm } from './login.remote';
 
+    type IconComponent = Component<{ class?: string }>;
+
+    interface SystemApp {
+        id: string;
+        name: string;
+        description: string;
+        icon: IconComponent | null;
+        iconType: 'component' | 'image';
+        iconSrc?: string;
+        accent: string;
+        soft: string;
+        tag: string;
+    }
+
+    const systems: SystemApp[] = [
+        {
+            id: 'tdmp',
+            name: 'T D M P',
+            description: 'TVET Data Management Platform — central data hub',
+            icon: null,
+            iconType: 'image',
+            iconSrc: '/DT-LOGO.svg',
+            accent: '#205FAD',
+            soft: '#E8EFFE',
+            tag: 'Core',
+        },
+        {
+            id: 'TMIS',
+            name: 'TMIS',
+            description: 'manage all teachers data',
+            icon: BarChart3,
+            iconType: 'component',
+            accent: '#0EA5E9',
+            soft: '#E0F2FE',
+            tag: 'Academics',
+        },
+        {
+            id: 'elearning',
+            name: 'E-Learning',
+            description: 'RP digital learning, courses and content delivery',
+            icon: null,
+            iconType: 'image',
+            iconSrc: '/RP-logo.png',
+            accent: '#16A34A',
+            soft: '#E7F6EC',
+            tag: 'Training',
+        },
+        {
+            id: 'core',
+            name: 'Core',
+            description: 'Identity, organisation and shared platform services',
+            icon: ChartPie,
+            iconType: 'component',
+            accent: '#9333EA',
+            soft: '#F2E8FB',
+            tag: 'Platform',
+        },
+    ];
+
     let isSubmitting = $state(false);
     let identifierValue = $state('');
     let passwordValue = $state('');
     let showPassword = $state(false);
+    let selectedSystemId = $state<string>(systems[0].id);
+    const selectedSystem = $derived(
+        systems.find(s => s.id === selectedSystemId) ?? systems[0],
+    );
 
     function handleMicrosoftSignIn() {
     // Microsoft SSO — coming soon
@@ -36,14 +103,6 @@
         <div
             class='flex-1 flex flex-col px-8 sm:px-12 lg:px-16 xl:px-20 pt-8 lg:pt-12'
         >
-            <!-- Gateway Access Label -->
-            <div class='flex items-center gap-2 mb-10'>
-                <div class='w-7 h-[1.5px] bg-[#0D28774D]'></div>
-                <span
-                    class='text-xs tracking-[0.35px] font-medium text-[#0D287799] leading-5 font-inter'
-                >GATEWAY ACCESS</span
-                >
-            </div>
 
             <!-- Main Heading -->
             <h1
@@ -60,15 +119,101 @@
                 different services in one place
             </p>
 
-            <!-- Illustration -->
-            <div
-                class='flex-1 flex items-start justify-center lg:justify-start'
-            >
-                <img
-                    src='/signin-image.png'
-                    alt='Data platform illustration'
-                    class='w-full max-w-125 lg:max-w-135 h-auto object-contain'
-                />
+            <!-- Systems Selector -->
+            <div class='flex-1 flex flex-col min-h-0'>
+                <div class='flex items-center justify-between mb-3'>
+                    <span
+                        class='text-[11px] tracking-[0.3px] font-semibold text-[#0D2877CC] uppercase font-inter'
+                    >
+                        Choose a system to access
+                    </span>
+                    <span
+                        class='text-[11px] tracking-[0.2px] font-medium text-[#0D287799] font-inter'
+                    >
+                        {systems.length} systems
+                    </span>
+                </div>
+
+                <div
+                    class='flex-1 min-h-0 overflow-y-auto pr-1 -mr-1 space-y-2.5 max-w-150'
+                >
+                    {#each systems as system (system.id)}
+                        {@const Icon = system.icon}
+                        {@const isSelected = selectedSystemId === system.id}
+                        <button
+                            type='button'
+                            onclick={() => selectedSystemId = system.id}
+                            class='group w-full text-left rounded-xl border bg-white px-4 py-3.5 flex items-center gap-3.5 transition-all duration-200 cursor-pointer hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 {isSelected
+                                ? 'border-transparent shadow-md ring-2'
+                                : 'border-[#DEE3EC] hover:border-[#C8D2E0]'}'
+                            style={isSelected
+                                ? `--tw-ring-color: ${system.accent}; box-shadow: 0 0 0 1px ${system.accent}, 0 8px 20px -10px ${system.accent}66;`
+                                : ''}
+                            aria-pressed={isSelected}
+                        >
+                            <!-- Logo / Icon -->
+                            <div
+                                class='shrink-0 w-11 h-11 rounded-lg flex items-center justify-center overflow-hidden border border-black/5'
+                                style='background-color: {system.soft};'
+                            >
+                                {#if system.iconType === 'image' && system.iconSrc}
+                                    <img
+                                        src={system.iconSrc}
+                                        alt='{system.name} logo'
+                                        class='w-7 h-7 object-contain'
+                                    />
+                                {:else if Icon}
+                                    <span
+                                        class='inline-flex'
+                                        style='color: {system.accent};'
+                                    >
+                                        <Icon class='w-5 h-5' />
+                                    </span>
+                                {/if}
+                            </div>
+
+                            <!-- Name + Description -->
+                            <div class='flex-1 min-w-0'>
+                                <div class='flex items-center gap-2 mb-0.5'>
+                                    <span
+                                        class='text-sm font-semibold font-manrope text-[#0D2877] truncate'
+                                    >
+                                        {system.name}
+                                    </span>
+                                    <span
+                                        class='text-[10px] font-medium font-inter px-1.5 py-0.5 rounded-md tracking-wide uppercase'
+                                        style='background-color: {system.soft}; color: {system.accent};'
+                                    >
+                                        {system.tag}
+                                    </span>
+                                </div>
+                                <p
+                                    class='text-xs font-inter text-[#0D287799] leading-snug truncate'
+                                >
+                                    {system.description}
+                                </p>
+                            </div>
+
+                            <!-- Checkbox -->
+                            <div
+                                class='shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200 {isSelected
+                                    ? 'border-transparent'
+                                    : 'border-[#C8D2E0] group-hover:border-[#9CA8BD] bg-white'}'
+                                style={isSelected
+                                    ? `background-color: ${system.accent}; border-color: ${system.accent};`
+                                    : ''}
+                                aria-hidden='true'
+                            >
+                                {#if isSelected}
+                                    <Check
+                                        class='w-3.5 h-3.5 text-white'
+                                        strokeWidth={3}
+                                    />
+                                {/if}
+                            </div>
+                        </button>
+                    {/each}
+                </div>
             </div>
         </div>
 
@@ -103,10 +248,10 @@
         >
             <!-- Sign In Card -->
             <Card
-                class='w-fit sm:max-w-105  h-128.5 px-7 py-8 sm:px-9 sm:py-10 border border-[#DEE1E6]  shadow-sm rounded-2xl '
+                class='w-fit sm:max-w-105 px-7 py-8 sm:px-9 sm:py-10 border border-[#DEE1E6] shadow-sm rounded-2xl'
             >
                 <!-- Card Header -->
-                <div class='text-center mb-7'>
+                <div class='text-center mb-6'>
                     <h2
                         class='text-xl sm:text-[24px] font-manrope leading-8 -tracking-[0.6px] font-semibold text-[#171A1F] mb-2'
                     >
@@ -119,6 +264,58 @@
                         your account.
                     </p>
                 </div>
+
+                <!-- Selected System Banner -->
+                {#key selectedSystem.id}
+                    {@const SelectedIcon = selectedSystem.icon}
+                    <div
+                        class='mb-6 rounded-xl border p-3.5 flex items-center gap-3 animate-in fade-in slide-in-from-top-1 duration-200'
+                        style='border-color: {selectedSystem.accent}33; background-color: {selectedSystem.soft};'
+                    >
+                        <div
+                            class='shrink-0 w-10 h-10 rounded-lg bg-white flex items-center justify-center overflow-hidden border'
+                            style='border-color: {selectedSystem.accent}33;'
+                        >
+                            {#if selectedSystem.iconType === 'image' && selectedSystem.iconSrc}
+                                <img
+                                    src={selectedSystem.iconSrc}
+                                    alt='{selectedSystem.name} logo'
+                                    class='w-6 h-6 object-contain'
+                                />
+                            {:else if SelectedIcon}
+                                <span
+                                    class='inline-flex'
+                                    style='color: {selectedSystem.accent};'
+                                >
+                                    <SelectedIcon class='w-5 h-5' />
+                                </span>
+                            {/if}
+                        </div>
+                        <div class='flex-1 min-w-0'>
+                            <p
+                                class='text-[10px] font-inter font-semibold tracking-[0.4px] uppercase mb-0.5'
+                                style='color: {selectedSystem.accent};'
+                            >
+                                Signing in to
+                            </p>
+                            <p
+                                class='text-sm font-manrope font-semibold text-[#0D2877] truncate'
+                            >
+                                {selectedSystem.name}
+                            </p>
+                        </div>
+                        <div
+                            class='shrink-0 w-7 h-7 rounded-full flex items-center justify-center'
+                            style='background-color: {selectedSystem.accent};'
+                            aria-hidden='true'
+                        >
+                            <Check
+                                class='w-4 h-4 text-white'
+                                strokeWidth={3}
+                            />
+                        </div>
+                    </div>
+                {/key}
 
                 <!-- Form -->
                 <form
