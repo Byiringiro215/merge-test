@@ -12,7 +12,6 @@
         GraduationCap,
         LayoutGrid,
         LoaderCircle,
-        Monitor,
         Settings,
     } from '@lucide/svelte';
 
@@ -67,19 +66,19 @@
                 { label: 'Courses', href: '/training/courses' },
             ],
         },
-        {
-            id: 'digital-tech',
-            label: 'Digital Tech',
-            href: '/digitalTech',
-            icon: Monitor,
-            resource: 'sdms:schools',
-            subNav: [
-                { label: 'General', href: '/digitalTech' },
-                { label: 'Schools', href: '/digitalTech/schools' },
-                { label: 'Devices', href: '/digitalTech/Devices' },
-                { label: 'E-learning', href: '/digitalTech/e-learning' },
-            ],
-        },
+        // {
+        //     id: 'digital-tech',
+        //     label: 'Digital Tech',
+        //     href: '/digitalTech',
+        //     icon: Monitor,
+        //     resource: 'sdms:schools',
+        //     subNav: [
+        //         { label: 'General', href: '/digitalTech' },
+        //         { label: 'Schools', href: '/digitalTech/schools' },
+        //         { label: 'Devices', href: '/digitalTech/Devices' },
+        //         { label: 'E-learning', href: '/digitalTech/e-learning' },
+        //     ],
+        // },
         {
             id: 'admin',
             label: 'Admin',
