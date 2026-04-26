@@ -126,6 +126,8 @@
                         .preflight(loginSchema as unknown as StandardSchemaV1<LoginInput, LoginInput>)
                         .enhance(async ({ submit }) => {
                             isSubmitting = true;
+                            // Capture before submit/invalidateAll — once the user is authenticated
+                            const redirect = page.url.searchParams.get('redirect') || '/dashboard';
                             try {
                                 await submit();
                                 // If `invalid()` was called server-side or preflight
@@ -133,7 +135,6 @@
                                 if ((loginForm.fields.allIssues()?.length ?? 0) > 0)
                                     return;
                                 await invalidateAll();
-                                const redirect = page.url.searchParams.get('redirect') || '/';
                                 await goto(resolve(redirect as any));
                             }
                             finally {
