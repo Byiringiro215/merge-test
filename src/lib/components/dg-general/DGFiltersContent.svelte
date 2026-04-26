@@ -6,23 +6,20 @@
     import DownloadIcon from '@lucide/svelte/icons/download';
     import MapPinIcon from '@lucide/svelte/icons/map-pin';
 
+    interface SelectOption {
+        value: string;
+        label: string;
+    }
+
     interface Props {
         filters: DGFiltersState;
         onFiltersChange: (filters: DGFiltersState) => void;
         onExport?: () => void;
+        provinceOptions?: SelectOption[];
+        districtOptions?: SelectOption[];
     }
 
-    const { filters, onFiltersChange, onExport }: Props = $props();
-
-    const dateRangeOptions = [
-        { value: 'last_year', label: 'Last Year' },
-        { value: 'this_quarter', label: 'This Quarter' },
-        { value: 'last_quarter', label: 'Last Quarter' },
-        { value: 'this_month', label: 'This Month' },
-        { value: 'last_month', label: 'Last Month' },
-    ];
-
-    const provinceOptions = [
+    const defaultProvinceOptions: SelectOption[] = [
         { value: 'all', label: 'All Provinces' },
         { value: 'kigali', label: 'Kigali City' },
         { value: 'southern', label: 'Southern Province' },
@@ -31,7 +28,7 @@
         { value: 'eastern', label: 'Eastern Province' },
     ];
 
-    const districtOptions = [
+    const defaultDistrictOptions: SelectOption[] = [
         { value: 'gasabo', label: 'Gasabo' },
         { value: 'kicukiro', label: 'Kicukiro' },
         { value: 'nyarugenge', label: 'Nyarugenge' },
@@ -42,6 +39,22 @@
         { value: 'ngoma', label: 'Ngoma' },
         { value: 'nyagatare', label: 'Nyagatare' },
         { value: 'rwamagana', label: 'Rwamagana' },
+    ];
+
+    const {
+        filters,
+        onFiltersChange,
+        onExport,
+        provinceOptions = defaultProvinceOptions,
+        districtOptions = defaultDistrictOptions,
+    }: Props = $props();
+
+    const dateRangeOptions = [
+        { value: 'last_year', label: 'Last Year' },
+        { value: 'this_quarter', label: 'This Quarter' },
+        { value: 'last_quarter', label: 'Last Quarter' },
+        { value: 'this_month', label: 'This Month' },
+        { value: 'last_month', label: 'Last Month' },
     ];
 
     const schoolTypeOptions = [
