@@ -1,45 +1,56 @@
 <script lang='ts'>
-    import type { Permission, Role } from '$lib/datamodel/admin';
+    import type { User } from '$lib/datamodel/admin';
     import FormField from '$lib/components/form-field/form-field.svelte';
     import { Button } from '$lib/components/ui/button';
     import * as Dialog from '$lib/components/ui/dialog';
-    import { permissionPickerSchema } from '$lib/types/form-schemas';
+    import { groupMemberPickerSchema } from '$lib/types/form-schemas';
     import * as s from '@bajustone/fetcher/schema';
     import { LoaderCircle } from '@lucide/svelte';
     import {
-        addPermissionToRole,
-        fetchAllPermissions,
-    } from '../../../../routes/(app)/admin/roles/role.remote';
+        addGroupMember,
+        searchUsersForGroup,
+    } from '../../../routes/(app)/admin/groups/group.remote';
 
     interface Props {
         open: boolean;
-        role: Role | null;
+        groupId: number | null;
+        existingMemberIds: number[];
         onOpenChange: (open: boolean) => void;
         onSuccess?: () => void;
     }
 
-    const { open, role, onOpenChange, onSuccess }: Props = $props();
+    const {
+        open,
+        groupId,
+        existingMemberIds,
+        onOpenChange,
+        onSuccess,
+    }: Props = $props();
 
-    let values = $state({ permissionId: '' });
+    let values = $state({ userId: '' });
     let errors = $state<Record<string, string>>({});
     let isSubmitting = $state(false);
     let errorMessage = $state('');
 
-    const permissionsQuery = $derived(fetchAllPermissions());
-    const permissions = $derived<Permission[]>(
-        (permissionsQuery.current ?? []) as Permission[],
+    const usersQuery = $derived(searchUsersForGroup({ limit: 100 }));
+    const allUsers = $derived<User[]>(
+        (usersQuery.current?.users ?? []) as User[],
     );
 
-    const permissionOptions = $derived(
-        permissions.map(p => ({
-            label: `${p.resource}:${p.action} (${p.effect})`,
-            value: String(p.id),
+    const availableUsers = $derived(
+        allUsers.filter(u => !existingMemberIds.includes(u.id)),
+    );
+
+    const userOptions = $derived(
+        availableUsers.map(u => ({
+            label: `${u.name} (${u.email})`,
+            value: String(u.id),
         })),
     );
 
     $effect(() => {
         if (!open) {
-            values = { permissionId: '' };
+            values = { userId: '' };
             errors = {};
             errorMessage = '';
         }
@@ -49,38 +60,20 @@
         errorMessage = '';
         errors = {};
 
-        if (!role)
+        if (!groupId)
             return;
 
-        const result = s.parseForm(permissionPickerSchema, values);
+        const result = s.parseForm(groupMemberPickerSchema, values);
         if (!result.ok) {
             errors = result.errors;
             return;
         }
 
-        const selectedPermission = permissions.find(
-            p => String(p.id) === result.value.permissionId,
-        );
-        if (!selectedPermission) {
-            errorMessage = 'Selected permission not found';
-            return;
-        }
-
         isSubmitting = true;
         try {
-            await addPermissionToRole({
-                id: role.id,
-                permission: {
-                    resource: selectedPermission.resource,
-                    action: selectedPermission.action,
-                    effect: selectedPermission.effect,
-                    ...(Array.isArray(selectedPermission.conditions) && selectedPermission.conditions.length > 0
-                        ? {
-                            conditions: selectedPermission.conditions,
-                        }
-                        : {}
-                    ),
-                },
+            await addGroupMember({
+                id: groupId,
+                userId: Number(result.value.userId),
             });
             onOpenChange(false);
             onSuccess?.();
@@ -89,7 +82,7 @@
             errorMessage
                 = err instanceof Error
                     ? err.message
-                    : 'Failed to add permission';
+                    : 'Failed to add member';
         }
         finally {
             isSubmitting = false;
@@ -100,10 +93,9 @@
 <Dialog.Root {open} onOpenChange={(v: boolean) => onOpenChange(v)}>
     <Dialog.Content class='sm:max-w-md'>
         <Dialog.Header>
-            <Dialog.Title>Add permission: <span class='font-bold capitalize'>{role?.name ?? ''}</span>
-            </Dialog.Title>
+            <Dialog.Title>Add member</Dialog.Title>
             <Dialog.Description>
-                Pick an existing permission to add to this role.
+                Pick a user to add to this group.
             </Dialog.Description>
         </Dialog.Header>
 
@@ -123,14 +115,14 @@
             {/if}
 
             <FormField
-                name='permissionId'
-                label='Permission'
+                name='userId'
+                label='User'
                 searchSelectInput={true}
-                options={permissionOptions}
-                value={values.permissionId}
-                onSelect={option => (values.permissionId = String(option.value))}
-                placeholder='Search permissions...'
-                error={errors.permissionId}
+                options={userOptions}
+                value={values.userId}
+                onSelect={option => (values.userId = String(option.value))}
+                placeholder='Search users...'
+                error={errors.userId}
                 disabled={isSubmitting}
             />
 

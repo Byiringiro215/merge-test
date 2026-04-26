@@ -15,7 +15,7 @@ function authHeader() {
     const { accessToken } = getAuthCookies(event.cookies);
     return { Authorization: `Bearer ${accessToken}` };
 }
-
+// get paginated users
 export const fetchAllUsers = query(fetchUsersQuerySchema, async (args) => {
     const result = await api.get('/auth/users', {
         query: {
@@ -35,6 +35,7 @@ export const fetchAllUsers = query(fetchUsersQuerySchema, async (args) => {
     return result.data;
 });
 
+// create new user
 export const createUser = command(createUserBodySchema, async (body) => {
     const result = await api.post('/auth/users', {
         body,

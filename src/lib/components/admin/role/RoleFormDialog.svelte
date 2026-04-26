@@ -34,8 +34,9 @@
     const isEditing = $derived(role !== null);
 
     const permissionsQuery = $derived(fetchAllPermissions());
+    // get all  permisssions
     const availablePermissions = $derived(
-        (permissionsQuery.current ?? []) as unknown as PermissionRes[],
+        (permissionsQuery.current ?? []) as PermissionRes[],
     );
 
     const permissionOptions = $derived(
@@ -46,7 +47,7 @@
                 value: String(p.id),
             })),
     );
-
+    // Add selected permission to the list
     const addPermission = (permissionId: string) => {
         // Add a permission (looked up by id in the latest server result) to the form state.
         const id = Number(permissionId);
@@ -57,7 +58,7 @@
             return;
         values.permissions = [...values.permissions, permission];
     };
-
+    // get role details for editting
     $effect(() => {
         if (!open)
             return;
@@ -87,22 +88,34 @@
             originalPermissionIds = new Set();
         }
     });
-
+    // remove permission from the selected list
     const removePermission = (permissionId: number) => {
         values.permissions = values.permissions.filter(
             p => p.id !== permissionId,
         );
     };
+    // Shapping permission
+    const toPermissionInput = (p: PermissionRes) => ({
+        resource: p.resource,
+        action: p.action,
+        effect: p.effect,
+        ...(Array.isArray(p.conditions) && p.conditions.length > 0
+            ? { conditions: p.conditions }
+            : {}),
+    });
 
+    // create and edit role
     const handleSubmit = async () => {
         errorMessage = '';
         errors = {};
+
+        const permissionInputs = values.permissions.map(toPermissionInput);
 
         const result = s.parseForm(roleFormSchema, {
             ...(role ? { id: role.id } : {}),
             name: values.name,
             description: values.description || undefined,
-            permissions: values.permissions,
+            permissions: permissionInputs,
         });
 
         if (!result.ok) {
@@ -110,7 +123,7 @@
             return;
         }
 
-        if (result.value.permissions.length === 0) {
+        if (values.permissions.length === 0) {
             errors.permissions = 'Select at least one permission for this role.';
             return;
         }
@@ -120,9 +133,9 @@
         isSubmitting = true;
         try {
             if (role) {
-                const addedPermissions = (data.permissions as PermissionRes[]).filter(
-                    p => !originalPermissionIds.has(p.id),
-                );
+                const addedPermissions = values.permissions
+                    .filter(p => !originalPermissionIds.has(p.id))
+                    .map(toPermissionInput);
 
                 await updateRole({
                     id: role.id,
@@ -135,7 +148,7 @@
                 await createRole({
                     name: data.name,
                     description: data.description,
-                    permissions: data.permissions as never,
+                    permissions: permissionInputs as never,
                 });
             }
 

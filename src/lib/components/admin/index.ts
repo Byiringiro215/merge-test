@@ -1,7 +1,6 @@
 export { default as ConfirmDialog } from './ConfirmDialog.svelte';
 export { default as FormSheet } from './FormSheet.svelte';
 export { default as GroupFormSheet } from './GroupFormDialog.svelte';
-export { default as GroupMembersSheet } from './GroupMembersDialog.svelte';
 export { default as PermissionFormSheet } from './PermissionFormSheet.svelte';
 export { default as RoleBindingSheet } from './role/RoleBindingSheet.svelte';
 export { default as RoleFormSheet } from './role/RoleFormDialog.svelte';

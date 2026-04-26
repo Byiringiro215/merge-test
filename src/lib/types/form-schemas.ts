@@ -47,7 +47,7 @@ export const updateUserCommandSchema = s.extendSchema(
 );
 export type UpdateUserCommand = s.Infer<typeof updateUserCommandSchema>;
 
-export const deleteUserSchema = s.object({ id: s.number() });
+export const deleteUserSchema = routes['/auth/users/{id}'].DELETE.params!;
 export type DeleteUserInput = s.Infer<typeof deleteUserSchema>;
 
 export const fetchUsersQuerySchema = routes['/auth/users'].GET.query!;
@@ -111,6 +111,61 @@ export const addPermissionToRoleSchema = s.object({
     permission: validators.PermissionInput,
 });
 export type AddPermissionToRoleInput = s.Infer<typeof addPermissionToRoleSchema>;
+
+export const createPermissionBodySchema = routes['/iam/permissions'].POST.body!;
+export type CreatePermissionBody = s.Infer<typeof createPermissionBodySchema>;
+
+export const deletePermissionSchema = routes['/iam/permissions/{id}'].DELETE.params!;
+export type DeletePermissionInput = s.Infer<typeof deletePermissionSchema>;
+
+export const fetchPermissionsQuerySchema = routes['/iam/permissions'].GET.query!;
+export type FetchPermissionsQuery = s.Infer<typeof fetchPermissionsQuerySchema>;
+
+// -- Groups -------------------------------------------------------------------
+
+export const fetchGroupsQuerySchema = routes['/iam/groups'].GET.query!;
+export type FetchGroupsQuery = s.Infer<typeof fetchGroupsQuerySchema>;
+
+export const createGroupBodySchema = routes['/iam/groups'].POST.body!;
+export type CreateGroupBody = s.Infer<typeof createGroupBodySchema>;
+
+export const updateGroupCommandSchema = s.extendSchema(
+    routes['/iam/groups/{id}'].PUT.body!,
+    { id: s.number() },
+);
+export type UpdateGroupCommand = s.Infer<typeof updateGroupCommandSchema>;
+
+export const deleteGroupSchema = routes['/iam/groups/{id}'].DELETE.params!;
+export type DeleteGroupInput = s.Infer<typeof deleteGroupSchema>;
+
+// -- Group members ------------------------------------------------------------
+
+export const addGroupMemberSchema = s.extendSchema(
+    routes['/iam/groups/{id}/users'].POST.body!,
+    { id: s.number() },
+);
+export type AddGroupMemberInput = s.Infer<typeof addGroupMemberSchema>;
+
+export const removeGroupMemberSchema = routes['/iam/groups/{id}/users/{userId}'].DELETE.params!;
+export type RemoveGroupMemberInput = s.Infer<typeof removeGroupMemberSchema>;
+
+// UI-only picker schema for AddGroupMemberDialog.
+export const groupMemberPickerSchema = s.object({
+    userId: s.refined(
+        s.string(),
+        v => v.length >= 1,
+        'Please select a user',
+    ),
+});
+export type GroupMemberPickerInput = s.Infer<typeof groupMemberPickerSchema>;
+
+// -- Sessions -----------------------------------------------------------------
+
+export const revokeSessionSchema = routes['/auth/sessions/{id}'].DELETE.params!;
+export type RevokeSessionInput = s.Infer<typeof revokeSessionSchema>;
+
+export const revokeAllSessionsSchema = routes['/auth/sessions'].DELETE.body!;
+export type RevokeAllSessionsInput = s.Infer<typeof revokeAllSessionsSchema>;
 
 // -- Query args (searches) ----------------------------------------------------
 

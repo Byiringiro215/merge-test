@@ -8,7 +8,7 @@
     import RoleBindingSheet from '$lib/components/admin/role/RoleBindingSheet.svelte';
     import RoleFormDialog from '$lib/components/admin/role/RoleFormDialog.svelte';
     import DataTable from '$lib/components/data-table/data-table.svelte';
-    import AppLayout from '$lib/components/layout/AppLayout.svelte';
+    import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import { Badge } from '$lib/components/ui/badge';
     import { Button } from '$lib/components/ui/button';
     import { renderSnippet } from '$lib/components/ui/data-table/index.js';
@@ -31,6 +31,16 @@
 
     const rolesQuery = $derived(fetchAllRoles());
     const roles = $derived(rolesQuery.current ?? []);
+
+    // loading state
+    let isInitialLoad = $state(true);
+    $effect(() => {
+        if (!rolesQuery.loading) {
+            isInitialLoad = false;
+        }
+    });
+
+    const showLoading = $derived(!isInitialLoad && rolesQuery.loading);
 
     const filteredRoles = $derived(
         searchParam
@@ -228,33 +238,45 @@
     </div>
 {/snippet}
 
-<AppLayout containerClass='px-4 sm:px-6 lg:px-10'>
-    <div
-        class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-5'
-    >
-        <div class='relative w-full sm:max-w-xs'>
-            <Search
-                class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400'
-            />
-            <Input
-                type='text'
-                placeholder='Search roles...'
-                bind:value={searchInput}
-                oninput={handleSearchInput}
-                class='pl-10'
-            />
+<LoadingBar visible={showLoading} />
+<div class='sm:px-6 lg:px-10 pt-16   bg-[#FAFAFA] '>
+
+    <div class='border px-5 py-6 lg:py-8 lg:px-7'>
+
+        <div class='mb-10'>
+            <h1 class='text-[24px] font-bold text-gray-900 leading-tight'>
+                Roles Management
+            </h1>
+            <p class='mt-1 text-sm text-gray-500'>
+                Manage roles, assign them to users or groups, and control role permissions.
+            </p>
         </div>
 
-        <div class='flex items-center gap-3'>
-            <Button class='gap-2' onclick={() => handleOpenRole()}>
+        <div
+            class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-5'
+        >
+            <div class='relative w-full sm:max-w-xs'>
+                <Search
+                    class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400'
+                />
+                <Input
+                    type='text'
+                    placeholder='Search roles...'
+                    bind:value={searchInput}
+                    oninput={handleSearchInput}
+                    class='pl-10 rounded'
+                />
+            </div>
+
+            <Button class='gap-2 rounded' onclick={() => handleOpenRole()}>
                 <Plus class='h-4 w-4' />
                 Create Role
             </Button>
         </div>
-    </div>
 
-    <DataTable {columns} data={filteredRoles} />
-</AppLayout>
+        <DataTable {columns} data={filteredRoles} />
+    </div>
+</div>
 
 <RoleFormDialog
     open={openRoleDialog}
