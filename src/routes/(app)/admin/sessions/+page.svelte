@@ -1,35 +1,43 @@
 <script lang='ts'>
     import type { Session } from '$lib/datamodel/admin';
     import type { ColumnDef } from '@tanstack/table-core';
-    import { api } from '$lib/api';
     import { ConfirmDialog } from '$lib/components/admin';
     import DataTable from '$lib/components/data-table/data-table.svelte';
-    import AppLayout from '$lib/components/layout/AppLayout.svelte';
+    import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import { Badge } from '$lib/components/ui/badge';
     import { Button } from '$lib/components/ui/button';
-    import {
-        Card,
-        CardContent,
-        CardDescription,
-        CardHeader,
-        CardTitle,
-    } from '$lib/components/ui/card';
     import { renderSnippet } from '$lib/components/ui/data-table/index.js';
-    import { sessionListResponseSchema } from '$lib/types/api-schemas';
-    import { LoaderCircle, ShieldOff, Trash2 } from '@lucide/svelte';
-    import { createRawSnippet, onMount } from 'svelte';
+    import { ShieldOff, Trash2 } from '@lucide/svelte';
+    import { createRawSnippet } from 'svelte';
+    import {
+        fetchAllSessions,
+        revokeAllOtherSessions,
+        revokeSession,
+    } from './session.remote';
 
-    let sessions = $state<Session[]>([]);
-    let isLoading = $state(false);
+    const sessionsQuery = $derived(fetchAllSessions());
+    const sessions = $derived(sessionsQuery.current ?? []);
+
+    // loading state
+    let isInitialLoad = $state(true);
+    $effect(() => {
+        if (!sessionsQuery.loading) {
+            isInitialLoad = false;
+        }
+    });
+
+    const showLoading = $derived(!isInitialLoad && sessionsQuery.loading);
 
     // Revoke single dialog
     let revokeDialogOpen = $state(false);
     let revokingSession = $state<Session | null>(null);
     let isRevoking = $state(false);
+    let revokeError = $state('');
 
     // Revoke all dialog
     let revokeAllDialogOpen = $state(false);
     let isRevokingAll = $state(false);
+    let revokeAllError = $state('');
 
     const parseUserAgent = (ua: string | null | undefined): string => {
         if (!ua)
@@ -45,23 +53,13 @@
         return ua.length > 40 ? `${ua.slice(0, 40)}...` : ua;
     };
 
-    const fetchSessions = async () => {
-        isLoading = true;
-        try {
-            const result = await api.get('/auth/sessions', {
-                responseSchema: sessionListResponseSchema,
-            }).result();
-            if (result.ok) {
-                sessions = result.data;
-            }
-        }
-        finally {
-            isLoading = false;
-        }
+    const refetchSessions = async () => {
+        await sessionsQuery.refresh();
     };
 
     const openRevokeDialog = (session: Session) => {
         revokingSession = session;
+        revokeError = '';
         revokeDialogOpen = true;
     };
 
@@ -69,13 +67,16 @@
         if (!revokingSession)
             return;
         isRevoking = true;
+        revokeError = '';
         try {
-            await api.delete('/auth/sessions/{id}', {
-                params: { id: revokingSession.id },
-            }).result();
+            await revokeSession({ id: revokingSession.id });
+            await refetchSessions();
             revokeDialogOpen = false;
             revokingSession = null;
-            await fetchSessions();
+        }
+        catch (err) {
+            revokeError
+                = err instanceof Error ? err.message : 'Failed to revoke session';
         }
         finally {
             isRevoking = false;
@@ -83,13 +84,19 @@
     };
 
     const handleRevokeAll = async () => {
+        const currentTokenId = sessions[0]?.id;
+        if (currentTokenId === undefined)
+            return;
         isRevokingAll = true;
+        revokeAllError = '';
         try {
-            await api.delete('/auth/sessions', {
-                body: { currentTokenId: sessions[0]?.id },
-            }).result();
+            await revokeAllOtherSessions({ currentTokenId });
+            await refetchSessions();
             revokeAllDialogOpen = false;
-            await fetchSessions();
+        }
+        catch (err) {
+            revokeAllError
+                = err instanceof Error ? err.message : 'Failed to revoke sessions';
         }
         finally {
             isRevokingAll = false;
@@ -167,10 +174,6 @@
                 }),
         },
     ];
-
-    onMount(() => {
-        fetchSessions();
-    });
 </script>
 
 {#snippet actionsCell({ session, index }: { session: Session; index: number })}
@@ -190,47 +193,36 @@
     </div>
 {/snippet}
 
-<AppLayout containerClass='lg:pl-10 px-6'>
-    <div
-        class='mb-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'
-    >
-        <div>
-            <h1 class='text-[24px] font-bold text-gray-900 leading-tight'>
-                Sessions Management
-            </h1>
-            <p class='mt-1 text-sm text-gray-500'>
-                View and manage active sessions
-            </p>
-        </div>
-        {#if sessions.length > 1}
-            <Button
-                variant='destructive'
-                onclick={() => (revokeAllDialogOpen = true)}
-            >
-                <ShieldOff class='mr-2 h-4 w-4' />
-                Revoke All Other Sessions
-            </Button>
-        {/if}
-    </div>
+<LoadingBar visible={showLoading} />
+<div class='sm:px-6 lg:px-10 pt-16   bg-[#FAFAFA] '>
 
-    <Card class='py-10'>
-        <CardHeader>
-            <CardTitle>Active Sessions ({sessions.length})</CardTitle>
-            <CardDescription>
-                Sessions currently active for your account.
-            </CardDescription>
-        </CardHeader>
-        <CardContent class='py-5'>
-            {#if isLoading}
-                <div class='flex items-center justify-center py-12'>
-                    <LoaderCircle class='h-8 w-8 animate-spin text-primary' />
-                </div>
-            {:else}
-                <DataTable {columns} data={sessions} />
+    <div class='border px-5 py-6 lg:py-8 lg:px-7'>
+        <div
+            class='mb-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'
+        >
+            <div>
+                <h1 class='text-[24px] font-bold text-gray-900 leading-tight'>
+                    Sessions Management
+                </h1>
+                <p class='mt-1 text-sm text-gray-500'>
+                    View and manage active sessions
+                </p>
+            </div>
+            {#if sessions.length > 1}
+                <Button
+                    variant='destructive'
+                    class='rounded'
+                    onclick={() => (revokeAllDialogOpen = true)}
+                >
+                    <ShieldOff class='mr-2 h-4 w-4' />
+                    Revoke All Other Sessions
+                </Button>
             {/if}
-        </CardContent>
-    </Card>
-</AppLayout>
+        </div>
+
+        <DataTable {columns} data={sessions} />
+    </div>
+</div>
 
 <ConfirmDialog
     open={revokeDialogOpen}
@@ -238,6 +230,7 @@
     message='This will terminate the selected session. The user will need to log in again on that device.'
     confirmLabel='Revoke'
     isLoading={isRevoking}
+    error={revokeError}
     onOpenChange={v => (revokeDialogOpen = v)}
     onConfirm={handleRevoke}
 />
@@ -248,6 +241,7 @@
     message='This will terminate all sessions except your current one. Other logged-in devices will need to log in again.'
     confirmLabel='Revoke All'
     isLoading={isRevokingAll}
+    error={revokeAllError}
     onOpenChange={v => (revokeAllDialogOpen = v)}
     onConfirm={handleRevokeAll}
 />

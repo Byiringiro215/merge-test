@@ -74,7 +74,12 @@
                     resource: selectedPermission.resource,
                     action: selectedPermission.action,
                     effect: selectedPermission.effect,
-                    conditions: selectedPermission.conditions,
+                    ...(Array.isArray(selectedPermission.conditions) && selectedPermission.conditions.length > 0
+                        ? {
+                            conditions: selectedPermission.conditions,
+                        }
+                        : {}
+                    ),
                 },
             });
             onOpenChange(false);

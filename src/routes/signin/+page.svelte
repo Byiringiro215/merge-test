@@ -9,6 +9,8 @@
     import { loginSchema } from '$lib/types/form-schemas';
     import {
         ArrowRight,
+        Eye,
+        EyeOff,
         LifeBuoy,
         LoaderCircle,
         Lock,
@@ -17,6 +19,9 @@
     import { loginForm } from './login.remote';
 
     let isSubmitting = $state(false);
+    let identifierValue = $state('');
+    let passwordValue = $state('');
+    let showPassword = $state(false);
 
     function handleMicrosoftSignIn() {
     // Microsoft SSO — coming soon
@@ -98,7 +103,7 @@
         >
             <!-- Sign In Card -->
             <Card
-                class='w-full max-w-85 sm:max-w-105 h-128.5 px-7 py-8 sm:px-9 sm:py-10 border border-[#DEE1E6]  shadow-sm rounded-2xl '
+                class='w-fit sm:max-w-105  h-128.5 px-7 py-8 sm:px-9 sm:py-10 border border-[#DEE1E6]  shadow-sm rounded-2xl '
             >
                 <!-- Card Header -->
                 <div class='text-center mb-7'>
@@ -153,20 +158,23 @@
                             for='identifier'
                             class='block text-sm font-inter font-medium text-[#181B20] leading-6 tracking-normal mb-2'
                         >
-                            Email
+                            Username or Email
                         </label>
                         <div
                             class='relative sm:w-84.25'
                         >
-                            <Mail
-                                class='absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]'
-                            />
+                            {#if !identifierValue}
+                                <Mail
+                                    class='absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF] pointer-events-none'
+                                />
+                            {/if}
                             <input
                                 {...loginForm.fields.identifier.as('text')}
                                 id='identifier'
                                 placeholder='jane@rtb.rw'
                                 disabled={isSubmitting}
-                                class='pl-10 h-11 w-full border border-[#DEE1E6] bg-[#F9FAFB] rounded-lg text-sm placeholder:text-[#171A1F] font-inter focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring outline-none px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50'
+                                oninput={e => identifierValue = e.currentTarget.value}
+                                class="{identifierValue ? 'pl-3' : 'pl-10'} h-11 w-full border border-[#DEE1E6] bg-[#F9FAFB] rounded-[6px] text-sm font-inter focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring outline-none pr-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
                             />
                         </div>
                     </div>
@@ -184,22 +192,40 @@
                             </label>
                             <button
                                 type='button'
-                                class='text-sm text-[#4770EB] hover:text-[#2563EB] font-medium font-inter leading-6 tracking-normal'
+                                class='text-sm text-[#4770EB] cursor-pointer hover:underline hover:text-[#2563EB] font-medium font-inter leading-6 tracking-normal'
                             >
                                 Forgot password?
                             </button>
                         </div>
                         <div class='relative'>
-                            <Lock
-                                class='absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]'
-                            />
+                            {#if !passwordValue}
+                                <Lock
+                                    class='absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF] pointer-events-none'
+                                />
+                            {/if}
                             <input
                                 {...loginForm.fields._password.as('password')}
+                                type={showPassword ? 'text' : 'password'}
                                 id='password'
                                 placeholder='••••••••'
                                 disabled={isSubmitting}
-                                class='pl-10 h-11 w-full border border-[#DEE1E6] bg-[#F9FAFB] rounded-xl text-sm placeholder:text-black placeholder:tracking-normal font-inter focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring outline-none px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50'
+                                oninput={e => passwordValue = e.currentTarget.value}
+                                class="{passwordValue ? 'pl-3' : 'pl-10'} pr-10 h-11 w-full border border-[#DEE1E6] bg-[#F9FAFB] rounded-[6px] text-sm placeholder:tracking-normal font-inter focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring outline-none py-1 disabled:cursor-not-allowed disabled:opacity-50"
                             />
+                            {#if passwordValue}
+                                <button
+                                    type='button'
+                                    onclick={() => showPassword = !showPassword}
+                                    class='absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#4770EB] cursor-pointer'
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                >
+                                    {#if showPassword}
+                                        <EyeOff class='h-4 w-4' />
+                                    {:else}
+                                        <Eye class='h-4 w-4' />
+                                    {/if}
+                                </button>
+                            {/if}
                         </div>
                     </div>
 
@@ -242,8 +268,7 @@
                     type='button'
                     variant='outline'
                     onclick={handleMicrosoftSignIn}
-                    disabled
-                    class='w-full h-11 border-[#DEE1E6] hover:bg-gray-50 bg-[#F3F4F6] text-[#323843] font-medium font-inter rounded-lg flex items-center justify-center  gap-2.5 disabled:opacity-50'
+                    class='w-full h-11 border-[#DEE1E6] hover:bg-gray-50 bg-[#F3F4F6] text-[#323843] font-medium font-inter rounded-lg flex items-center justify-center  gap-2.5 disabled:opacity-50 cursor-pointer'
                 >
                     <!-- Microsoft Logo -->
                     <svg
