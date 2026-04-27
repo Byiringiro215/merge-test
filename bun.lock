@@ -5,7 +5,7 @@
     "": {
       "name": "my-app",
       "dependencies": {
-        "@bajustone/fetcher": "npm:@jsr/bajustone__fetcher@0.8.0",
+        "@bajustone/fetcher": "npm:@jsr/bajustone__fetcher@0.9.0",
         "d3": "^7.9.0",
         "zod": "^4.3.6",
       },
@@ -55,7 +55,7 @@
 
     "@babel/types": ["@babel/types@7.29.0", "", { "dependencies": { "@babel/helper-string-parser": "^7.27.1", "@babel/helper-validator-identifier": "^7.28.5" } }, "sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A=="],
 
-    "@bajustone/fetcher": ["@jsr/bajustone__fetcher@0.8.0", "https://npm.jsr.io/~/11/@jsr/bajustone__fetcher/0.8.0.tgz", { "dependencies": { "openapi-typescript": "^7.13.0" } }, "sha512-1CnhnDs56L2v4S9L+p8d7tKp4JpfdioLdygJYvcZoUVSy2rXfiNqsDeayI9R65LS81SGmfXugtkLIn16dH9RKw=="],
+    "@bajustone/fetcher": ["@jsr/bajustone__fetcher@0.9.0", "https://npm.jsr.io/~/11/@jsr/bajustone__fetcher/0.9.0.tgz", { "dependencies": { "openapi-typescript": "^7.13.0" } }, "sha512-+/A55cLSr216zNa5xjj1J/Vpcnt3JmE2WnS+WG5mVlxpzgtHoqq2tAv0CkqyMTSeEo1YFRQtK98WJSLSjyiyQA=="],
 
     "@clack/core": ["@clack/core@1.2.0", "", { "dependencies": { "fast-wrap-ansi": "^0.1.3", "sisteransi": "^1.0.5" } }, "sha512-qfxof/3T3t9DPU/Rj3OmcFyZInceqj/NVtO9rwIuJqCUgh32gwPjpFQQp/ben07qKlhpwq7GzfWpST4qdJ5Drg=="],
 
