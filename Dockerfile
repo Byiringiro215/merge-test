@@ -2,7 +2,7 @@
 FROM oven/bun:1.3.4 AS build
 WORKDIR /app
 
-COPY package.json bun.lock ./
+COPY package.json bun.lock .npmrc ./
 RUN bun install --frozen-lockfile
 
 COPY . .
@@ -12,12 +12,20 @@ ENV PUBLIC_API_URL=$PUBLIC_API_URL
 
 RUN bun run build
 
+# ---- Stage: prod-deps ----
+FROM oven/bun:1.3.4 AS prod-deps
+WORKDIR /app
+
+COPY package.json bun.lock .npmrc ./
+RUN bun install --frozen-lockfile --production
+
 # ---- Stage: runtime ----
 FROM node:22-alpine AS runtime
 WORKDIR /app
 
 COPY --from=build /app/build ./build
 COPY --from=build /app/package.json ./
+COPY --from=prod-deps /app/node_modules ./node_modules
 
 ENV NODE_ENV=production
 ENV PORT=3000
