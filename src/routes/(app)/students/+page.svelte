@@ -3,13 +3,10 @@
         FacultyEnrollment,
         ScoreDistribution,
     } from '$lib/components/students/types.js';
-    import type {
-        StudentFiltersState,
-        StudentSummary,
-    } from '$lib/datamodel/student';
-    import { api } from '$lib/api';
+    import type { StudentFiltersState } from '$lib/datamodel/student';
     import StatsCard from '$lib/components/dashboard/StatsCard.svelte';
     import Guard from '$lib/components/Guard.svelte';
+    import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import FacultyEnrollmentChart from '$lib/components/students/FacultyEnrollmentChart.svelte';
     import ScoreDistributionChart from '$lib/components/students/ScoreDistributionChart.svelte';
     import StudentFilters from '$lib/components/students/StudentFilters.svelte';
@@ -17,10 +14,6 @@
     import { FACULTY_COLORS } from '$lib/components/students/types.js';
     import { Button } from '$lib/components/ui/button';
     import * as Sidebar from '$lib/components/ui/sidebar';
-    import {
-        createPaginatedResponseSchema,
-        studentSummary,
-    } from '$lib/types/api-schemas';
     import Building2Icon from '@lucide/svelte/icons/building-2';
     import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
     import CircleXIcon from '@lucide/svelte/icons/circle-x';
@@ -28,7 +21,7 @@
     import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
     import UserPlusIcon from '@lucide/svelte/icons/user-plus';
     import UsersIcon from '@lucide/svelte/icons/users';
-    import { onMount } from 'svelte';
+    import { fetchStudents, fetchStudentStats } from './page.remote';
 
     // Sidebar filter state
     let filters = $state<StudentFiltersState>({
@@ -43,44 +36,70 @@
         currentPage = 1; // Reset to first page when filters change
     }
 
-    // Stats cards data
-    const statsCards = [
+    function fmt(n: number): string {
+        return n.toLocaleString();
+    }
+
+    let currentPage = $state(1);
+    const pageSize = 20;
+
+    const studentsQuery = $derived(
+        fetchStudents({
+            page: currentPage,
+            limit: pageSize,
+            ...(filters.gender && { gender: filters.gender }),
+            ...(filters.schoolCode && { schoolCode: filters.schoolCode }),
+            ...(filters.status && { status: filters.status }),
+            ...(filters.classGroup && { classGroup: filters.classGroup }),
+        }),
+    );
+    const studentStatsQuery = $derived(fetchStudentStats());
+
+    const stats = $derived(
+        studentStatsQuery.current
+            ?? { totalStudents: 0, totalSchools: 0, byStatus: {} as Record<string, number> },
+    );
+
+    function statusCount(stats: { byStatus: Record<string, number> }, ...needles: string[]): number {
+        let total = 0;
+        for (const [k, v] of Object.entries(stats.byStatus)) {
+            if (needles.some(n => k.toLowerCase().includes(n)))
+                total += v;
+        }
+        return total;
+    }
+
+    const succeeded = $derived(statusCount(stats, 'success', 'pass', 'graduat'));
+    const failed = $derived(statusCount(stats, 'fail', 'drop'));
+
+    const statsCards = $derived([
         {
             title: 'Total Students',
-            value: '12,450',
-            change: '+12%',
-            changeType: 'positive' as const,
+            value: fmt(stats.totalStudents),
             icon: UsersIcon,
         },
         {
             title: 'Succeeded',
-            value: '10,820',
-            change: '86%',
-            changeType: 'positive' as const,
+            value: succeeded ? fmt(succeeded) : '—',
             icon: CircleCheckIcon,
         },
         {
             title: 'Failed',
-            value: '1,630',
-            change: '14%',
-            changeType: 'negative' as const,
+            value: failed ? fmt(failed) : '—',
             icon: CircleXIcon,
         },
+        // TODO: no API source for avg score yet — placeholder.
         {
             title: 'Avg Score',
-            value: '78.4%',
-            change: '+2.5%',
-            changeType: 'positive' as const,
+            value: '—',
             icon: TrendingUpIcon,
         },
         {
             title: 'High Schools',
-            value: '42',
-            change: 'Active',
-            changeType: 'neutral' as const,
+            value: fmt(stats.totalSchools),
             icon: Building2Icon,
         },
-    ];
+    ]);
 
     // Score distribution data
     const scoreDistributionData: ScoreDistribution[] = [
@@ -125,78 +144,29 @@
         },
     ];
 
-    // Student data and pagination state
-    let students = $state<StudentSummary[]>([]);
-    let currentPage = $state(1);
-    const pageSize = $state(20);
-    let totalStudents = $state(0);
+    const students = $derived(studentsQuery.current?.students ?? []);
+    const totalStudents = $derived(studentsQuery.current?.total ?? 0);
     const totalPages = $derived(
         Math.max(1, Math.ceil(totalStudents / pageSize)),
     );
-    let isLoading = $state(false);
-    let isMounted = $state(false);
+    const isLoading = $derived(studentsQuery.loading);
 
-    /// Fetch students data
-    const fetchStudents = async () => {
-        try {
-            isLoading = true;
-            const paginatedStudentSchema
-                = createPaginatedResponseSchema(studentSummary);
-
-            const result = await api
-                .get('/sdms/students', {
-                    query: {
-                        page: currentPage,
-                        limit: pageSize,
-                        ...(filters.gender && {
-                            gender: filters.gender,
-                        }),
-                        ...(filters.schoolCode && {
-                            schoolCode: filters.schoolCode,
-                        }),
-                        ...(filters.status && {
-                            status: filters.status,
-                        }),
-                        ...(filters.classGroup && {
-                            classGroup: filters.classGroup,
-                        }),
-                    },
-                    responseSchema: paginatedStudentSchema,
-                })
-                .result();
-            if (!result.ok) {
-                console.error(
-                    'Failed to fetch students',
-                    result.error,
-                );
-                return;
-            }
-            students = result.data.data;
-            totalStudents = result.data.meta.page?.total ?? 0;
+    let isInitialLoad = $state(true);
+    $effect(() => {
+        if (!studentsQuery.loading && !studentStatsQuery.loading) {
+            isInitialLoad = false;
         }
-        catch (error) {
-            console.error('Fetch error:', error);
-        }
-        finally {
-            isLoading = false;
-        }
-    };
+    });
+    const showLoading = $derived(
+        !isInitialLoad && (studentsQuery.loading || studentStatsQuery.loading),
+    );
 
     const handlePageChange = (page: number) => {
         currentPage = page;
     };
-
-    onMount(() => {
-        isMounted = true;
-    });
-
-    // Re-fetch when page or filters change
-    $effect(() => {
-        if (isMounted) {
-            fetchStudents();
-        }
-    });
 </script>
+
+<LoadingBar visible={showLoading} />
 
 <div class='w-full max-w-[100vw] overflow-x-hidden'>
     <Sidebar.Provider>
@@ -261,7 +231,7 @@
                             >
                         </Button>
                         <Guard
-                            resource='sdms:students'
+                            resource='students'
                             action='write'
                         >
                             <Button
@@ -293,8 +263,6 @@
                         <StatsCard
                             title={card.title}
                             value={card.value}
-                            change={card.change}
-                            changeType={card.changeType}
                             icon={card.icon}
                         />
                     {/each}

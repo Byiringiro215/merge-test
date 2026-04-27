@@ -1,11 +1,13 @@
 <script lang='ts'>
-    import type { DGFiltersState } from '$lib/components/dg-general/types.js';
+    import type { DGFiltersState, RegionData } from '$lib/components/dg-general/types.js';
     import StatsCard from '$lib/components/dashboard/StatsCard.svelte';
     import CrossDepartmentRecordsTable from '$lib/components/dg-general/CrossDepartmentRecordsTable.svelte';
     import CrossDepartmentTrendsChart from '$lib/components/dg-general/CrossDepartmentTrendsChart.svelte';
     import DGFiltersContent from '$lib/components/dg-general/DGFiltersContent.svelte';
     import RwandaRegionalMap from '$lib/components/dg-general/RwandaRegionalMap.svelte';
+    import { PROVINCE_COLORS } from '$lib/components/dg-general/types.js';
     import { AppLayout } from '$lib/components/layout';
+    import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import { Button } from '$lib/components/ui/button';
     import { Card } from '$lib/components/ui/card';
     import {
@@ -17,6 +19,11 @@
         Users,
     } from '@lucide/svelte';
     import FilterIcon from '@lucide/svelte/icons/filter';
+    import {
+        fetchDistricts,
+        fetchOverviewByProvince,
+        fetchProvinces,
+    } from './page.remote';
 
     let appLayout: ReturnType<typeof AppLayout>;
 
@@ -46,57 +53,160 @@
         };
     }
 
-    const statsCards = [
+    // Reactive queries
+    const provincesQuery = $derived(fetchProvinces());
+    const provinces = $derived(provincesQuery.current ?? []);
+
+    const districtsQuery = $derived(
+        fetchDistricts(
+            filters.province && filters.province !== 'all'
+                ? { provinceId: filters.province }
+                : {},
+        ),
+    );
+    const districts = $derived(districtsQuery.current ?? []);
+
+    const overviewQuery = $derived(
+        fetchOverviewByProvince({
+            ...(filters.province && filters.province !== 'all'
+                ? { provinceId: filters.province }
+                : {}),
+            ...(filters.district && filters.district !== 'all'
+                ? { districtId: filters.district }
+                : {}),
+        }),
+    );
+
+    let isInitialLoad = $state(true);
+    $effect(() => {
+        if (!overviewQuery.loading) {
+            isInitialLoad = false;
+        }
+    });
+    const showLoading = $derived(!isInitialLoad && overviewQuery.loading);
+
+    const overviewRows = $derived(overviewQuery.current?.rows ?? []);
+    const lastMaterialisedAt = $derived(
+        overviewQuery.current?.lastMaterialisedAt ?? null,
+    );
+
+    const totals = $derived(
+        overviewRows.reduce(
+            (acc, r) => ({
+                schools: acc.schools + r.totals.schools,
+                students: acc.students + r.totals.students,
+                teachers: acc.teachers + r.totals.teachers,
+            }),
+            { schools: 0, students: 0, teachers: 0 },
+        ),
+    );
+
+    function fmt(n: number): string {
+        return n.toLocaleString();
+    }
+
+    const dataSyncedLabel = $derived(
+        lastMaterialisedAt
+            ? new Date(lastMaterialisedAt).toLocaleString()
+            : 'Never',
+    );
+
+    // Filter dropdown options sourced from API.
+    const provinceOptions = $derived([
+        { value: 'all', label: 'All Provinces' },
+        ...provinces.map(p => ({ value: String(p.id), label: p.name })),
+    ]);
+    const districtOptions = $derived([
+        { value: 'all', label: 'All Districts' },
+        ...districts.map(d => ({ value: String(d.id), label: d.name })),
+    ]);
+
+    const statsCards = $derived([
         {
             title: 'Total Schools',
-            value: '452',
-            change: '+12%',
-            changeType: 'positive' as const,
+            value: fmt(totals.schools),
             icon: Building2,
             iconBgColor: 'bg-blue-50',
         },
         {
             title: 'Total Teachers',
-            value: '12,450',
-            change: '+5.2%',
-            changeType: 'positive' as const,
+            value: fmt(totals.teachers),
             icon: Users,
             iconBgColor: 'bg-green-50',
         },
         {
             title: 'Total Students',
-            value: '145,280',
-            change: '+8.1%',
-            changeType: 'positive' as const,
+            value: fmt(totals.students),
             icon: GraduationCap,
             iconBgColor: 'bg-amber-50',
         },
+        // TODO: backend has no endpoint for these three; placeholder values.
         {
             title: 'Training Programs',
-            value: '124',
-            change: '+2.4%',
-            changeType: 'positive' as const,
+            value: '—',
             icon: BookOpen,
             iconBgColor: 'bg-purple-50',
         },
         {
             title: 'Infra Projects',
-            value: '89',
-            change: '-1.5%',
-            changeType: 'negative' as const,
+            value: '—',
             icon: HardHat,
             iconBgColor: 'bg-red-50',
         },
         {
             title: 'SPIU Projects',
-            value: '15',
-            change: '0%',
-            changeType: 'neutral' as const,
+            value: '—',
             icon: Briefcase,
             iconBgColor: 'bg-cyan-50',
         },
-    ];
+    ]);
+
+    const PROVINCE_SUFFIX_RE = /\s*Province$/i;
+    const CITY_SUFFIX_RE = /\s*City$/i;
+
+    function shortenLocationName(name: string): string {
+        return name.replace(PROVINCE_SUFFIX_RE, '').replace(CITY_SUFFIX_RE, '');
+    }
+
+    function provinceColor(name: string): string {
+        const slug = name.toLowerCase();
+        if (slug.includes('kigali'))
+            return PROVINCE_COLORS.kigali;
+        if (slug.includes('south'))
+            return PROVINCE_COLORS.southern;
+        if (slug.includes('west'))
+            return PROVINCE_COLORS.western;
+        if (slug.includes('north'))
+            return PROVINCE_COLORS.northern;
+        if (slug.includes('east'))
+            return PROVINCE_COLORS.eastern;
+        return '#94A3B8';
+    }
+
+    const mapRegions = $derived(
+        overviewRows.map(r => ({
+            name: r.locationName,
+            shortName: shortenLocationName(r.locationName),
+            students: r.totals.students,
+            color: provinceColor(r.locationName),
+        })),
+    );
+
+    const tableData = $derived<RegionData[]>(
+        overviewRows.map(r => ({
+            region: r.locationName,
+            totalSchools: r.totals.schools,
+            students: r.totals.students,
+            teachingStaff: r.totals.teachers,
+            // TODO: no API for these — placeholders until backend exists.
+            curriculumProgs: 0,
+            infraSpiu: '—',
+            status: 'Active',
+        })),
+    );
 </script>
+
+<LoadingBar visible={showLoading} />
 
 <AppLayout
     bind:this={appLayout}
@@ -122,7 +232,7 @@
                 class='px-4 py-1.5 rounded-[6px] bg-[#FAFAFB] border border-gray-100 '
             >
                 <span class='text-sm leading-5 text-[#565D6D] font-normal'>
-                    Data synced: <span>Just now</span>
+                    Data synced: <span>{dataSyncedLabel}</span>
                 </span>
             </Card>
             <!-- Mobile filter trigger -->
@@ -143,8 +253,6 @@
             <StatsCard
                 title={card.title}
                 value={card.value}
-                change={card.change}
-                changeType={card.changeType}
                 icon={card.icon}
                 iconBgColor={card.iconBgColor}
             />
@@ -154,7 +262,7 @@
     <!-- Charts Section - Map and Trends -->
     <div class='mb-5 grid grid-cols-1 gap-5 lg:grid-cols-12'>
         <div class='lg:col-span-4'>
-            <RwandaRegionalMap />
+            <RwandaRegionalMap regions={mapRegions} />
         </div>
         <div class='lg:col-span-8 h-105'>
             <CrossDepartmentTrendsChart />
@@ -163,7 +271,13 @@
 
     <!-- Records Table -->
     <div class='mb-6'>
-        <CrossDepartmentRecordsTable />
+        <CrossDepartmentRecordsTable
+            data={tableData}
+            totalItems={tableData.length}
+            totalPages={1}
+            currentPage={1}
+            pageSize={tableData.length || 1}
+        />
     </div>
 
     <!-- Right Sidebar Content -->
@@ -172,6 +286,8 @@
             {filters}
             onFiltersChange={handleFiltersChange}
             onExport={handleExport}
+            {provinceOptions}
+            {districtOptions}
         />
     {/snippet}
 </AppLayout>

@@ -2,9 +2,9 @@
     import type {
         DistributionData,
         EnrollmentData,
-        School,
     } from '$lib/components/schools/types.js';
     import StatsCard from '$lib/components/dashboard/StatsCard.svelte';
+    import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import EnrollmentTrendChart from '$lib/components/schools/EnrollmentTrendChart.svelte';
     import SchoolsDistributionChart from '$lib/components/schools/SchoolsDistributionChart.svelte';
     import SchoolsRegistryTable from '$lib/components/schools/SchoolsRegistryTable.svelte';
@@ -16,171 +16,84 @@
     import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
     import CircleCheckBigIcon from '@lucide/svelte/icons/circle-check-big';
     import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
+    import { fetchSchools, fetchSchoolStats } from './page.remote';
 
-    // Stats cards data - 4 cards as shown in design
-    const statsCards = [
+    const schoolsQuery = $derived(fetchSchools({ page: 1, limit: 100 }));
+    const statsQuery = $derived(fetchSchoolStats());
+
+    let isInitialLoad = $state(true);
+    $effect(() => {
+        if (!schoolsQuery.loading && !statsQuery.loading) {
+            isInitialLoad = false;
+        }
+    });
+    const showLoading = $derived(
+        !isInitialLoad && (schoolsQuery.loading || statsQuery.loading),
+    );
+
+    const schools = $derived(schoolsQuery.current?.schools ?? []);
+    const stats = $derived(
+        statsQuery.current ?? { totalSchools: 0, totalStudents: 0, activeSchools: 0 },
+    );
+
+    function fmt(n: number): string {
+        if (n >= 1000)
+            return `${(n / 1000).toFixed(1)}k`;
+        return n.toLocaleString();
+    }
+
+    const statsCards = $derived([
         {
-            title: 'Total High Schools',
-            value: '52',
-            change: '+3.2%',
-            changeType: 'positive' as const,
+            title: 'Total Schools',
+            value: fmt(stats.totalSchools),
             icon: Building2Icon,
         },
         {
             title: 'Active Schools',
-            value: '48',
-            change: '+1.5%',
-            changeType: 'positive' as const,
+            value: fmt(stats.activeSchools),
             icon: CircleCheckIcon,
         },
+        // TODO: no API source for success rate yet — placeholder.
         {
             title: 'Avg. Success Rate',
-            value: '87.4%',
-            change: '+2.1%',
-            changeType: 'positive' as const,
+            value: '—',
             icon: TrendingUpIcon,
         },
         {
             title: 'Enrolled Students',
-            value: '15.2k',
-            change: '+8.4%',
-            changeType: 'positive' as const,
+            value: fmt(stats.totalStudents),
             icon: BookOpenIcon,
         },
-    ];
+    ]);
 
-    // Distribution chart data
-    const distributionData: DistributionData[] = [
-        { district: 'Kicukiro', active: 10, inactive: 4 },
-        { district: 'Nyamagabe', active: 8, inactive: 3 },
-        { district: 'Rubavu', active: 11, inactive: 2 },
-        { district: 'Ngororero', active: 9, inactive: 3 },
-        { district: 'Gasabo', active: 14, inactive: 2 },
-    ];
+    // Distribution / enrollment charts have no direct API counterpart; derive
+    // from the loaded school list as a best-effort breakdown by district.
+    const distributionData = $derived<DistributionData[]>(
+        Object.entries(
+            schools.reduce<Record<string, { active: number; inactive: number }>>(
+                (acc, school) => {
+                    const key = school.district || '—';
+                    acc[key] ??= { active: 0, inactive: 0 };
+                    if (school.status === 'Active')
+                        acc[key].active += 1;
+                    else acc[key].inactive += 1;
+                    return acc;
+                },
+                {},
+            ),
+        )
+            .sort((a, b) => (b[1].active + b[1].inactive) - (a[1].active + a[1].inactive))
+            .slice(0, 5)
+            .map(([district, v]) => ({ district: district as DistributionData['district'], ...v })),
+    );
 
-    // Enrollment trend data
-    const enrollmentData: EnrollmentData[] = [
-        { district: 'Kicukiro', students: 4200 },
-        { district: 'Nyamagabe', students: 3100 },
-        { district: 'Rubavu', students: 2800 },
-        { district: 'Ngororero', students: 2200 },
-        { district: 'Gasabo', students: 5100 },
-    ];
-
-    // Sample school data
-    const schools: School[] = [
-        {
-            id: 1,
-            name: 'Kicukiro Technical High School',
-            district: 'Kicukiro',
-            status: 'Active',
-            faculties: 6,
-            students: 1240,
-            successRate: 92,
-        },
-        {
-            id: 2,
-            name: 'Nyamagabe Excellence Academy',
-            district: 'Nyamagabe',
-            status: 'Active',
-            faculties: 4,
-            students: 850,
-            successRate: 88,
-        },
-        {
-            id: 3,
-            name: 'Rubavu Vocational High',
-            district: 'Rubavu',
-            status: 'Active',
-            faculties: 6,
-            students: 1100,
-            successRate: 85,
-        },
-        {
-            id: 4,
-            name: 'Ngororero Science School',
-            district: 'Ngororero',
-            status: 'Inactive',
-            faculties: 3,
-            students: 420,
-            successRate: 74,
-        },
-        {
-            id: 5,
-            name: 'Gasabo International High',
-            district: 'Gasabo',
-            status: 'Active',
-            faculties: 6,
-            students: 1560,
-            successRate: 95,
-        },
-        {
-            id: 6,
-            name: 'Kicukiro STEM Academy',
-            district: 'Kicukiro',
-            status: 'Active',
-            faculties: 5,
-            students: 980,
-            successRate: 89,
-        },
-        {
-            id: 7,
-            name: 'Nyamagabe Technical Institute',
-            district: 'Nyamagabe',
-            status: 'Active',
-            faculties: 4,
-            students: 720,
-            successRate: 82,
-        },
-        {
-            id: 8,
-            name: 'Rubavu Maritime School',
-            district: 'Rubavu',
-            status: 'Active',
-            faculties: 3,
-            students: 540,
-            successRate: 78,
-        },
-        {
-            id: 9,
-            name: 'Ngororero Agricultural High',
-            district: 'Ngororero',
-            status: 'Active',
-            faculties: 4,
-            students: 680,
-            successRate: 81,
-        },
-        {
-            id: 10,
-            name: 'Gasabo Business Academy',
-            district: 'Gasabo',
-            status: 'Active',
-            faculties: 5,
-            students: 1120,
-            successRate: 91,
-        },
-        {
-            id: 11,
-            name: 'Kicukiro Arts & Design',
-            district: 'Kicukiro',
-            status: 'Inactive',
-            faculties: 3,
-            students: 320,
-            successRate: 72,
-        },
-        {
-            id: 12,
-            name: 'Gasabo Science High',
-            district: 'Gasabo',
-            status: 'Active',
-            faculties: 6,
-            students: 1340,
-            successRate: 94,
-        },
-    ];
+    // The /schools list does not return per-school student count, so the
+    // EnrollmentTrendChart is left empty until the backend exposes it.
+    const enrollmentData: EnrollmentData[] = [];
 </script>
 
-<!-- <div class="w-full max-w-[100vw] overflow-x-hidden"> -->
+<LoadingBar visible={showLoading} />
+
 <div
     class='w-full max-w-375 px-3 py-4 sm:px-4 bg-white sm:py-6 mb-20 lg:mx-auto lg:px-6'
 >
@@ -224,8 +137,6 @@
             <StatsCard
                 title={card.title}
                 value={card.value}
-                change={card.change}
-                changeType={card.changeType}
                 icon={card.icon}
             />
         {/each}
@@ -252,4 +163,3 @@
         <SchoolsRegistryTable {schools} />
     </div>
 </div>
-<!-- </div> -->
