@@ -9,13 +9,19 @@
         color: string;
     }
 
-    const regionData: RegionData[] = [
+    const defaultRegionData: RegionData[] = [
         { name: 'Eastern Province', shortName: 'Eastern', students: 42500, color: '#86EFAC' },
         { name: 'Western Province', shortName: 'Western', students: 38200, color: '#CBD5E1' },
         { name: 'Southern Province', shortName: 'Southern', students: 35800, color: '#A1887F' },
         { name: 'Northern Province', shortName: 'Northern', students: 28400, color: '#C4B5FD' },
         { name: 'Kigali City', shortName: 'Kigali', students: 24600, color: '#EF4444' },
     ];
+
+    interface Props {
+        regions?: RegionData[];
+    }
+
+    const { regions = defaultRegionData }: Props = $props();
 
     let chartContainerRef: ReturnType<typeof ChartContainer>;
     const height = 320;
@@ -40,6 +46,14 @@
         tooltip.style.display = 'none';
     }
 
+    const renderChart = $derived.by(() => {
+        // Track `regions` so the ChartContainer effect re-runs (and we re-render)
+        // whenever the data changes.
+        void regions;
+        return (container: HTMLDivElement, width: number) =>
+            createChart(container, width);
+    });
+
     function createChart(container: HTMLDivElement, width: number) {
         if (!container || width === 0)
             return;
@@ -63,12 +77,12 @@
 
         // Scales
         const x = scaleBand<string>()
-            .domain(regionData.map(d => d.shortName))
+            .domain(regions.map(d => d.shortName))
             .range([0, chartWidth])
             .padding(0.3);
 
         const y = scaleLinear()
-            .domain([0, max(regionData, d => d.students) ?? 0])
+            .domain([0, max(regions, d => d.students) ?? 0])
             .nice()
             .range([chartHeight, 0]);
 
@@ -104,7 +118,7 @@
         // Bars
         const bars = g
             .selectAll<SVGRectElement, RegionData>('.bar')
-            .data(regionData)
+            .data(regions)
             .enter()
             .append('rect')
             .attr('class', 'bar')
@@ -153,7 +167,7 @@
             .attr('class', 'x-axis')
             .attr('transform', `translate(0,${chartHeight})`)
             .selectAll('text')
-            .data(regionData)
+            .data(regions)
             .enter()
             .append('text')
             .attr('x', d => (x(d.shortName) ?? 0) + x.bandwidth() / 2)
@@ -173,5 +187,5 @@
     cardClass='h-full'
     headerClass='p-4 lg:p-5'
     contentClass='px-4 lg:px-6 pb-4'
-    onResize={createChart}
+    onResize={renderChart}
 />

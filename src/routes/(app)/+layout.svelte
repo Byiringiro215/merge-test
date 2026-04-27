@@ -12,6 +12,7 @@
         GraduationCap,
         LayoutGrid,
         LoaderCircle,
+        Monitor,
         Settings,
     } from '@lucide/svelte';
 
@@ -20,15 +21,15 @@
     const auth = getAuthState();
 
     const routeResourceMap: Record<string, Resource> = {
-        '/dashboard': 'sdms:schools',
-        '/students': 'sdms:students',
-        '/teachers': 'sdms:staff',
-        '/schools': 'sdms:schools',
-        '/curricula': 'sdms:schools',
+        '/dashboard': 'reports:overview',
+        '/students': 'students',
+        '/teachers': 'teachers',
+        '/schools': 'schools',
+        '/curricula': 'schools',
         '/admin': 'iam:roles',
         '/admin/roles': 'iam:roles',
         '/admin/groups': 'iam:groups',
-        '/admin/sessions': 'users',
+        '/admin/sessions': 'auth:sessions',
         '/admin/permissions': 'iam:permissions',
     };
 
@@ -38,14 +39,14 @@
             label: 'DG General',
             href: '/dashboard',
             icon: LayoutGrid,
-            resource: 'sdms:schools',
+            resource: 'reports:overview',
         },
         {
             id: 'curriculum',
             label: 'Curriculum',
             href: '/curricula',
             icon: BookOpen,
-            resource: 'sdms:schools',
+            resource: 'schools',
             subNav: [
                 { label: 'General', href: '/curricula' },
                 { label: 'Curriculum', href: '/curricula/curriculum' },
@@ -57,7 +58,7 @@
             label: 'Training',
             href: '/training',
             icon: GraduationCap,
-            resource: 'sdms:staff',
+            resource: 'teachers',
             subNav: [
                 { label: 'General', href: '/training' },
                 { label: 'Schools', href: '/training/schools' },
@@ -66,19 +67,19 @@
                 { label: 'Courses', href: '/training/courses' },
             ],
         },
-        // {
-        //     id: 'digital-tech',
-        //     label: 'Digital Tech',
-        //     href: '/digitalTech',
-        //     icon: Monitor,
-        //     resource: 'sdms:schools',
-        //     subNav: [
-        //         { label: 'General', href: '/digitalTech' },
-        //         { label: 'Schools', href: '/digitalTech/schools' },
-        //         { label: 'Devices', href: '/digitalTech/Devices' },
-        //         { label: 'E-learning', href: '/digitalTech/e-learning' },
-        //     ],
-        // },
+        {
+            id: 'digital-tech',
+            label: 'Digital Tech',
+            href: '/digitalTech',
+            icon: Monitor,
+            resource: 'schools',
+            subNav: [
+                { label: 'General', href: '/digitalTech' },
+                { label: 'Schools', href: '/digitalTech/schools' },
+                { label: 'Devices', href: '/digitalTech/Devices' },
+                { label: 'E-learning', href: '/digitalTech/e-learning' },
+            ],
+        },
         {
             id: 'admin',
             label: 'Admin',

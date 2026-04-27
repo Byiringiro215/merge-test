@@ -1,6 +1,7 @@
 <script lang='ts'>
     import type { TrainingFiltersState } from '$lib/components/training';
     import { AppLayout } from '$lib/components/layout';
+    import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import {
         EnrollmentByTradeChart,
         TrainingFiltersContent,
@@ -20,8 +21,7 @@
     } from '@lucide/svelte';
     import CalendarIcon from '@lucide/svelte/icons/calendar';
     import FilterIcon from '@lucide/svelte/icons/filter';
-    import TrendingDownIcon from '@lucide/svelte/icons/trending-down';
-    import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
+    import { fetchTrainingStats } from './page.remote';
 
     let appLayout: ReturnType<typeof AppLayout>;
 
@@ -60,57 +60,82 @@
         currentPage = page;
     }
 
-    // Stats data matching Figma design
-    const statsCards = [
+    const statsQuery = $derived(fetchTrainingStats());
+
+    let isInitialLoad = $state(true);
+    $effect(() => {
+        if (!statsQuery.loading)
+            isInitialLoad = false;
+    });
+    const showLoading = $derived(!isInitialLoad && statsQuery.loading);
+
+    const stats = $derived(
+        statsQuery.current
+            ?? {
+                totalSchools: 0,
+                totalStudents: 0,
+                totalTeachers: 0,
+                byCategory: {} as Record<string, number>,
+            },
+    );
+
+    function fmt(n: number): string {
+        return n.toLocaleString();
+    }
+
+    function categoryCount(byCategory: Record<string, number>, ...needles: string[]): number {
+        let total = 0;
+        for (const [k, v] of Object.entries(byCategory)) {
+            if (needles.some(n => k.toLowerCase().includes(n)))
+                total += v;
+        }
+        return total;
+    }
+
+    const schoolBreakdowns = $derived([
+        { label: 'PUBLIC', value: categoryCount(stats.byCategory, 'public') },
+        { label: 'PRIVATE', value: categoryCount(stats.byCategory, 'private') },
+        { label: 'GOV', value: categoryCount(stats.byCategory, 'gov', 'state') },
+    ]);
+
+    // Stats cards driven by the API. The three cards without an API source
+    // (Ongoing Trainings, Production Units, Special Academics) keep their
+    // titles but show '—' until backend support lands.
+    const statsCards = $derived([
         {
             title: 'Total Students',
-            value: '85,240',
-            change: '+4.5%',
-            changeType: 'positive' as const,
-            changeDescription: 'from last year',
+            value: fmt(stats.totalStudents),
             icon: Users,
             iconBgColor: 'bg-blue-50',
         },
         {
             title: 'Active Teachers',
-            value: '4,150',
-            change: '+2.1%',
-            changeType: 'positive' as const,
-            changeDescription: 'from last year',
+            value: fmt(stats.totalTeachers),
             icon: GraduationCap,
             iconBgColor: 'bg-green-50',
         },
         {
             title: 'Ongoing Trainings',
-            value: '1,248',
-            description: 'Across 45 distinct trade areas',
+            value: '—',
+            description: 'Pending backend support',
             icon: Activity,
             iconBgColor: 'bg-purple-50',
         },
         {
             title: 'Production Units',
-            value: '87',
-            change: '-1',
-            changeType: 'negative' as const,
-            changeDescription: 'closed for maintenance',
+            value: '—',
+            description: 'Pending backend support',
             icon: Factory,
             iconBgColor: 'bg-amber-50',
         },
         {
             title: 'Special Academics',
-            value: '32',
-            description: 'Centers of Excellence active',
+            value: '—',
+            description: 'Pending backend support',
             icon: Award,
             iconBgColor: 'bg-cyan-50',
         },
-    ];
-
-    // School breakdown for first card
-    const schoolBreakdowns = [
-        { label: 'PUBLIC', value: 142 },
-        { label: 'PRIVATE', value: 198 },
-        { label: 'GOV', value: 44 },
-    ];
+    ]);
 
     const iconColors: Record<string, string> = {
         'bg-blue-50': 'text-blue-600',
@@ -120,11 +145,9 @@
         'bg-cyan-50': 'text-cyan-600',
     };
 
-    const changeColors: Record<string, string> = {
-        positive: 'text-green-600',
-        negative: 'text-red-600',
-    };
 </script>
+
+<LoadingBar visible={showLoading} />
 
 <AppLayout
     bind:this={appLayout}
@@ -176,7 +199,7 @@
                 </div>
             </div>
             <div class='text-[28px] font-bold text-gray-900 leading-tight mb-3'>
-                384
+                {fmt(stats.totalSchools)}
             </div>
             <div class='flex items-center justify-between pt-3 border-t border-gray-100'>
                 {#each schoolBreakdowns as item (item.label)}
@@ -202,19 +225,7 @@
                 <div class='text-[28px] font-bold text-gray-900 leading-tight'>
                     {stat.value}
                 </div>
-                {#if stat.change}
-                    <div class='flex items-center gap-1 mt-1'>
-                        {#if stat.changeType === 'positive'}
-                            <TrendingUpIcon class='h-3.5 w-3.5 text-green-600' />
-                        {:else if stat.changeType === 'negative'}
-                            <TrendingDownIcon class='h-3.5 w-3.5 text-red-600' />
-                        {/if}
-                        <span class='text-xs font-medium {changeColors[stat.changeType]}'>{stat.change}</span>
-                        {#if stat.changeDescription}
-                            <span class='text-xs text-gray-400'>{stat.changeDescription}</span>
-                        {/if}
-                    </div>
-                {:else if stat.description}
+                {#if stat.description}
                     <p class='text-xs text-gray-400 mt-1'>{stat.description}</p>
                 {/if}
             </Card>
