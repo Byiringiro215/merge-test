@@ -17,7 +17,7 @@ FROM oven/bun:1.3.4 AS prod-deps
 WORKDIR /app
 
 COPY package.json bun.lock .npmrc ./
-RUN bun install --frozen-lockfile --production
+RUN bun install --frozen-lockfile --production --ignore-scripts
 
 # ---- Stage: runtime ----
 FROM node:22-alpine AS runtime
