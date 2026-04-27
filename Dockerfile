@@ -7,7 +7,7 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-ARG PUBLIC_API_URL
+ARG PUBLIC_API_URL=http://197.243.29.44/api
 ENV PUBLIC_API_URL=$PUBLIC_API_URL
 
 RUN bun run build
