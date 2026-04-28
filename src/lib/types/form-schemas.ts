@@ -159,6 +159,23 @@ export const groupMemberPickerSchema = s.object({
 });
 export type GroupMemberPickerInput = s.Infer<typeof groupMemberPickerSchema>;
 
+// -- Service accounts ---------------------------------------------------------
+
+export const fetchServiceAccountsQuerySchema = routes['/iam/service-accounts'].GET.query!;
+export type FetchServiceAccountsQuery = s.Infer<typeof fetchServiceAccountsQuerySchema>;
+
+export const createServiceAccountBodySchema = routes['/iam/service-accounts'].POST.body!;
+export type CreateServiceAccountBody = s.Infer<typeof createServiceAccountBodySchema>;
+
+export const updateServiceAccountCommandSchema = s.extendSchema(
+    routes['/iam/service-accounts/{id}'].PATCH.body!,
+    { id: s.number() },
+);
+export type UpdateServiceAccountCommand = s.Infer<typeof updateServiceAccountCommandSchema>;
+
+export const deleteServiceAccountSchema = routes['/iam/service-accounts/{id}'].DELETE.params!;
+export type DeleteServiceAccountInput = s.Infer<typeof deleteServiceAccountSchema>;
+
 // -- Sessions -----------------------------------------------------------------
 
 export const revokeSessionSchema = routes['/auth/sessions/{id}'].DELETE.params!;

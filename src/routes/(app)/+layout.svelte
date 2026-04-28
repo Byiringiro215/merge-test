@@ -31,6 +31,7 @@
         '/admin/groups': 'iam:groups',
         '/admin/sessions': 'auth:sessions',
         '/admin/permissions': 'iam:permissions',
+        '/admin/service-accounts': 'iam:service-accounts',
     };
 
     const allNavItems: NavItem[] = [
@@ -92,6 +93,7 @@
                 { label: 'Groups', href: '/admin/groups' },
                 { label: 'Sessions', href: '/admin/sessions' },
                 { label: 'Permissions', href: '/admin/permissions' },
+                { label: 'Service Accounts', href: '/admin/service-accounts' },
             ],
         },
     ];
