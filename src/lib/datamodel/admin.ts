@@ -9,3 +9,4 @@ export type Permission = Schema<'Permission'>;
 export type PermissionRes = Infer<typeof permissionSchema>;
 export type Session = Schema<'SessionInfo'>;
 export type PermissionInput = Schema<'PermissionInput'>;
+export type ServiceAccount = Schema<'ServiceAccount'>;
