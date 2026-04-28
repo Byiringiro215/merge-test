@@ -1,16 +1,16 @@
 <script lang='ts'>
     import type {
-        FacultyEnrollment,
         ScoreDistribution,
+        TradeEnrollment,
     } from '$lib/components/students/types.js';
     import type { StudentFiltersState } from '$lib/datamodel/student';
     import StatsCard from '$lib/components/dashboard/StatsCard.svelte';
     import Guard from '$lib/components/Guard.svelte';
     import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
-    import FacultyEnrollmentChart from '$lib/components/students/FacultyEnrollmentChart.svelte';
     import ScoreDistributionChart from '$lib/components/students/ScoreDistributionChart.svelte';
     import StudentFilters from '$lib/components/students/StudentFilters.svelte';
     import StudentRegistryTable from '$lib/components/students/StudentRegistryTable.svelte';
+    import TradeEnrollmentChart from '$lib/components/students/TradeEnrollmentChart.svelte';
     import { FACULTY_COLORS } from '$lib/components/students/types.js';
     import { Button } from '$lib/components/ui/button';
     import * as Sidebar from '$lib/components/ui/sidebar';
@@ -110,35 +110,35 @@
         { range: '81-100', count: 2800 },
     ];
 
-    // Faculty enrollment data
-    const facultyEnrollmentData: FacultyEnrollment[] = [
+    // Trade enrollment data
+    const tradeEnrollmentData: TradeEnrollment[] = [
         {
-            faculty: 'Software development',
+            trade: 'Software development',
             count: 3200,
             color: FACULTY_COLORS['Software development'],
         },
         {
-            faculty: 'Mechanics',
+            trade: 'Mechanics',
             count: 2100,
             color: FACULTY_COLORS.Mechanics,
         },
         {
-            faculty: 'Automobile',
+            trade: 'Automobile',
             count: 1800,
             color: FACULTY_COLORS.Automobile,
         },
         {
-            faculty: 'Tourism',
+            trade: 'Tourism',
             count: 2400,
             color: FACULTY_COLORS.Tourism,
         },
         {
-            faculty: 'Electrical engineering',
+            trade: 'Electrical engineering',
             count: 1950,
             color: FACULTY_COLORS['Electrical engineering'],
         },
         {
-            faculty: 'Road construction',
+            trade: 'Road construction',
             count: 1000,
             color: FACULTY_COLORS['Road construction'],
         },
@@ -207,7 +207,7 @@
                                 Deep dive into
                                 academic
                                 performance and
-                                faculty trends.
+                                trade trends.
                             </p>
                         </div>
                     </div>
@@ -278,8 +278,8 @@
                         />
                     </div>
                     <div class='min-w-0'>
-                        <FacultyEnrollmentChart
-                            data={facultyEnrollmentData}
+                        <TradeEnrollmentChart
+                            data={tradeEnrollmentData}
                         />
                     </div>
                 </div>

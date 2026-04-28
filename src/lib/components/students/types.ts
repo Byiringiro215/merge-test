@@ -1,4 +1,4 @@
-export type Faculty
+export type Trade
     = | 'Software development'
         | 'Mechanics'
         | 'Automobile'
@@ -13,13 +13,13 @@ export interface ScoreDistribution {
     count: number;
 }
 
-export interface FacultyEnrollment {
-    faculty: Faculty;
+export interface TradeEnrollment {
+    trade: Trade;
     count: number;
     color: string;
 }
 
-export const FACULTIES: Faculty[] = [
+export const TRADES: Trade[] = [
     'Software development',
     'Mechanics',
     'Automobile',
@@ -30,7 +30,7 @@ export const FACULTIES: Faculty[] = [
 
 export const LEVELS: Level[] = ['L1', 'L2', 'L3', 'L4', 'L5'];
 
-export const FACULTY_COLORS: Record<Faculty, string> = {
+export const FACULTY_COLORS: Record<Trade, string> = {
     'Software development': '#3b82f6',
     'Mechanics': '#10b981',
     'Automobile': '#f59e0b',

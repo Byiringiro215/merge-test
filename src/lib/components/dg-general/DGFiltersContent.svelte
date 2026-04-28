@@ -63,7 +63,7 @@
         { value: 'private', label: 'Private Schools' },
     ];
 
-    const facultyOptions = [
+    const tradeOptions = [
         { value: 'all', label: 'All Faculties...' },
         { value: 'software', label: 'Software Development' },
         { value: 'mechanics', label: 'Mechanics' },
@@ -122,12 +122,12 @@
     />
 
     <SelectInputField
-        label='Faculty'
-        value={filters.faculty}
-        options={facultyOptions}
+        label='Trade'
+        value={filters.trade}
+        options={tradeOptions}
         onValueChange={(v: string | undefined) =>
-            v && updateFilter('faculty', v)}
-        placeholder='Select Faculty...'
+            v && updateFilter('trade', v)}
+        placeholder='Select Trade...'
     />
 </div>
 

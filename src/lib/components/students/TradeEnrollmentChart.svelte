@@ -1,6 +1,6 @@
 <script lang='ts'>
     import type { PieArcDatum } from 'd3';
-    import type { FacultyEnrollment } from './types.js';
+    import type { TradeEnrollment } from './types.js';
     import { ChartContainer } from '$lib/components/ui/chart-container';
     import ChartLegend from '$lib/components/ui/chart-container/chart-legend.svelte';
     import { arc, easeQuadOut, interpolate, pie, select } from 'd3';
@@ -8,33 +8,33 @@
     import { FACULTY_COLORS } from './types.js';
 
     interface Props {
-        data?: FacultyEnrollment[];
+        data?: TradeEnrollment[];
     }
 
-    const defaultData: FacultyEnrollment[] = [
+    const defaultData: TradeEnrollment[] = [
         {
-            faculty: 'Software development',
+            trade: 'Software development',
             count: 3200,
             color: FACULTY_COLORS['Software development'],
         },
         {
-            faculty: 'Mechanics',
+            trade: 'Mechanics',
             count: 2100,
             color: FACULTY_COLORS.Mechanics,
         },
         {
-            faculty: 'Automobile',
+            trade: 'Automobile',
             count: 1800,
             color: FACULTY_COLORS.Automobile,
         },
-        { faculty: 'Tourism', count: 2400, color: FACULTY_COLORS.Tourism },
+        { trade: 'Tourism', count: 2400, color: FACULTY_COLORS.Tourism },
         {
-            faculty: 'Electrical engineering',
+            trade: 'Electrical engineering',
             count: 1950,
             color: FACULTY_COLORS['Electrical engineering'],
         },
         {
-            faculty: 'Road construction',
+            trade: 'Road construction',
             count: 1000,
             color: FACULTY_COLORS['Road construction'],
         },
@@ -158,7 +158,7 @@
                     tooltip,
                     chartElement,
                     event,
-                    `${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
+                    `${d.data.trade}: ${d.data.count.toLocaleString()} (${percent}%)`,
                 );
             },
         )
@@ -181,7 +181,7 @@
                         tooltip,
                         chartElement,
                         event,
-                        `${d.data.faculty}: ${d.data.count.toLocaleString()} (${percent}%)`,
+                        `${d.data.trade}: ${d.data.count.toLocaleString()} (${percent}%)`,
                     );
                 },
             )
@@ -211,14 +211,14 @@
 
     // Legend items for ChartLegend component
     const legendItems = data.map(item => ({
-        label: item.faculty,
+        label: item.trade,
         color: item.color,
     }));
 </script>
 
 <ChartContainer
     bind:this={chartContainerRef}
-    title='Faculty Enrollment'
+    title='Trade Enrollment'
     description='Breakdown by specialized vocational tracks'
     cardClass='h-full'
     headerClass='p-4 lg:p-6'
