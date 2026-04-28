@@ -7,7 +7,7 @@ export interface Course {
     name: string;
     school: string;
     district: District;
-    faculty: string;
+    trade: string;
     instructor: string;
     instructorAvatar?: string;
     enrollment: number;

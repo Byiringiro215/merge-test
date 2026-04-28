@@ -1,5 +1,5 @@
 <script lang='ts'>
-    import type { FacultySuccessData } from './types.js';
+    import type { TradeSuccessData } from './types.js';
     import { ChartContainer } from '$lib/components/ui/chart-container';
     import {
         axisBottom,
@@ -13,36 +13,36 @@
     } from 'd3';
 
     interface Props {
-        data?: FacultySuccessData[];
+        data?: TradeSuccessData[];
     }
 
-    const defaultData: FacultySuccessData[] = [
+    const defaultData: TradeSuccessData[] = [
         {
-            faculty: 'Information Technology',
+            trade: 'Information Technology',
             abbreviation: 'IT',
             currentRate: 88,
             nationalTarget: 85,
         },
         {
-            faculty: 'Tourism & Hospitality',
+            trade: 'Tourism & Hospitality',
             abbreviation: 'Tourism',
             currentRate: 82,
             nationalTarget: 85,
         },
         {
-            faculty: 'Mechanical Engineering',
+            trade: 'Mechanical Engineering',
             abbreviation: 'Mecha',
             currentRate: 65,
             nationalTarget: 85,
         },
         {
-            faculty: 'Civil Engineering',
+            trade: 'Civil Engineering',
             abbreviation: 'Civil',
             currentRate: 92,
             nationalTarget: 85,
         },
         {
-            faculty: 'Agriculture',
+            trade: 'Agriculture',
             abbreviation: 'Agri',
             currentRate: 78,
             nationalTarget: 85,
@@ -123,14 +123,14 @@
         const cornerRadius = 6;
 
         const bars = g
-            .selectAll<SVGPathElement, FacultySuccessData>('.bar')
+            .selectAll<SVGPathElement, TradeSuccessData>('.bar')
             .data(data)
             .enter()
             .append('path')
             .attr('class', 'bar')
             .attr('fill', '#3B82F6')
             .style('cursor', 'pointer')
-            .attr('d', (d: FacultySuccessData) => {
+            .attr('d', (d: TradeSuccessData) => {
                 const x = xScale(d.abbreviation) || 0;
                 return `M${x},${innerHeight} L${x},${innerHeight} L${x + barWidth},${innerHeight} L${x + barWidth},${innerHeight} Z`;
             });
@@ -138,8 +138,8 @@
         // Animate bars growing from bottom
         bars.transition()
             .duration(800)
-            .delay((_: FacultySuccessData, i: number) => i * 100)
-            .attr('d', (d: FacultySuccessData) => {
+            .delay((_: TradeSuccessData, i: number) => i * 100)
+            .attr('d', (d: TradeSuccessData) => {
                 const x = xScale(d.abbreviation) || 0;
                 const y = yScale(d.currentRate);
                 const h = innerHeight - y;
@@ -155,7 +155,7 @@
         // Bar hover effects
         bars.on(
             'pointerenter',
-            function (event: PointerEvent, d: FacultySuccessData) {
+            function (event: PointerEvent, d: TradeSuccessData) {
                 select(this)
                     .transition()
                     .duration(200)
@@ -169,20 +169,20 @@
                     tooltip,
                     container,
                     event,
-                    `${d.faculty}: ${d.currentRate}% success rate`,
+                    `${d.trade}: ${d.currentRate}% success rate`,
                 );
             },
         )
             .on(
                 'pointermove',
-                (event: PointerEvent, d: FacultySuccessData) => {
+                (event: PointerEvent, d: TradeSuccessData) => {
                     if (!tooltip)
                         return;
                     showTooltip(
                         tooltip,
                         container,
                         event,
-                        `${d.faculty}: ${d.currentRate}% success rate`,
+                        `${d.trade}: ${d.currentRate}% success rate`,
                     );
                 },
             )
@@ -200,7 +200,7 @@
             });
 
         // Draw target line
-        const lineGenerator = line<FacultySuccessData>()
+        const lineGenerator = line<TradeSuccessData>()
             .x(d => (xScale(d.abbreviation) || 0) + barWidth / 2)
             .y(d => yScale(d.nationalTarget))
             .curve(curveMonotoneX);
@@ -225,7 +225,7 @@
 
         // Draw circle markers on line
         const dots = g
-            .selectAll<SVGCircleElement, FacultySuccessData>('.target-dot')
+            .selectAll<SVGCircleElement, TradeSuccessData>('.target-dot')
             .data(data)
             .enter()
             .append('circle')
@@ -241,13 +241,13 @@
         // Animate dots
         dots.transition()
             .duration(400)
-            .delay((_: FacultySuccessData, i: number) => 800 + i * 80)
+            .delay((_: TradeSuccessData, i: number) => 800 + i * 80)
             .attr('r', 5);
 
         // Dot hover effects
         dots.on(
             'pointerenter',
-            function (event: PointerEvent, d: FacultySuccessData) {
+            function (event: PointerEvent, d: TradeSuccessData) {
                 select(this)
                     .transition()
                     .duration(150)
@@ -260,20 +260,20 @@
                     tooltip,
                     container,
                     event,
-                    `${d.faculty}: ${d.nationalTarget}% national target`,
+                    `${d.trade}: ${d.nationalTarget}% national target`,
                 );
             },
         )
             .on(
                 'pointermove',
-                (event: PointerEvent, d: FacultySuccessData) => {
+                (event: PointerEvent, d: TradeSuccessData) => {
                     if (!tooltip)
                         return;
                     showTooltip(
                         tooltip,
                         container,
                         event,
-                        `${d.faculty}: ${d.nationalTarget}% national target`,
+                        `${d.trade}: ${d.nationalTarget}% national target`,
                     );
                 },
             )
@@ -321,8 +321,8 @@
 
 <ChartContainer
     bind:this={chartContainerRef}
-    title='Faculty Success Rates'
-    description='Comparison of current student success rates vs national targets per faculty.'
+    title='Trade Success Rates'
+    description='Comparison of current student success rates vs national targets per trade.'
     {height}
     onResize={createChart}
     cardClass='border-0'
