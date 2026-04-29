@@ -5,6 +5,7 @@
     import { page } from '$app/state';
     import { ConfirmDialog, StatusBadge } from '$lib/components/admin';
     import ServiceAccountFormDialog from '$lib/components/admin/ServiceAccountFormDialog.svelte';
+    import ServiceAccountRoleAssignDialog from '$lib/components/admin/ServiceAccountRoleAssignDialog.svelte';
     import DataTable from '$lib/components/data-table/data-table.svelte';
     import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
     import { Button } from '$lib/components/ui/button';
@@ -13,9 +14,12 @@
     import { Pagination } from '$lib/components/ui/pagination';
     import {
         Edit,
+        Key,
         MoreHorizontal,
         Plus,
+        Shield,
         Trash2,
+        Users,
     } from '@lucide/svelte';
     import { createRawSnippet } from 'svelte';
     import {
@@ -52,6 +56,9 @@
     let formDialogOpen = $state(false);
     let editingServiceAccount = $state<ServiceAccount | null>(null);
 
+    let roleAssignDialogOpen = $state(false);
+    let roleAssignServiceAccount = $state<ServiceAccount | null>(null);
+
     let deleteDialogOpen = $state(false);
     let deletingServiceAccount = $state<ServiceAccount | null>(null);
     let isDeleting = $state(false);
@@ -81,18 +88,24 @@
     const refetchServiceAccounts = async () => {
         await serviceAccountsQuery.refresh();
     };
-
+    // open service account form dialog
     const openServiceAccountDialog = (sa?: ServiceAccount) => {
         editingServiceAccount = sa ?? null;
         formDialogOpen = true;
     };
+    // open service account role assign and unassign form dialog
+    const openRoleAssignDialog = (sa: ServiceAccount) => {
+        roleAssignServiceAccount = sa;
+        roleAssignDialogOpen = true;
+    };
 
+    // open delete confirmation service account form dialog
     const openDeleteDialog = (sa: ServiceAccount) => {
         deletingServiceAccount = sa;
         deleteError = '';
         deleteDialogOpen = true;
     };
-
+    // delete service account dialog
     const handleDelete = async () => {
         if (!deletingServiceAccount)
             return;
@@ -208,11 +221,28 @@
                     </Button>
                 {/snippet}
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content align='end'>
+            <DropdownMenu.Content align='end' class='w-56'>
                 <DropdownMenu.Item onclick={() => openServiceAccountDialog(sa)}>
                     <Edit class='mr-2 h-4 w-4' />
                     Edit
                 </DropdownMenu.Item>
+                <DropdownMenu.Item onclick={() => openRoleAssignDialog(sa)}>
+                    <Users class='mr-2 h-4 w-4' />
+                    Manage roles
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                    onclick={() => goto(`/admin/service-accounts/${sa.id}/permissions`)}
+                >
+                    <Shield class='mr-2 h-4 w-4' />
+                    Permissions
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                    onclick={() => goto(`/admin/service-accounts/${sa.id}/api-keys`)}
+                >
+                    <Key class='mr-2 h-4 w-4' />
+                    API keys
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
                 <DropdownMenu.Item
                     class='text-destructive'
                     onclick={() => openDeleteDialog(sa)}
@@ -233,7 +263,8 @@
                 Service Accounts
             </h1>
             <p class='mt-1 text-sm text-gray-500'>
-                non-human IAM principal. Service accounts hold roles and direct permissions just like users
+                Non-human IAM principals used to connect external systems with
+                generated API keys.
             </p>
         </div>
 
@@ -268,6 +299,12 @@
     serviceAccount={editingServiceAccount}
     onOpenChange={v => (formDialogOpen = v)}
     onSuccess={refetchServiceAccounts}
+/>
+
+<ServiceAccountRoleAssignDialog
+    open={roleAssignDialogOpen}
+    serviceAccount={roleAssignServiceAccount}
+    onOpenChange={v => (roleAssignDialogOpen = v)}
 />
 
 <ConfirmDialog

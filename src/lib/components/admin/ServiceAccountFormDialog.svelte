@@ -141,12 +141,14 @@
             onInput={v => (values.displayName = v)}
             error={errors.displayName}
             disabled={isSubmitting}
+            labelClass='mt-5!'
         />
 
         <FormField
             name='description'
             label='Description'
             textareaInput
+            labelClass='mb-4'
             placeholder='What this service account is used for'
             value={values.description}
             onInput={v => (values.description = v)}
