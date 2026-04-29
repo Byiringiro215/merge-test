@@ -176,6 +176,55 @@ export type UpdateServiceAccountCommand = s.Infer<typeof updateServiceAccountCom
 export const deleteServiceAccountSchema = routes['/iam/service-accounts/{id}'].DELETE.params!;
 export type DeleteServiceAccountInput = s.Infer<typeof deleteServiceAccountSchema>;
 
+// Service account → role binding (path id = role id, body has serviceAccountId).
+export const bindRoleToServiceAccountSchema = s.extendSchema(
+    routes['/iam/roles/{id}/bind/service-account'].POST.body!,
+    { id: s.number() },
+);
+export type BindRoleToServiceAccountInput = s.Infer<typeof bindRoleToServiceAccountSchema>;
+
+// Direct permission bind/unbind for a service account.
+export const bindPermissionToServiceAccountBodySchema
+    = routes['/iam/permissions/bind/service-account'].POST.body!;
+export type BindPermissionToServiceAccountInput = s.Infer<
+    typeof bindPermissionToServiceAccountBodySchema
+>;
+
+export const unbindPermissionFromServiceAccountBodySchema
+    = routes['/iam/permissions/bind/service-account'].DELETE.body!;
+export type UnbindPermissionFromServiceAccountInput = s.Infer<
+    typeof unbindPermissionFromServiceAccountBodySchema
+>;
+
+// Effective permissions list — path id + optional tenant query.
+export const fetchServiceAccountPermissionsSchema = s.object({
+    id: s.number(),
+    tenantId: s.optional(s.string()),
+});
+export type FetchServiceAccountPermissionsInput = s.Infer<
+    typeof fetchServiceAccountPermissionsSchema
+>;
+
+// Service account → API keys.
+export const fetchServiceAccountApiKeysSchema = s.object({ id: s.number() });
+export type FetchServiceAccountApiKeysInput = s.Infer<
+    typeof fetchServiceAccountApiKeysSchema
+>;
+
+export const mintServiceAccountApiKeyCommandSchema = s.extendSchema(
+    routes['/admin/service-accounts/{id}/api-keys'].POST.body!,
+    { id: s.number() },
+);
+export type MintServiceAccountApiKeyCommand = s.Infer<
+    typeof mintServiceAccountApiKeyCommandSchema
+>;
+
+export const revokeServiceAccountApiKeySchema
+    = routes['/admin/service-accounts/{id}/api-keys/{keyId}'].DELETE.params!;
+export type RevokeServiceAccountApiKeyInput = s.Infer<
+    typeof revokeServiceAccountApiKeySchema
+>;
+
 // -- Sessions -----------------------------------------------------------------
 
 export const revokeSessionSchema = routes['/auth/sessions/{id}'].DELETE.params!;
