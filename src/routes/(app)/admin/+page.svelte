@@ -17,8 +17,10 @@
         ArrowDownAZ,
         ArrowUpAZ,
         Check,
+        Edit,
         Filter,
-        Pencil,
+        Key,
+        MoreHorizontal,
         Plus,
         Search,
         Trash2,
@@ -271,23 +273,41 @@
 {/snippet}
 
 {#snippet actionsCell({ user }: { user: User })}
-    <div class='flex items-center gap-1'>
-        <button
-            type='button'
-            class='rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-            title='Edit user'
-            onclick={() => openUserDialog(user)}
-        >
-            <Pencil class='h-4 w-4' />
-        </button>
-        <button
-            type='button'
-            class='rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-red-600'
-            title='Delete user'
-            onclick={() => openDeleteDialog(user)}
-        >
-            <Trash2 class='h-4 w-4' />
-        </button>
+    <div class='text-right'>
+        <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+                {#snippet child({ props })}
+                    <Button
+                        {...props}
+                        variant='ghost'
+                        size='icon'
+                        class='cursor-pointer'
+                    >
+                        <MoreHorizontal class='h-4 w-4' />
+                    </Button>
+                {/snippet}
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align='end' class='w-48'>
+                <DropdownMenu.Item onclick={() => openUserDialog(user)}>
+                    <Edit class='mr-2 h-4 w-4' />
+                    Edit
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                    onclick={() => goto(`/admin/users/${user.id}/api-keys`)}
+                >
+                    <Key class='mr-2 h-4 w-4' />
+                    API keys
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                    class='text-destructive'
+                    onclick={() => openDeleteDialog(user)}
+                >
+                    <Trash2 class='mr-2 h-4 w-4' />
+                    Delete
+                </DropdownMenu.Item>
+            </DropdownMenu.Content>
+        </DropdownMenu.Root>
     </div>
 {/snippet}
 
