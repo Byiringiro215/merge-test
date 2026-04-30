@@ -4,5 +4,7 @@ export { default as GroupFormSheet } from './GroupFormDialog.svelte';
 export { default as PermissionFormSheet } from './PermissionFormSheet.svelte';
 export { default as RoleBindingSheet } from './role/RoleBindingSheet.svelte';
 export { default as RoleFormSheet } from './role/RoleFormDialog.svelte';
+export { default as ServiceAccountFormSheet } from './ServiceAccountFormDialog.svelte';
+export { default as ServiceAccountRoleAssignSheet } from './ServiceAccountRoleAssignDialog.svelte';
 export { default as StatusBadge } from './StatusBadge.svelte';
 export { default as UserFormSheet } from './UserFormDialog.svelte';

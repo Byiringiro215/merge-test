@@ -156,20 +156,20 @@
             },
         },
         {
-            accessorKey: 'faculty',
+            accessorKey: 'trade',
             header: () => {
                 const snippet = createRawSnippet(() => ({
                     render: () =>
-                        `<div class="text-sm leading-7 font-inter h-[48px] font-medium text-[#565D6D]">Faculty</div>`,
+                        `<div class="text-sm leading-7 font-inter h-[48px] font-medium text-[#565D6D]">Trade</div>`,
                 }));
                 return renderSnippet(snippet);
             },
             cell: ({ row }) => {
-                const faculty = row.original.faculty;
+                const trade = row.original.trade;
                 const snippet = createRawSnippet(() => ({
                     render: () =>
                         `<div>
-            <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-normal bg-[#F3F4F666]">${faculty}</span>
+            <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-normal bg-[#F3F4F666]">${trade}</span>
             </div>`,
                 }));
                 return renderSnippet(snippet);

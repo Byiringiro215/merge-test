@@ -31,7 +31,7 @@
         {
             id: 2,
             type: 'info',
-            message: 'New curriculum added for Road Construction faculty',
+            message: 'New curriculum added for Road Construction trade',
             time: '2 hours ago',
         },
         {
@@ -43,7 +43,7 @@
         {
             id: 4,
             type: 'success',
-            message: '58 students certified in Tourism faculty (Rubavu)',
+            message: '58 students certified in Tourism trade (Rubavu)',
             time: '1 day ago',
         },
         {
@@ -79,7 +79,7 @@
     <CardContent class='space-y-4'>
         <div class='flex items-center justify-between'>
             <CardDescription
-            >Recent data synchronization and faculty updates.</CardDescription
+            >Recent data synchronization and trade updates.</CardDescription
             >
 
             <a

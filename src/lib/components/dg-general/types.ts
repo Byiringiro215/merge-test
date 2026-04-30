@@ -3,7 +3,7 @@ export interface DGFiltersState {
     province: string;
     district: string;
     schoolType: string;
-    faculty: string;
+    trade: string;
 }
 
 export interface RegionData {

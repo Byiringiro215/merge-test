@@ -15,8 +15,8 @@
             id: 1,
             name: 'Kicukiro Tech High',
             district: 'Kicukiro',
-            faculty: 'Software development',
-            facultyColor: 'bg-green-100 text-green-700',
+            trade: 'Software development',
+            tradeColor: 'bg-green-100 text-green-700',
             activeStudents: 124,
             successRate: 94,
             status: 'High',
@@ -25,8 +25,8 @@
             id: 2,
             name: 'Gasabo Vocational',
             district: 'Gasabo',
-            faculty: 'Mechanics',
-            facultyColor: 'bg-blue-100 text-blue-700',
+            trade: 'Mechanics',
+            tradeColor: 'bg-blue-100 text-blue-700',
             activeStudents: 89,
             successRate: 82,
             status: 'Stable',
@@ -35,8 +35,8 @@
             id: 3,
             name: 'Rubavu Excellence',
             district: 'Rubavu',
-            faculty: 'Tourism',
-            facultyColor: 'bg-purple-100 text-purple-700',
+            trade: 'Tourism',
+            tradeColor: 'bg-purple-100 text-purple-700',
             activeStudents: 156,
             successRate: 88,
             status: 'High',
@@ -45,8 +45,8 @@
             id: 4,
             name: 'Nyamagabe Technical',
             district: 'Nyamagabe',
-            faculty: 'Electrical engineering',
-            facultyColor: 'bg-yellow-100 text-yellow-700',
+            trade: 'Electrical engineering',
+            tradeColor: 'bg-yellow-100 text-yellow-700',
             activeStudents: 72,
             successRate: 75,
             status: 'Stable',
@@ -55,8 +55,8 @@
             id: 5,
             name: 'Ngororero Road Inst.',
             district: 'Ngororero',
-            faculty: 'Road construction',
-            facultyColor: 'bg-orange-100 text-orange-700',
+            trade: 'Road construction',
+            tradeColor: 'bg-orange-100 text-orange-700',
             activeStudents: 45,
             successRate: 68,
             status: 'Action Required',
@@ -65,8 +65,8 @@
             id: 6,
             name: 'Gasabo Auto Academy',
             district: 'Gasabo',
-            faculty: 'Automobile',
-            facultyColor: 'bg-cyan-100 text-cyan-700',
+            trade: 'Automobile',
+            tradeColor: 'bg-cyan-100 text-cyan-700',
             activeStudents: 110,
             successRate: 91,
             status: 'High',
@@ -86,7 +86,7 @@
                         || r.district
                             .toLowerCase()
                             .includes(searchQuery.toLowerCase())
-                        || r.faculty
+                        || r.trade
                             .toLowerCase()
                             .includes(searchQuery.toLowerCase()),
             )
@@ -105,13 +105,13 @@
             cell: ({ row }) => row.original.district,
         },
         {
-            accessorKey: 'faculty',
-            header: 'Primary Faculty',
+            accessorKey: 'trade',
+            header: 'Primary Trade',
             cell: ({ row }) => {
                 const snippet = createRawSnippet(() => {
                     return {
                         render: () =>
-                            `<span class="inline-flex items-center rounded-full px-1 py-0.5 text-xs font-normal bg-[#9bc3e8]/20 text-[#205fad] border border-[#8db9e2]">${row.original.faculty}</span>`,
+                            `<span class="inline-flex items-center rounded-full px-1 py-0.5 text-xs font-normal bg-[#9bc3e8]/20 text-[#205fad] border border-[#8db9e2]">${row.original.trade}</span>`,
                     };
                 });
                 return renderSnippet(snippet);
