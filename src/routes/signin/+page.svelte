@@ -323,8 +323,10 @@
                         .preflight(loginSchema as unknown as StandardSchemaV1<LoginInput, LoginInput>)
                         .enhance(async ({ submit }) => {
                             isSubmitting = true;
-                            // Capture before submit/invalidateAll — once the user is authenticated
-                            const redirect = page.url.searchParams.get('redirect') || '/dashboard';
+                            // Capture before submit/invalidateAll — once the user is authenticated.
+                            // OAuth authorize redirects unauthenticated users here with ?flow=<id>.
+                            const flow = page.url.searchParams.get('flow');
+                            const redirect = page.url.searchParams.get('redirect') || (flow ? `/oauth/consent?flow=${flow}` : '/dashboard');
                             try {
                                 await submit();
                                 // If `invalid()` was called server-side or preflight
