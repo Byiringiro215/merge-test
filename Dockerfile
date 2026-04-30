@@ -7,9 +7,8 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-ARG PUBLIC_API_URL=http://197.243.29.44/api
-ENV PUBLIC_API_URL=$PUBLIC_API_URL
-
+# PUBLIC_API_URL is read at runtime via $env/dynamic/public, not baked here.
+# Set it in the container environment (docker-compose `environment:` block).
 RUN bun run build
 
 # ---- Stage: prod-deps ----
@@ -32,7 +31,10 @@ ENV PORT=3000
 
 EXPOSE 3000
 
+# Use 127.0.0.1 (not localhost) — Node listens on 0.0.0.0 (IPv4 only),
+# but `localhost` resolves to ::1 in Alpine and the connect refuses.
+# Hit /signin so a backend outage doesn't flap container health.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/signin || exit 1
 
 CMD ["node", "build"]

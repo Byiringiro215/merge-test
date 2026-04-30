@@ -7,10 +7,6 @@ on:
         required: true
         type: string
         description: "Deployment environment (staging or production)"
-      public_api_url:
-        required: true
-        type: string
-        description: "PUBLIC_API_URL to bake into the build"
 
 permissions:
   contents: read
@@ -23,8 +19,6 @@ jobs:
   lint:
     name: Lint
     runs-on: self-hosted
-    env:
-      PUBLIC_API_URL: http://localhost
     steps:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
@@ -52,13 +46,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # PUBLIC_API_URL is no longer baked at build time — it's read at runtime
+      # via $env/dynamic/public, set per-environment by the deploy step.
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          build-args: |
-            PUBLIC_API_URL=${{ inputs.public_api_url }}
           tags: |
             ${{ env.IMAGE_NAME }}:${{ inputs.environment }}-${{ github.sha }}
             ${{ env.IMAGE_NAME }}:latest-${{ inputs.environment }}
