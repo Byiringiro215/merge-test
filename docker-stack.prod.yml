@@ -6,6 +6,7 @@ services:
     environment:
       NODE_ENV: production
       ORIGIN: ${ORIGIN:-http://localhost:3000}
+      PUBLIC_API_URL: ${PUBLIC_API_URL:?PUBLIC_API_URL must be set (e.g. https://tdmp.rtb.gov.rw/api)}
     deploy:
       replicas: 2
       update_config:
@@ -21,7 +22,7 @@ services:
         delay: 5s
         max_attempts: 3
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/signin"]
       interval: 30s
       timeout: 5s
       retries: 3
