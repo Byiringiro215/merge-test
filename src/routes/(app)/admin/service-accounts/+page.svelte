@@ -263,8 +263,7 @@
                 Service Accounts
             </h1>
             <p class='mt-1 text-sm text-gray-500'>
-                Non-human IAM principals used to connect external systems with
-                generated API keys.
+                non-human IAM principal. Service accounts hold roles and direct permissions just like users
             </p>
         </div>
 
