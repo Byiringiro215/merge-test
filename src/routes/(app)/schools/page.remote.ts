@@ -53,7 +53,7 @@ export const fetchSchools = query(
             // District type is a literal union; cast so unrecognised districts still render.
             district: (row.location.districtName ?? '—') as School['district'],
             status: (row.isActive === 'Yes' || row.schoolStatus === 'Active' ? 'Active' : 'Inactive') as School['status'],
-            // The canonical /schools endpoint doesn't expose faculty count or success rate.
+            // The canonical /schools endpoint doesn't expose trade count or success rate.
             faculties: 0,
             students: 0,
             successRate: 0,

@@ -32,7 +32,7 @@
         province: '',
         district: '',
         schoolType: '',
-        faculty: '',
+        trade: '',
     });
 
     function handleFiltersChange(newFilters: DGFiltersState) {
@@ -49,7 +49,7 @@
             province: '',
             district: '',
             schoolType: '',
-            faculty: '',
+            trade: '',
         };
     }
 

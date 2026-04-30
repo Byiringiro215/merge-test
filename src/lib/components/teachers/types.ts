@@ -1,5 +1,5 @@
 export type District = 'Kicukiro' | 'Nyamagabe' | 'Rubavu' | 'Ngororero' | 'Gasabo';
-export type Faculty = 'Software development' | 'Mechanics' | 'Automobile' | 'Tourism' | 'Electrical engineering' | 'Road construction';
+export type Trade = 'Software development' | 'Mechanics' | 'Automobile' | 'Tourism' | 'Electrical engineering' | 'Road construction';
 export type Province = 'Kigali' | 'North' | 'South' | 'East' | 'West';
 
 export interface Teacher {
@@ -7,7 +7,7 @@ export interface Teacher {
     name: string;
     avatar?: string;
     registeredSince: string;
-    primaryFaculty: Faculty;
+    primaryTrade: Trade;
     assignedSchool: string;
     district: District;
     students: number;
@@ -16,12 +16,12 @@ export interface Teacher {
 
 export interface TeacherFiltersState {
     districts: District[];
-    faculties: Faculty[];
+    faculties: Trade[];
     successThreshold: [number, number];
 }
 
 export interface HeatmapCell {
-    faculty: Faculty;
+    trade: Trade;
     district: District;
     value: number; // 0-100 intensity
 }
@@ -33,7 +33,7 @@ export interface DistrictSuccess {
 
 export const DISTRICTS: District[] = ['Kicukiro', 'Nyamagabe', 'Rubavu', 'Ngororero', 'Gasabo'];
 
-export const FACULTIES: Faculty[] = [
+export const TRADES: Trade[] = [
     'Software development',
     'Mechanics',
     'Automobile',
@@ -72,9 +72,9 @@ export interface TeacherProvinceAssistance {
     };
 }
 
-// For combo chart - Faculty Success Rates
-export interface FacultySuccessData {
-    faculty: string;
+// For combo chart - Trade Success Rates
+export interface TradeSuccessData {
+    trade: string;
     abbreviation: string;
     currentRate: number;
     nationalTarget: number;

@@ -1,15 +1,15 @@
 <script lang='ts'>
     import type {
-        FacultySuccessData,
         TeacherProvinceAssistance,
+        TradeSuccessData,
     } from '$lib/components/teachers/types.js';
     import type { StaffFiltersState } from '$lib/datamodel/staff';
     import StatsCard from '$lib/components/dashboard/StatsCard.svelte';
     import LoadingBar from '$lib/components/loading-bar/loading-bar.svelte';
-    import FacultySuccessRatesChart from '$lib/components/teachers/FacultySuccessRatesChart.svelte';
     import StudentAssistanceByProvinceChart from '$lib/components/teachers/StudentAssistanceByProvinceChart.svelte';
     import TeacherFilters from '$lib/components/teachers/TeacherFilters.svelte';
     import TeacherRegistryTable from '$lib/components/teachers/TeacherRegistryTable.svelte';
+    import TradeSuccessRatesChart from '$lib/components/teachers/TradeSuccessRatesChart.svelte';
     import { Button } from '$lib/components/ui/button';
     import * as Sidebar from '$lib/components/ui/sidebar';
     import BookOpenIcon from '@lucide/svelte/icons/book-open';
@@ -121,34 +121,34 @@
         },
     ];
 
-    // Faculty Success Rates data
-    const facultySuccessData: FacultySuccessData[] = [
+    // Trade Success Rates data
+    const tradeSuccessData: TradeSuccessData[] = [
         {
-            faculty: 'Information Technology',
+            trade: 'Information Technology',
             abbreviation: 'IT',
             currentRate: 88,
             nationalTarget: 85,
         },
         {
-            faculty: 'Tourism & Hospitality',
+            trade: 'Tourism & Hospitality',
             abbreviation: 'Tourism',
             currentRate: 82,
             nationalTarget: 85,
         },
         {
-            faculty: 'Mechanical Engineering',
+            trade: 'Mechanical Engineering',
             abbreviation: 'Mecha',
             currentRate: 65,
             nationalTarget: 85,
         },
         {
-            faculty: 'Civil Engineering',
+            trade: 'Civil Engineering',
             abbreviation: 'Civil',
             currentRate: 92,
             nationalTarget: 85,
         },
         {
-            faculty: 'Agriculture',
+            trade: 'Agriculture',
             abbreviation: 'Agri',
             currentRate: 78,
             nationalTarget: 85,
@@ -187,7 +187,7 @@
                             <p
                                 class='mt-0.5 text-xs text-primary-gray sm:mt-1 sm:text-sm'
                             >
-                                Monitoring faculty performance across Rwandan
+                                Monitoring trade performance across Rwandan
                                 High Schools
                             </p>
                         </div>
@@ -237,8 +237,8 @@
                             />
                         </div>
                         <div class='min-w-0 lg:pl-6'>
-                            <FacultySuccessRatesChart
-                                data={facultySuccessData}
+                            <TradeSuccessRatesChart
+                                data={tradeSuccessData}
                             />
                         </div>
                     </div>
