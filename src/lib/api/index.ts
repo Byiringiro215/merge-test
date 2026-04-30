@@ -1,18 +1,21 @@
 import type { paths } from './paths';
+import { building } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { getAccessToken, setAccessToken } from '$lib/auth/index.svelte';
 import { bearerWithRefresh, createFetch } from '@bajustone/fetcher';
 import { routes } from 'virtual:fetcher';
 
 // Read at runtime (not build time) so a single image works in any environment.
-// Fail loud at module load if it's missing — better than silent 502s on every protected page.
-if (!env.PUBLIC_API_URL) {
+// Fail loud at startup if it's missing in a real run — better than silent 502s
+// on every protected page. `building` is true during `vite build` SSR
+// pre-rendering, where PUBLIC_API_URL is intentionally absent.
+if (!building && !env.PUBLIC_API_URL) {
     throw new Error(
         'PUBLIC_API_URL is not set. Set it in the container environment (docker-compose `environment:` block) before starting the app.',
     );
 }
 
-const baseUrl = `${env.PUBLIC_API_URL}/v1`;
+const baseUrl = `${env.PUBLIC_API_URL ?? ''}/v1`;
 
 export const api = createFetch<paths>({
     baseUrl,
