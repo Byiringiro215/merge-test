@@ -53,6 +53,21 @@ export type DeleteUserInput = s.Infer<typeof deleteUserSchema>;
 export const fetchUsersQuerySchema = routes['/auth/users'].GET.query!;
 export type FetchUsersQuery = s.Infer<typeof fetchUsersQuerySchema>;
 
+// -- User API keys (admin-managed) -------------------------------------------
+
+export const fetchUserApiKeysSchema = s.object({ userId: s.number() });
+export type FetchUserApiKeysInput = s.Infer<typeof fetchUserApiKeysSchema>;
+
+export const mintUserApiKeyCommandSchema = s.extendSchema(
+    routes['/admin/users/{userId}/api-keys'].POST.body!,
+    { userId: s.number() },
+);
+export type MintUserApiKeyCommand = s.Infer<typeof mintUserApiKeyCommandSchema>;
+
+export const revokeUserApiKeySchema
+    = routes['/admin/users/{userId}/api-keys/{id}'].DELETE.params!;
+export type RevokeUserApiKeyInput = s.Infer<typeof revokeUserApiKeySchema>;
+
 // -- Roles --------------------------------------------------------------------
 
 export const createRoleCommandSchema = routes['/iam/roles'].POST.body!;
