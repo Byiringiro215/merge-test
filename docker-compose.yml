@@ -12,3 +12,4 @@ services:
     environment:
       NODE_ENV: production
       ORIGIN: ${ORIGIN:-http://localhost:3000}
+      PUBLIC_API_URL: ${PUBLIC_API_URL:?PUBLIC_API_URL must be set in the server-side .env file (e.g. https://tdmptest.rtb.gov.rw/api)}
