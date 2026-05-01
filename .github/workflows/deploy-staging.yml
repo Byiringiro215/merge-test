@@ -24,6 +24,13 @@ jobs:
     runs-on: self-hosted
     needs: ci
     environment: staging
+    # Job-level env so every `docker compose` invocation (pull, up, down) can
+    # interpolate the compose file — the file's `${PUBLIC_API_URL:?...}` guard
+    # otherwise fails the `pull` step before we get to `up`.
+    env:
+      PUBLIC_API_URL: ${{ vars.STAGING_API_URL }}
+      ORIGIN: ${{ secrets.STAGING_ORIGIN }}
+      PORT: ${{ vars.PORT }}
     steps:
       - uses: actions/checkout@v5
 
@@ -39,10 +46,6 @@ jobs:
 
       - name: Deploy
         run: docker compose up -d --remove-orphans
-        env:
-          PUBLIC_API_URL: ${{ vars.STAGING_API_URL }}
-          ORIGIN: ${{ secrets.STAGING_ORIGIN }}
-          PORT: ${{ vars.PORT }}
 
       - name: Clean up old images
         run: docker image prune -f
