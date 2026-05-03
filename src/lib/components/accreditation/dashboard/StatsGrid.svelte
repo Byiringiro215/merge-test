@@ -29,7 +29,7 @@
     {#each items as item (item.label)}
         {#if item.href}
             <a href={item.href} class='block'>
-                <Card class='overflow-hidden rounded-md border border-slate-200 bg-white shadow-none transition-colors hover:border-[#0A77FF] hover:bg-blue-50/30'>
+                <Card class='overflow-hidden -sm border border-slate-200 bg-white shadow-none transition-colors hover:border-[#0A77FF] hover:bg-blue-50/30'>
                     <CardContent class='flex flex-col gap-4 p-5'>
                         <div class='w-fit rounded-sm border border-[#EAECF0] bg-white p-2.5 shadow-[0_1px_2px_0_rgba(16,24,40,0.05)]'>
                             <item.icon class='h-5 w-5' style='color: {item.iconColor || '#64748B'}' strokeWidth={1} />
@@ -42,7 +42,7 @@
                 </Card>
             </a>
         {:else}
-            <Card class='overflow-hidden rounded-md border border-slate-200 bg-white shadow-none'>
+            <Card class='overflow-hidden -sm border border-slate-200 bg-white shadow-none'>
                 <CardContent class='flex flex-col gap-4 p-5'>
                     <div class='w-fit rounded-sm border border-[#EAECF0] bg-white p-2.5 shadow-[0_1px_2px_0_rgba(16,24,40,0.05)]'>
                         <item.icon class='h-5 w-5' style='color: {item.iconColor || '#64748B'}' strokeWidth={1} />

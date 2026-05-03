@@ -16,7 +16,7 @@
         <div class='absolute h-[55px] w-[55px] rounded-full border border-[#F2F4F7]'></div>
 
         <!-- Icon Container -->
-        <div class='absolute bottom-0 z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-white ring-1 ring-slate-200/60 transition-transform shadow-[0_8px_16px_-4px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:scale-105'>
+        <div class='absolute bottom-0 z-10 flex h-14 w-14 items-center justify-center -sm bg-white ring-1 ring-slate-200/60 transition-transform shadow-[0_8px_16px_-4px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:scale-105'>
             <FilePlus class='h-6 w-6 text-slate-400' strokeWidth={1.5} />
         </div>
     </div>
