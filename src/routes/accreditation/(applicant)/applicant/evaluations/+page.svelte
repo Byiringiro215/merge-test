@@ -103,6 +103,9 @@
         { id: 'Applications', label: 'Applications', icon: FileText },
         { id: 'Certificates', label: 'Certificates', icon: Folder },
     ];
+
+    const progressWidth = $derived(`${(currentStep / (steps.length - 1)) * 100}%`);
+    const lineGap = 32;
 </script>
 
 <PageContainer
@@ -162,44 +165,54 @@
 
                         <!-- Horizontal Stepper -->
                         <div class='no-scrollbar w-full overflow-x-auto pb-4'>
-                            <div class='relative my-6 flex min-w-[750px] items-start justify-between overflow-visible px-1 pt-2'>
-                                {#each steps as step, idx}
-                                    {@const isActive = idx === currentStep}
-                                    {@const isCompleted = idx < currentStep}
-                                    <div class='relative flex flex-1 min-w-[130px] flex-col items-start text-start'>
-                                        <!-- Connector Line Segments -->
-                                        {#if idx > 0}
-                                            <div
-                                                class={cn(
-                                                    'absolute top-[12px] -left-full right-[calc(100%-12px)] ml-[12px] h-px z-0',
-                                                    idx <= currentStep ? 'bg-[#0A77FF] h-[1.5px]' : 'bg-slate-200',
-                                                )}
-                                            ></div>
-                                        {/if}
+                            <div class='relative my-6 min-w-[750px] px-1 pt-2 overflow-visible'>
+                                <!-- Background Line -->
+                                <div class='absolute top-[13px] left-[16px] right-[16px] h-px bg-slate-200 z-0'></div>
+                                <!-- Progress Line -->
+                                <div
+                                    class='absolute top-[13px] left-[16px] h-[1.5px] bg-[#0A77FF] z-0 transition-all duration-300'
+                                    style='width: calc({progressWidth} - {(currentStep / (steps.length - 1)) * lineGap}px)'
+                                ></div>
 
+                                <div class='flex items-start justify-between w-full relative z-10'>
+                                    {#each steps as step, idx}
+                                        {@const isActive = idx === currentStep}
+                                        {@const isCompleted = idx < currentStep}
                                         <div class={cn(
-                                            'h-6 w-6 rounded-full border flex items-center justify-center mb-3 transition-all duration-300 shrink-0 relative z-10',
-                                            isActive
-                                                ? 'border-[#0A77FF] bg-[#0A77FF]'
-                                                : isCompleted ? 'border-[#0A77FF] bg-[#0A77FF]' : 'border-slate-200 bg-white',
+                                            'flex flex-col relative',
+                                            idx === 0 ? 'items-start' : idx === steps.length - 1 ? 'items-end' : 'items-center flex-1',
                                         )}>
-                                            {#if isCompleted}
-                                                <Check class='h-3.5 w-3.5 text-white' strokeWidth={3} />
-                                            {:else if isActive}
-                                                <div class='h-1.5 w-1.5 rounded-full bg-white'></div>
-                                            {:else}
-                                                <div class='h-1.5 w-1.5 rounded-full bg-slate-200'></div>
-                                            {/if}
+                                            <div class={cn(
+                                                'h-6 w-6 rounded-full border flex items-center justify-center mb-3 transition-all duration-300 shrink-0 relative z-10',
+                                                isActive
+                                                    ? 'border-[#0A77FF] bg-[#0A77FF]'
+                                                    : isCompleted ? 'border-[#0A77FF] bg-[#0A77FF]' : 'border-slate-200 bg-white',
+                                            )}>
+                                                {#if isCompleted}
+                                                    <Check class='h-3.5 w-3.5 text-white' strokeWidth={3} />
+                                                {:else if isActive}
+                                                    <div class='h-1.5 w-1.5 rounded-full bg-white'></div>
+                                                {:else}
+                                                    <div class='h-1.5 w-1.5 rounded-full bg-slate-200'></div>
+                                                {/if}
+                                            </div>
+
+                                            <div class={cn(
+                                                'flex flex-row items-baseline justify-between w-full gap-1.5 md:flex-col md:items-start md:gap-0',
+                                                !isActive && 'hidden md:flex',
+                                                idx === steps.length - 1 ? 'items-end text-right' : 'items-start text-left',
+                                            )}>
+                                                <span class={cn(
+                                                    'text-[12px] font-bold mb-0.5 whitespace-nowrap',
+                                                    idx <= currentStep ? 'text-slate-900' : 'text-slate-400',
+                                                )}>
+                                                    {step.label}
+                                                </span>
+                                                <span class='whitespace-nowrap text-[10px] font-medium text-slate-400'>{step.sub}</span>
+                                            </div>
                                         </div>
-                                        <span class={cn(
-                                            'text-[12px] font-bold block mb-0.5 whitespace-nowrap',
-                                            idx <= currentStep ? 'text-slate-900' : 'text-slate-400',
-                                        )}>
-                                            {step.label}
-                                        </span>
-                                        <span class='whitespace-nowrap text-[10px] font-medium text-slate-400'>{step.sub}</span>
-                                    </div>
-                                {/each}
+                                    {/each}
+                                </div>
                             </div>
                         </div>
                     </div>
