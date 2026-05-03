@@ -2,7 +2,7 @@
     import type { Staff, StaffSpeciality } from '$lib/datamodel/staff';
     import type { ColumnDef } from '@tanstack/table-core';
     import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
+
     import { page } from '$app/state';
     import { api } from '$lib/api';
     import DataTable from '$lib/components/data-table/data-table.svelte';
@@ -142,7 +142,7 @@
         <Button
             variant='ghost'
             class='mb-4 gap-2 text-gray-600 hover:text-gray-900'
-            onclick={() => goto(resolve('/teachers'))}
+            onclick={() => goto('/teachers')}
         >
             <ArrowLeftIcon class='h-4 w-4' />
             Back to Teachers

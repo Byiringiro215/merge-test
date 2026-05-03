@@ -3,7 +3,7 @@
     import type { StandardSchemaV1 } from '@bajustone/fetcher';
     import type { Component } from 'svelte';
     import { goto, invalidateAll } from '$app/navigation';
-    import { resolve } from '$app/paths';
+
     import { page } from '$app/state';
     import { Button } from '$lib/components/ui/button';
     import { Card } from '$lib/components/ui/card';
@@ -308,7 +308,7 @@
                                     if ((loginForm.fields.allIssues()?.length ?? 0) > 0)
                                         return;
                                     await invalidateAll();
-                                    await goto(resolve(redirect as any));
+                                    await goto(redirect);
                                 }
                                 finally {
                                     isSubmitting = false;

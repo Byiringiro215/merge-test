@@ -1,7 +1,6 @@
 <script lang='ts'>
     import type { Component } from 'svelte';
     import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
     import { getAuthState, logout } from '$lib/auth/index.svelte';
     import { Card } from '$lib/components/ui/card';
     import { Input } from '$lib/components/ui/input';
@@ -24,7 +23,7 @@
 
     $effect(() => {
         if (!auth.isLoading && !auth.isAuthenticated) {
-            goto(resolve('/signin'));
+            goto('/signin');
         }
     });
 
@@ -273,7 +272,7 @@
 
 <!-- App Card  -->
 {#snippet AppCard(app: App)}
-    <a href={resolve(app.href as any)} class='block'>
+    <a href={app.href} class='block'>
         <Card
             class='group h-35  sm:h-51 bg-white hover:bg-gray-50 border-[#F3F4F6] hover:border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col sm:gap-6 items-center justify-center '
         >
