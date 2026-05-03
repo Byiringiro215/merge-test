@@ -208,6 +208,10 @@
 
 <LoadingBar visible={showLoading} />
 
+<!-- <Guard resource='auth:' action='create'>
+    <button>Test</button>
+
+</Guard> -->
 <AppLayout
     bind:this={appLayout}
     isRightSidebar={true}

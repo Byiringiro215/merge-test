@@ -91,7 +91,7 @@
             .attr('rx', 4)
             .style('cursor', 'pointer')
             .on('pointerenter', function (event: PointerEvent, d: TradeAreaData) {
-                select(this).attr('fill', '#2563EB');
+                select(this).attr('fill', '#1A4B8A');
                 if (!tooltip)
                     return;
                 const content = `

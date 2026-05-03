@@ -93,15 +93,16 @@
             if (!result.ok)
                 throw new Error(errorFromResult(result.error, 'Unable to load this OAuth consent request.'));
 
+            const data = result.data as any;
             flow = {
-                flowId: result.data.flowId ?? Number(id),
+                flowId: data.flowId ?? Number(id),
                 client: {
-                    clientId: result.data.client?.clientId ?? '',
-                    name: result.data.client?.name ?? 'Application',
+                    clientId: data.client?.clientId ?? '',
+                    name: data.client?.name ?? 'Application',
                 },
-                redirectUri: result.data.redirectUri ?? '',
-                scopes: result.data.scopes ?? [],
-                state: result.data.state ?? '',
+                redirectUri: data.redirectUri ?? '',
+                scopes: data.scopes ?? [],
+                state: data.state ?? '',
             } satisfies FlowMetadata;
         }
         catch (error) {
@@ -127,10 +128,11 @@
             if (!result.ok)
                 throw new Error(errorFromResult(result.error, 'Unable to approve this OAuth request.'));
 
-            if (!result.data.redirectUrl)
+            const data = result.data as any;
+            if (!data.redirectUrl)
                 throw new Error('OAuth server did not return a redirect URL.');
 
-            window.location.href = result.data.redirectUrl;
+            window.location.href = data.redirectUrl;
         }
         catch (error) {
             errorMessage = error instanceof Error ? error.message : 'Unable to approve this OAuth request.';
@@ -153,10 +155,11 @@
             if (!result.ok)
                 throw new Error(errorFromResult(result.error, 'Unable to deny this OAuth request.'));
 
-            if (!result.data.redirectUrl)
+            const data = result.data as any;
+            if (!data.redirectUrl)
                 throw new Error('OAuth server did not return a redirect URL.');
 
-            window.location.href = result.data.redirectUrl;
+            window.location.href = data.redirectUrl;
         }
         catch (error) {
             errorMessage = error instanceof Error ? error.message : 'Unable to deny this OAuth request.';

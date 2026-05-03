@@ -62,6 +62,10 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --primary-soft: rgba(0, 136, 255, 0.08);
+  --primary-soft-strong: rgba(0, 136, 255, 0.14);
+  --brand-blue: #0A77FF;
+  --app-text: #353E49;
 }
 
 .dark {
@@ -264,4 +268,19 @@
 	&::-webkit-scrollbar {
 		display: none;
   }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
 }

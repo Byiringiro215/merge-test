@@ -40,10 +40,10 @@
     };
 </script>
 
-<Card class='p-5 bg-white border border-gray-100 shadow-sm rounded-xl'>
+<Card class='p-5 bg-white border border-gray-100 shadow-sm rounded-lg'>
     <div class='flex items-start justify-between'>
         <div
-            class='flex h-12 w-12 items-center justify-center rounded-xl {iconBgColor}'
+            class='flex h-12 w-12 items-center justify-center rounded-lg {iconBgColor}'
         >
             <Icon
                 class="h-5 w-5 {iconColors[iconBgColor] || 'text-blue-600'}"

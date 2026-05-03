@@ -16,10 +16,10 @@
     );
 </script>
 
-<Card class='p-5 bg-white border border-gray-100 shadow-sm rounded-xl h-full'>
+<Card class='p-5 bg-white border border-gray-100 shadow-sm rounded-lg h-full'>
     <div class='flex items-start justify-between mb-2'>
         <span class='text-sm font-medium text-gray-500'>Network Device Health</span>
-        <div class='flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100'>
+        <div class='flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100'>
             <ActivityIcon class='h-5 w-5 text-gray-500' />
         </div>
     </div>

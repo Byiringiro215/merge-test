@@ -191,7 +191,7 @@
     <!-- Stats Cards -->
     <div class='mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6'>
         <!-- First Card: Total Schools with breakdown -->
-        <Card class='p-4 bg-white border border-gray-100 shadow-sm rounded-xl'>
+        <Card class='p-4 bg-white border border-gray-100 shadow-sm rounded-lg'>
             <div class='flex items-start justify-between mb-2'>
                 <span class='text-sm font-medium text-gray-500'>Total Schools</span>
                 <div class='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50'>
@@ -215,7 +215,7 @@
 
         <!-- Other Stats Cards -->
         {#each statsCards as stat (stat.title)}
-            <Card class='p-4 bg-white border border-gray-100 shadow-sm rounded-xl'>
+            <Card class='p-4 bg-white border border-gray-100 shadow-sm rounded-lg'>
                 <div class='flex items-start justify-between mb-2'>
                     <span class='text-sm font-medium text-gray-500'>{stat.title}</span>
                     <div class='flex h-8 w-8 items-center justify-center rounded-lg {stat.iconBgColor}'>

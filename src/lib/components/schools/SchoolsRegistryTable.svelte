@@ -66,7 +66,7 @@
         if (rate >= 90)
             return '#16A34A'; // green-500
         if (rate >= 80)
-            return '#2563EB'; // blue-500
+            return '#1A4B8A'; // blue-500
         if (rate >= 70)
             return '#D97706'; // amber-500
         return '#ef4444'; // red-500

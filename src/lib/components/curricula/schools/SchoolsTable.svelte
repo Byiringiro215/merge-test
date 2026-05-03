@@ -242,7 +242,7 @@
     }
 </script>
 
-<Card class='p-5 bg-white border border-gray-100 shadow-sm rounded-xl'>
+<Card class='p-5 bg-white border border-gray-100 shadow-sm rounded-lg'>
     <!-- Search and Results Count -->
     <div
         class='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4'

@@ -278,7 +278,7 @@
             class='group h-35  sm:h-51 bg-white hover:bg-gray-50 border-[#F3F4F6] hover:border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col sm:gap-6 items-center justify-center '
         >
             <div
-                class='size-16 rounded-xl border border-[#F3F4F6] flex items-center justify-center group-hover:scale-105 transition-transform'
+                class='size-16 rounded-lg border border-[#F3F4F6] flex items-center justify-center group-hover:scale-105 transition-transform'
             >
                 {#if app.iconType === 'image' && app.iconSrc}
                     <img
