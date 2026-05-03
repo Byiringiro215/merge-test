@@ -1,5 +1,5 @@
 <script lang='ts'>
-    import { cn } from '$lib/components/accreditation/utils/cn';
+    import { cn } from '$lib/accreditation/utils/cn';
     import { CheckCircle2, Clock, UserPlus, Users } from '@lucide/svelte';
 
     const {
@@ -36,9 +36,9 @@
 >
     <!-- Header -->
     <div
-        class='order-1 flex flex-col items-center pt-5 text-center sm:flex-row sm:items-start sm:text-left md:col-start-1 md:row-start-1 md:flex-col md:items-start md:text-left'
+        class='order-1 flex flex-col items-center pt-5 text-center sm:flex-row sm:items-start sm:text-left md:col-start-1 md:row-start-1'
     >
-        <div class='mb-6 flex h-12 w-12 shrink-0 items-center justify-center rounded-sm border border-slate-100 sm:mb-0 sm:mr-6 md:mb-6 md:mr-0'>
+        <div class='mb-6 flex h-12 w-12 shrink-0 items-center justify-center rounded-sm border border-slate-100 sm:mb-0 sm:mr-6'>
             <Users class='h-6 w-6 text-slate-400' strokeWidth={1.5} />
         </div>
         <div class='flex flex-col'>

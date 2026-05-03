@@ -13,7 +13,9 @@
         Trash2,
         TriangleAlert,
         User,
+        UserCheck,
         Users,
+        UserX,
     } from '@lucide/svelte';
 
     interface UserRecord {
@@ -139,10 +141,21 @@
     <StatusBadge status={user.status} />
 {/snippet}
 
-{#snippet actionsCell()}
+{#snippet actionsCell(_user: UserRecord)}
     <div class='flex items-center justify-start gap-3'>
-        <Trash2 class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-red-500' />
-        <Pencil class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#7F56D9]' />
+        {#if activeTab === 'curriculum-evaluator'}
+            <button class='flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-green-600 transition-colors hover:bg-green-50'>
+                <UserCheck class='h-3.5 w-3.5' />
+                Activate
+            </button>
+            <button class='flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-red-500 transition-colors hover:bg-red-50'>
+                <UserX class='h-3.5 w-3.5' />
+                Deactivate
+            </button>
+        {:else}
+            <Trash2 class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-red-500' />
+            <Pencil class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#7F56D9]' />
+        {/if}
     </div>
 {/snippet}
 
