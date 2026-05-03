@@ -12,6 +12,9 @@ export default defineConfig({
         }),
         sveltekit(),
     ],
+    ssr: {
+        noExternal: ['lucide-svelte'],
+    },
     test: {
         environment: 'node',
         include: ['src/**/*.{test,spec}.{js,ts}'],

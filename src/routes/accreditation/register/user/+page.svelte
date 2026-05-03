@@ -20,8 +20,8 @@
     } from '@lucide/svelte';
     import { fade, fly, slide } from 'svelte/transition';
 
-    type ViewState = 'input' | 'searching' | 'registered' | 'new_user' | 'notifying' | 'create_password';
-    type UserRole = 'student' | 'teacher' | 'employer';
+    type ViewState = 'input' | 'searching' | 'registered' | 'confirm_email' | 'notifying' | 'create_password';
+    type UserRole = 'student' | 'school_staff' | 'employer';
 
     let view = $state<ViewState>('input');
     let role = $state<UserRole | null>(null);
@@ -37,47 +37,44 @@
     let confirmPassword = $state('');
     let showPassword = $state(false);
 
-    // Validation states
-    let emailTouched = $state(false);
-    let phoneTouched = $state(false);
-    let employerRole = $state<'owner' | 'employee'>('employee');
-
-    const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/;
-    const phoneRegex = /^07[2389]\d{7}$/;
-
-    const isEmailValid = $derived(emailRegex.test(email));
-    const isPhoneValid = $derived(phoneRegex.test(phone));
-    const isFormValid = $derived(isEmailValid && isPhoneValid);
-
-    const mockNidaUsers = [
+    const mockSdmsUsers = [
         {
             id: '1199012345678901',
             firstName: 'Jean',
             lastName: 'Ntaganda',
-            dob: '12/05/1990',
-            gender: 'Male',
+            email: 'j.ntaganda@sdms.gov.rw',
             status: 'unregistered',
         },
         {
-            id: '1', // Test ID as requested
+            id: '1',
             firstName: 'Test',
-            lastName: 'User',
-            dob: '01/01/2000',
-            gender: 'Male',
+            lastName: 'Staff',
+            email: 't.staff@sdms.gov.rw',
             status: 'unregistered',
         },
         {
-            id: '2', // Registered Test ID
+            id: '2',
             firstName: 'Marie',
             lastName: 'Uwase',
-            dob: '25/10/1995',
-            gender: 'Female',
+            email: 'm.uwase@sdms.gov.rw',
             status: 'registered',
-            email: 'm.uwase@example.com',
+        },
+        {
+            id: '3',
+            firstName: 'Jean',
+            lastName: 'Bosco',
+            email: 'j.bosco@company.com',
+            status: 'unregistered',
         },
     ];
 
-    let fetchedUser = $state<typeof mockNidaUsers[0] | null>(null);
+    const mockInstitutions = [
+        { tin: '1', name: 'RTB Training Center' },
+        { tin: '2', name: 'Alpha Tech Solutions' },
+        { tin: '3', name: 'Rwanda Polytechnic' },
+    ];
+
+    let fetchedUser = $state<typeof mockSdmsUsers[0] | null>(null);
 
     async function handleVerify() {
         errorMessage = '';
@@ -92,17 +89,15 @@
                 return;
             }
         }
-        else if (role === 'teacher' || role === 'employer') {
-            if (!nationalId || !email || !phone) {
-                errorMessage = 'Please enter National ID, Email, and Phone.';
+        else if (role === 'school_staff') {
+            if (!nationalId) {
+                errorMessage = 'Please enter your National ID Number.';
                 return;
             }
-            if (role === 'teacher' && !sdmsCode) {
-                errorMessage = 'Please enter SDMS Code.';
-                return;
-            }
-            if (role === 'employer' && !tinNumber) {
-                errorMessage = 'Please enter Company TIN.';
+        }
+        else if (role === 'employer') {
+            if (!nationalId || !tinNumber || !email || !phone) {
+                errorMessage = 'Please enter your National ID, Company TIN, Email, and Phone.';
                 return;
             }
         }
@@ -117,41 +112,67 @@
             return;
         }
 
-        const user = mockNidaUsers.find(u => u.id === nationalId);
+        const user = mockSdmsUsers.find(u => u.id === nationalId);
 
         if (user) {
             fetchedUser = user;
             if (user.status === 'registered') {
                 view = 'registered';
+                return;
+            }
+
+            // Both School Staff and Employer should verify their SDMS email if they exist in SDMS
+            if (role === 'school_staff' || role === 'employer') {
+                // If it's an employer, we still need to check the TIN
+                if (role === 'employer') {
+                    const inst = mockInstitutions.find(i => i.tin === tinNumber);
+                    if (!inst) {
+                        view = 'input';
+                        errorMessage = 'Company TIN not found in our records.';
+                        return;
+                    }
+                }
+
+                email = user.email;
+                view = 'confirm_email';
             }
             else {
-                // Skip 'new_user' and go straight to notify/password
+                // For other roles, proceed toNotify
                 view = 'notifying';
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 view = 'create_password';
             }
         }
         else {
-            view = 'input';
-            errorMessage = 'No record found for this National ID. Please ensure it is correct.';
+            // User not in SDMS
+            if (role === 'employer') {
+                const inst = mockInstitutions.find(i => i.tin === tinNumber);
+                if (!inst) {
+                    view = 'input';
+                    errorMessage = 'No record found for this National ID or Company TIN.';
+                    return;
+                }
+                // Employer exists as an organization but user is not in SDMS yet
+                // Use the email/phone they provided in the input
+                view = 'notifying';
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                view = 'create_password';
+            }
+            else {
+                view = 'input';
+                errorMessage = 'No record found for this National ID. Please ensure it is correct.';
+            }
         }
     }
 
-    async function handleRegister() {
-        emailTouched = true;
-        phoneTouched = true;
-
-        if (!isFormValid) {
-            errorMessage = 'Please provide a valid email and phone number.';
-            return;
-        }
-
+    async function handleSendVerification() {
         errorMessage = '';
         view = 'notifying';
 
-        // Wait 2 seconds as requested
+        // Simulate sending email
         await new Promise(resolve => setTimeout(resolve, 2000));
 
+        // Simulate clicking link in email (automatic transition for demo)
         view = 'create_password';
     }
 
@@ -200,7 +221,7 @@
                     <div class='grid grid-cols-1 gap-3 pt-4'>
                         {#each [
                             { id: 'student', label: 'Student', icon: GraduationCap, desc: 'For students enrolled in SDMS.' },
-                            { id: 'teacher', label: 'Teacher', icon: BookOpen, desc: 'For educators and trainers within the SDMS.' },
+                            { id: 'school_staff', label: 'School Staff', icon: BookOpen, desc: 'For educators and school staff within the SDMS.' },
                             { id: 'employer', label: 'Employee/Employer', icon: Building2, desc: 'For staff and representatives of partner institutions.' },
                         ] as r}
                             <button
@@ -231,7 +252,7 @@
                     <div class='flex flex-1 rounded-lg bg-slate-100 p-1'>
                         {#each [
                             { id: 'student', label: 'Student' },
-                            { id: 'teacher', label: 'Teacher' },
+                            { id: 'school_staff', label: 'School Staff' },
                             { id: 'employer', label: 'Employee/er' },
                         ] as r}
                             <button
@@ -254,8 +275,8 @@
                         <p class='mt-2 text-sm text-slate-500'>
                             {#if role === 'student'}
                                 Enter your SDMS credentials to create your student account.
-                            {:else if role === 'teacher'}
-                                Verify your identity as a teacher to proceed with registration.
+                            {:else if role === 'school_staff'}
+                                Verify your identity as school staff to proceed with registration.
                             {:else}
                                 Verify your company affiliation to create your employer account.
                             {/if}
@@ -316,39 +337,8 @@
                             </div>
                         </label>
 
-                        {#if role === 'teacher'}
-                            <label class='flex flex-col space-y-2.5'>
-                                <span class='text-xs font-medium text-slate-700'>SDMS Code <span class='text-red-500'>*</span></span>
-                                <div class='relative'>
-                                    <input
-                                        bind:value={sdmsCode}
-                                        class='w-full rounded-lg border border-slate-200 px-3 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20'
-                                        placeholder='Enter SDMS Code'
-                                        type='text'
-                                    />
-                                    <Hash class='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' size={16} />
-                                </div>
-                            </label>
-                        {:else if role === 'employer'}
+                        {#if role === 'employer'}
                             <div class='space-y-4'>
-                                <div class='space-y-2.5'>
-                                    <span class='text-xs font-medium text-slate-700'>Your Position <span class='text-red-500'>*</span></span>
-                                    <div class='flex w-full rounded-lg bg-slate-100 p-1'>
-                                        <button
-                                            onclick={() => employerRole = 'employee'}
-                                            class='flex-1 cursor-pointer rounded-lg py-2 text-sm font-semibold transition-all duration-300 {employerRole === 'employee' ? 'bg-white text-[#205FAD] ' : 'text-slate-500 hover:text-slate-700'}'
-                                        >
-                                            Employee
-                                        </button>
-                                        <button
-                                            onclick={() => employerRole = 'owner'}
-                                            class='flex-1 cursor-pointer rounded-lg py-2 text-sm font-semibold transition-all duration-300 {employerRole === 'owner' ? 'bg-white text-[#205FAD] ' : 'text-slate-500 hover:text-slate-700'}'
-                                        >
-                                            Owner
-                                        </button>
-                                    </div>
-                                </div>
-
                                 <label class='flex flex-col space-y-2.5'>
                                     <span class='text-xs font-medium text-slate-700'>Company TIN Number <span class='text-red-500'>*</span></span>
                                     <div class='relative'>
@@ -361,34 +351,34 @@
                                         <Building2 class='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' size={16} />
                                     </div>
                                 </label>
+
+                                <label class='flex flex-col space-y-2.5'>
+                                    <span class='text-xs font-medium text-slate-700'>Email Address <span class='text-red-500'>*</span></span>
+                                    <div class='relative'>
+                                        <input
+                                            bind:value={email}
+                                            type='email'
+                                            class='w-full rounded-lg border border-slate-200 px-3 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20'
+                                            placeholder='e.g. name@example.com'
+                                        />
+                                        <Mail class='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' size={16} />
+                                    </div>
+                                </label>
+
+                                <label class='flex flex-col space-y-2.5'>
+                                    <span class='text-xs font-medium text-slate-700'>Phone Number <span class='text-red-500'>*</span></span>
+                                    <div class='relative'>
+                                        <input
+                                            bind:value={phone}
+                                            type='tel'
+                                            class='w-full rounded-lg border border-slate-200 px-3 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20'
+                                            placeholder='07X XXX XXXX'
+                                        />
+                                        <Phone class='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' size={16} />
+                                    </div>
+                                </label>
                             </div>
                         {/if}
-
-                        <label class='flex flex-col space-y-2.5'>
-                            <span class='text-xs font-medium text-slate-700'>Email Address <span class='text-red-500'>*</span></span>
-                            <div class='relative'>
-                                <input
-                                    bind:value={email}
-                                    type='email'
-                                    class='w-full rounded-lg border border-slate-200 px-3 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20'
-                                    placeholder='e.g. name@example.com'
-                                />
-                                <Mail class='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' size={16} />
-                            </div>
-                        </label>
-
-                        <label class='flex flex-col space-y-2.5'>
-                            <span class='text-xs font-medium text-slate-700'>Phone Number <span class='text-red-500'>*</span></span>
-                            <div class='relative'>
-                                <input
-                                    bind:value={phone}
-                                    type='tel'
-                                    class='w-full rounded-lg border border-slate-200 px-3 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20'
-                                    placeholder='07X XXX XXXX'
-                                />
-                                <Phone class='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' size={16} />
-                            </div>
-                        </label>
                     {/if}
 
                     {#if errorMessage}
@@ -459,96 +449,43 @@
                 </button>
             </div>
         </div>
-    {:else if view === 'new_user' && fetchedUser}
-        <div in:fly={{ y: 20, duration: 400 }} class='space-y-6'>
-            <!-- Identity Details (Read-only from NIDA) -->
-            <div class='space-y-1.5'>
-                <h2 class='text-xl font-bold text-slate-900'>Information Found</h2>
-                <p class='text-sm text-slate-500'>
-                    We've retrieved your basic details from NIDA.
+    {:else if view === 'confirm_email' && fetchedUser}
+        <div in:fly={{ y: 20, duration: 400 }} class='space-y-6 text-center'>
+            <div class='mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 text-primary'>
+                <Mail size={32} />
+            </div>
+            <div class='space-y-2'>
+                <h2 class='text-xl font-bold text-slate-900'>Verify Your Email</h2>
+                <p class='px-4 text-sm leading-relaxed text-slate-500'>
+                    We found your record for <span class='font-semibold text-slate-900'>{fetchedUser.firstName} {fetchedUser.lastName}</span> in SDMS.
+                </p>
+                <p class='px-4 text-sm leading-relaxed text-slate-500'>
+                    A verification link will be sent to:
+                    <br />
+                    <span class='mt-2 inline-block font-semibold text-[#205FAD]'>{email.replace(/(.{3}).*(@.*)/, '$1***$2')}</span>
                 </p>
             </div>
 
-            <div class='grid grid-cols-2 gap-4 rounded-lg border border-slate-200 bg-slate-50/80 p-5'>
-                <div class='space-y-1'>
-                    <p class='text-[10px] font-bold uppercase tracking-wider text-slate-400'>First Name</p>
-                    <p class='text-sm font-semibold text-slate-700'>{fetchedUser.firstName}</p>
-                </div>
-                <div class='space-y-1'>
-                    <p class='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Last Name</p>
-                    <p class='text-sm font-semibold text-slate-700'>{fetchedUser.lastName}</p>
-                </div>
-                <div class='space-y-1'>
-                    <p class='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Date of Birth</p>
-                    <p class='text-sm font-semibold text-slate-700'>{fetchedUser.dob}</p>
-                </div>
-                <div class='space-y-1'>
-                    <p class='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Gender</p>
-                    <p class='text-sm font-semibold text-slate-700'>{fetchedUser.gender}</p>
-                </div>
+            <div class='flex gap-3 rounded-lg border border-amber-100 bg-amber-50 p-4 text-left'>
+                <Info class='mt-0.5 shrink-0 text-amber-600' size={18} />
+                <p class='text-[11px] leading-relaxed text-amber-800'>
+                    Do you want to send the verification link to this email? You will need to click the link in the email to activate your account.
+                </p>
             </div>
 
-            <div class='space-y-4 pt-2'>
-                <div class='space-y-1.5'>
-                    <h3 class='text-sm font-semibold text-slate-800'>Contact Information</h3>
-                    <p class='text-xs text-slate-500'>Please provide your contact details to complete your registration.</p>
-                </div>
-
-                <div class='space-y-4'>
-                    <label class='flex flex-col space-y-2'>
-                        <span class='text-xs font-medium text-slate-700'>Email Address <span class='text-red-500'>*</span></span>
-                        <div class='relative'>
-                            <input
-                                bind:value={email}
-                                onblur={() => emailTouched = true}
-                                type='email'
-                                class='w-full rounded-lg border px-3 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-1 {emailTouched && !isEmailValid ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-200 focus:border-blue-500 focus:ring-blue-500/20'}'
-                                placeholder='e.g. name@example.com'
-                            />
-                            <Mail class='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors duration-300 {emailTouched && !isEmailValid ? 'text-red-400' : 'text-slate-400'}' size={16} />
-                        </div>
-                        {#if emailTouched && !isEmailValid}
-                            <p transition:slide={{ duration: 300 }} class='text-[10px] font-medium text-red-500'>Please enter a valid email address.</p>
-                        {/if}
-                    </label>
-
-                    <label class='flex flex-col space-y-2'>
-                        <span class='text-xs font-medium text-slate-700'>Phone Number <span class='text-red-500'>*</span></span>
-                        <div class='relative'>
-                            <input
-                                bind:value={phone}
-                                onblur={() => phoneTouched = true}
-                                type='tel'
-                                class='w-full rounded-lg border px-3 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-1 {phoneTouched && !isPhoneValid ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-200 focus:border-blue-500 focus:ring-blue-500/20'}'
-                                placeholder='07X XXX XXXX'
-                            />
-                            <Phone class='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors duration-300 {phoneTouched && !isPhoneValid ? 'text-red-400' : 'text-slate-400'}' size={16} />
-                        </div>
-                        {#if phoneTouched && !isPhoneValid}
-                            <p transition:slide={{ duration: 300 }} class='text-[10px] font-medium text-red-500'>Format: 078/079/072/073 followed by 7 digits.</p>
-                        {/if}
-                    </label>
-                </div>
-
-                {#if errorMessage}
-                    <p transition:fade class='text-xs font-medium text-red-500'>{errorMessage}</p>
-                {/if}
-
-                <div class='flex flex-col gap-3 pt-2'>
-                    <button
-                        onclick={handleRegister}
-                        class='flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#205FAD] px-4 py-2 font-inter text-sm font-medium whitespace-nowrap text-white outline-none transition-colors duration-300 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-70 hover:bg-[#1A4B8A]'
-                    >
-                        Register & Continue
-                        <ArrowRight size={16} />
-                    </button>
-                    <button
-                        onclick={reset}
-                        class='cursor-pointer text-xs font-medium text-slate-400 transition-colors duration-300 hover:text-slate-600'
-                    >
-                        Cancel
-                    </button>
-                </div>
+            <div class='flex flex-col gap-3 pt-4'>
+                <button
+                    onclick={handleSendVerification}
+                    class='flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#205FAD] px-4 py-2 font-inter text-sm font-medium whitespace-nowrap text-white outline-none transition-colors duration-300 hover:bg-[#1A4B8A]'
+                >
+                    Yes, Send Verification Link
+                </button>
+                <button
+                    onclick={reset}
+                    class='cursor-pointer text-xs font-medium text-slate-400 transition-colors duration-300 hover:text-slate-600'
+                >
+                    No, this is not my email
+                </button>
             </div>
         </div>
     {:else if view === 'notifying'}
@@ -557,9 +494,9 @@
                 <CheckCircle2 size={32} class='animate-bounce' />
             </div>
             <div class='space-y-3'>
-                <h2 class='text-xl font-bold text-slate-900'>Contact Verified</h2>
+                <h2 class='text-xl font-bold text-slate-900'>Verification Link Sent</h2>
                 <p class='px-4 text-sm leading-relaxed text-slate-500'>
-                    A verification code has been sent to <span class='font-semibold text-slate-700'>{email}</span>.
+                    A verification link has been sent to your registered email: <span class='font-semibold text-slate-700'>{email}</span>.
                 </p>
                 <div class='flex items-center justify-center gap-2 pt-2 text-xs font-medium text-primary'>
                     <LoaderCircle class='h-3 w-3 animate-spin' />
@@ -629,7 +566,7 @@
                     <ArrowRight size={16} />
                 </button>
                 <button
-                    onclick={() => view = 'new_user'}
+                    onclick={() => view = 'confirm_email'}
                     class='cursor-pointer text-xs font-medium text-slate-400 transition-colors duration-300 hover:text-slate-600'
                 >
                     Back to Contact Details
