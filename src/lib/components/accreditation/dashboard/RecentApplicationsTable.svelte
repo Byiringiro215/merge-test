@@ -12,7 +12,7 @@
         activeFilters = activeFilters.filter(f => f !== filter);
     };
 
-    const filteredData = $derived(mockApplications.filter((item) => {
+    const filteredData = $derived(mockApplications.filter((item: Application) => {
         const matchesSearch
             = item.applicant.name.toLowerCase().includes(search.toLowerCase())
                 || item.applicant.email.toLowerCase().includes(search.toLowerCase())
