@@ -28,7 +28,7 @@
     ]);
 
     let search = $state('');
-    const isReadOnly = $derived(role === 'supervisor');
+    const isReadOnly = $derived(role === 'supervisor' || role === 'evaluator');
 
     function handleFileSelect(_selectedFiles: FileList | null) {
     // File selection handler — integration pending
