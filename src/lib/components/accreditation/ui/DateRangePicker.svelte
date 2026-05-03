@@ -1,6 +1,6 @@
 <script lang='ts'>
     import { cn } from '$lib/accreditation/utils/cn';
-    import { ChevronLeft, ChevronRight } from 'lucide-svelte';
+    import { ChevronLeft, ChevronRight } from '@lucide/svelte';
     import { fade } from 'svelte/transition';
 
     const {

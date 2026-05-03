@@ -1,7 +1,7 @@
 <script lang='ts'>
     import { mockApplications } from '$lib/accreditation/utils/application-utils';
     import { cn } from '$lib/accreditation/utils/cn';
-    import { Building2, Check, Files, UngroupIcon, Users } from 'lucide-svelte';
+    import { Building2, Check, Files, UngroupIcon, Users } from '@lucide/svelte';
     import AddEvaluatorModal from './AddEvaluatorModal.svelte';
     import AssignEvaluatorsStage from './stages/AssignEvaluatorsStage.svelte';
     import DecisionMakingStage from './stages/DecisionMakingStage.svelte';

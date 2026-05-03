@@ -1,6 +1,6 @@
 <script lang='ts'>
     import { cn } from '$lib/accreditation/utils/cn';
-    import { CheckCircle2, Clock, UserPlus, Users } from 'lucide-svelte';
+    import { CheckCircle2, Clock, UserPlus, Users } from '@lucide/svelte';
 
     const {
         assignedInitialPrincipal,
