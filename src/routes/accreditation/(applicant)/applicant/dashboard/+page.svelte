@@ -11,6 +11,7 @@
             value: '2',
             icon: FileText,
             iconColor: '#0A77FF',
+            href: '/accreditation/applicant/applications',
         },
         {
             label: 'Pending',
@@ -38,7 +39,7 @@
 {#snippet action()}
     <PrimaryButton
         label='New Application'
-        href='/accreditation/applicant/applications'
+        href='/accreditation/applicant/applications?new=true'
         iconPosition='right'
     />
 {/snippet}
