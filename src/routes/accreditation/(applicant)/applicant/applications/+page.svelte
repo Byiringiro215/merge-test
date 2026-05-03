@@ -73,13 +73,16 @@
             showWizard = true;
         }
     });
-
     let selectedTrade = $state<string | null>(null);
     let selectedCompetencies = $state<string[]>([]);
     let tradeSearch = $state('');
     let competencySearch = $state('');
     let customTradeName = $state('');
-    let newCompetencyName = $state('');
+
+    // Custom competencies (for 'other' trade)
+    let customCompetencyName = $state('');
+    let customCompetencyHours = $state('');
+    let customCompetencies = $state<{ id: string; name: string; hours: string }[]>([]);
 
     // Step 3 – Equipment
     let equipmentName = $state('');
@@ -186,16 +189,28 @@
         }
     }
     function handleCompetencyContinue() {
-        if (selectedCompetencies.length > 0)
-            currentStep = 3;
-    }
-    function handleAddCompetency() {
-        if (newCompetencyName.trim()) {
-            const newId = `custom-${Math.random()}`;
-            competenciesList.push({ id: newId, name: newCompetencyName.trim() });
-            selectedCompetencies = [...selectedCompetencies, newId];
-            newCompetencyName = '';
+        if (selectedTrade === 'other') {
+            if (customCompetencies.length > 0)
+                currentStep = 3;
         }
+        else {
+            if (selectedCompetencies.length > 0)
+                currentStep = 3;
+        }
+    }
+
+    function handleAddCustomCompetency() {
+        if (customCompetencyName.trim() && String(customCompetencyHours).trim()) {
+            customCompetencies = [
+                ...customCompetencies,
+                { id: `cc-${Math.random()}`, name: customCompetencyName.trim(), hours: String(customCompetencyHours).trim() },
+            ];
+            customCompetencyName = '';
+            customCompetencyHours = '';
+        }
+    }
+    function removeCustomCompetency(id: string) {
+        customCompetencies = customCompetencies.filter(c => c.id !== id);
     }
     function handleEquipmentContinue() {
         currentStep = 4;
@@ -486,14 +501,20 @@
                             </div>
                         </div>
 
-                        <!-- ── STEP 2: COMPETENCIES (multi-select) ──────────────────────── -->
+                        <!-- ── STEP 2: COMPETENCIES ──────────────────────────────────────── -->
                     {:else if currentStep === 2}
                         <div class='flex flex-col items-center text-center'>
                             <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
                                 <Hexagon size={24} class='text-slate-500' strokeWidth={1.5} />
                             </div>
                             <h2 class='text-[17px] font-semibold text-slate-900'>Competencies</h2>
-                            <p class='mt-1.5 text-[13px] text-slate-500'>Select one or more competencies for the chosen trade.</p>
+                            <p class='mt-1.5 text-[13px] text-slate-500'>
+                                {#if selectedTrade === 'other'}
+                                    Add the competencies for your custom trade, including the hours for each.
+                                {:else}
+                                    Select one or more competencies for the chosen trade.
+                                {/if}
+                            </p>
                         </div>
 
                         <div class='mt-8 flex flex-col items-center'>
@@ -508,56 +529,131 @@
                             </div>
                         </div>
 
-                        <div class='mt-2'>
-                            <div class='mb-3 flex items-center justify-between'>
-                                <p class='text-[12px] text-slate-500'>{filteredCompetencies.length} competencies available</p>
-                                {#if selectedCompetencies.length > 0}
-                                    <span class='text-[12px] font-medium text-[#0A77FF]'>{selectedCompetencies.length} selected</span>
-                                {/if}
-                            </div>
-
-                            <div class='relative mb-6'>
-                                <Search size={16} class='absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400' />
-                                <input type='text' placeholder='Search' bind:value={competencySearch}
-                                       class='w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-[#0A77FF] focus:outline-none focus:ring-1 focus:ring-[#0A77FF]' />
-                            </div>
-
-                            {#if selectedTrade === 'other'}
-                                <div class='mb-6 flex items-center gap-2'>
-                                    <input type='text' placeholder='Enter custom competency name' bind:value={newCompetencyName}
-                                           class='flex-1 rounded-xl border border-slate-200 py-2.5 px-4 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-[#0A77FF] focus:outline-none focus:ring-1 focus:ring-[#0A77FF]' />
-                                    <button onclick={handleAddCompetency} disabled={!newCompetencyName.trim()}
-                                            class={cn('rounded-xl px-5 py-2.5 text-[13px] font-semibold text-white transition-colors', newCompetencyName.trim() ? 'bg-[#0A77FF] hover:bg-blue-600' : 'bg-blue-300 cursor-not-allowed')}>
-                                        Add
+                        {#if selectedTrade === 'other'}
+                            <!-- ── Custom trade: name + hours input form ── -->
+                            <div class='mt-2'>
+                                <div class='mb-5 rounded-2xl border border-slate-200 bg-white p-5'>
+                                    <p class='mb-4 text-[13px] font-semibold text-slate-700'>Add Competency</p>
+                                    <div class='mb-4'>
+                                        <label for='custom-comp-name' class='mb-1.5 block text-[12px] font-medium text-slate-600'>
+                                            Competency Name <span class='text-red-500'>*</span>
+                                        </label>
+                                        <input
+                                            id='custom-comp-name'
+                                            type='text'
+                                            placeholder='e.g. Advanced Welding'
+                                            bind:value={customCompetencyName}
+                                            class='w-full rounded-xl border border-slate-200 px-4 py-2.5 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-[#0A77FF] focus:outline-none focus:ring-1 focus:ring-[#0A77FF]'
+                                        />
+                                    </div>
+                                    <div class='mb-4'>
+                                        <label for='custom-comp-hours' class='mb-1.5 block text-[12px] font-medium text-slate-600'>
+                                            Hours <span class='text-red-500'>*</span>
+                                        </label>
+                                        <input
+                                            id='custom-comp-hours'
+                                            type='number'
+                                            min='1'
+                                            placeholder='e.g. 40'
+                                            bind:value={customCompetencyHours}
+                                            class='w-full rounded-xl border border-slate-200 px-4 py-2.5 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-[#0A77FF] focus:outline-none focus:ring-1 focus:ring-[#0A77FF]'
+                                        />
+                                    </div>
+                                    <button
+                                        onclick={handleAddCustomCompetency}
+                                        disabled={!customCompetencyName.trim() || !String(customCompetencyHours).trim()}
+                                        class={cn(
+                                            'flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-[13px] font-semibold text-white transition-colors',
+                                            customCompetencyName.trim() && String(customCompetencyHours).trim()
+                                                ? 'bg-[#0A77FF] hover:bg-[#0864d6]'
+                                                : 'cursor-not-allowed bg-blue-300',
+                                        )}
+                                    >
+                                        <Plus size={15} strokeWidth={2.5} />
+                                        Add Competency
                                     </button>
                                 </div>
-                            {/if}
 
-                            <div class='mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2'>
-                                {#each filteredCompetencies as comp}
-                                    {@const isSelected = selectedCompetencies.includes(comp.id)}
-                                    <button onclick={() => toggleCompetency(comp.id)}
-                                            class={cn('flex items-center justify-between rounded-xl border p-3.5 transition-colors text-left', isSelected ? 'border-[#0A77FF] bg-blue-50/30' : 'border-slate-200 hover:border-[#0A77FF]')}>
-                                        <div class='flex items-center gap-3'>
-                                            <Hexagon size={15} class='text-[#0A77FF]' strokeWidth={2} />
-                                            <span class='line-clamp-1 text-[12px] font-medium text-slate-600'>{comp.name}</span>
-                                        </div>
-                                        <div class={cn('flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors', isSelected ? 'border-[#0A77FF] bg-[#0A77FF]' : 'border-slate-300 bg-white')}>
-                                            {#if isSelected}<Check size={10} class='text-white' strokeWidth={3} />{/if}
-                                        </div>
+                                {#if customCompetencies.length > 0}
+                                    <div class='mb-6 flex flex-col gap-2'>
+                                        <p class='mb-1 text-[12px] font-medium text-slate-500'>{customCompetencies.length} competenc{customCompetencies.length === 1 ? 'y' : 'ies'} added</p>
+                                        {#each customCompetencies as cc}
+                                            <div class='flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3'>
+                                                <div class='flex items-center gap-3'>
+                                                    <div class='flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50'>
+                                                        <Hexagon size={15} class='text-[#0A77FF]' strokeWidth={2} />
+                                                    </div>
+                                                    <div>
+                                                        <p class='text-[13px] font-medium text-slate-800'>{cc.name}</p>
+                                                        <p class='text-[11px] text-slate-400'>{cc.hours} hrs</p>
+                                                    </div>
+                                                </div>
+                                                <button onclick={() => removeCustomCompetency(cc.id)} class='text-slate-300 transition-colors hover:text-red-500'>
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                        {/each}
+                                    </div>
+                                {/if}
+
+                                <div class='flex w-full gap-3'>
+                                    <button onclick={() => backFrom(2)}
+                                            class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
+                                    <button
+                                        onclick={handleCompetencyContinue}
+                                        disabled={customCompetencies.length === 0}
+                                        class={cn(
+                                            'flex flex-1 items-center justify-center rounded-xl py-3 text-[13px] font-semibold text-white transition-colors',
+                                            customCompetencies.length > 0 ? 'bg-[#0A77FF] hover:bg-[#0864d6]' : 'bg-blue-300 cursor-not-allowed',
+                                        )}
+                                    >
+                                        Continue
                                     </button>
-                                {/each}
+                                </div>
                             </div>
 
-                            <div class='flex w-full gap-3'>
-                                <button onclick={() => backFrom(2)}
-                                        class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
-                                <button onclick={handleCompetencyContinue} disabled={selectedCompetencies.length === 0}
-                                        class={cn('flex flex-1 items-center justify-center rounded-xl py-3 text-[13px] font-semibold text-white transition-colors', selectedCompetencies.length > 0 ? 'bg-[#0A77FF] hover:bg-[#0864d6]' : 'bg-blue-300 cursor-not-allowed')}>
-                                    Continue
-                                </button>
+                        {:else}
+                            <!-- ── Predefined trade: multi-select list ── -->
+                            <div class='mt-2'>
+                                <div class='mb-3 flex items-center justify-between'>
+                                    <p class='text-[12px] text-slate-500'>{filteredCompetencies.length} competencies available</p>
+                                    {#if selectedCompetencies.length > 0}
+                                        <span class='text-[12px] font-medium text-[#0A77FF]'>{selectedCompetencies.length} selected</span>
+                                    {/if}
+                                </div>
+
+                                <div class='relative mb-6'>
+                                    <Search size={16} class='absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400' />
+                                    <input type='text' placeholder='Search' bind:value={competencySearch}
+                                           class='w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-[#0A77FF] focus:outline-none focus:ring-1 focus:ring-[#0A77FF]' />
+                                </div>
+
+                                <div class='mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2'>
+                                    {#each filteredCompetencies as comp}
+                                        {@const isSelected = selectedCompetencies.includes(comp.id)}
+                                        <button onclick={() => toggleCompetency(comp.id)}
+                                                class={cn('flex items-center justify-between rounded-xl border p-3.5 transition-colors text-left', isSelected ? 'border-[#0A77FF] bg-blue-50/30' : 'border-slate-200 hover:border-[#0A77FF]')}>
+                                            <div class='flex items-center gap-3'>
+                                                <Hexagon size={15} class='text-[#0A77FF]' strokeWidth={2} />
+                                                <span class='line-clamp-1 text-[12px] font-medium text-slate-600'>{comp.name}</span>
+                                            </div>
+                                            <div class={cn('flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors', isSelected ? 'border-[#0A77FF] bg-[#0A77FF]' : 'border-slate-300 bg-white')}>
+                                                {#if isSelected}<Check size={10} class='text-white' strokeWidth={3} />{/if}
+                                            </div>
+                                        </button>
+                                    {/each}
+                                </div>
+
+                                <div class='flex w-full gap-3'>
+                                    <button onclick={() => backFrom(2)}
+                                            class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
+                                    <button onclick={handleCompetencyContinue} disabled={selectedCompetencies.length === 0}
+                                            class={cn('flex flex-1 items-center justify-center rounded-xl py-3 text-[13px] font-semibold text-white transition-colors', selectedCompetencies.length > 0 ? 'bg-[#0A77FF] hover:bg-[#0864d6]' : 'bg-blue-300 cursor-not-allowed')}>
+                                        Continue
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        {/if}
 
                         <!-- ── STEP 3: EQUIPMENT & FACILITIES ───────────────────────────── -->
                     {:else if currentStep === 3}
