@@ -1,15 +1,14 @@
 <script lang='ts'>
-    import type { UserRole } from '$lib/accreditation/types/auth';
     import { page } from '$app/stores';
-    import { portalNavigation } from '$lib/accreditation/config/navigation';
+    import { portalNavigationConfig } from '$lib/accreditation/config/navigation';
     import { cn } from '$lib/accreditation/utils/cn';
     import { getPortalNavigation } from '$lib/accreditation/utils/navigation';
     import { LifeBuoy, LogOut, Settings } from '@lucide/svelte';
 
-    const { role, onCloseMobile }: { role: UserRole; onCloseMobile?: () => void } = $props();
+    const { role, onCloseMobile }: { role: string; onCloseMobile?: () => void } = $props();
 
     const items = $derived(getPortalNavigation(role, $page.url.pathname));
-    const config = $derived(portalNavigation[role]);
+    const config = $derived(portalNavigationConfig[role as keyof typeof portalNavigationConfig]);
 </script>
 
 <div class='flex h-full flex-col'>

@@ -5,8 +5,8 @@
     import PageContainer from '$lib/components/accreditation/layout/PageContainer.svelte';
     import PrimaryButton from '$lib/components/accreditation/ui/PrimaryButton.svelte';
 
-    const auth = getAuthState();
     const simulation = getSimulationState();
+    const auth = getAuthState();
     const activeRole = $derived(simulation?.role || 'merged');
     const userName = $derived(auth.user?.name || 'User');
 </script>

@@ -1,7 +1,6 @@
 <script lang='ts'>
-    import type { UserRole } from '$lib/accreditation/types/auth';
     import { page } from '$app/stores';
-    import { portalNavigation } from '$lib/accreditation/config/navigation';
+    import { allAccreditationNavItems } from '$lib/accreditation/config/navigation';
     import { getPageHeader } from '$lib/accreditation/context/page-header.svelte';
     import { ChevronRight } from '@lucide/svelte';
 
@@ -26,21 +25,13 @@
             .join(' ');
     };
 
-    const getSegmentTitle = (segment: string, fullPath: string, roleConfig: any) => {
+    const getSegmentTitle = (segment: string, fullPath: string) => {
         if (SEGMENT_TITLE_MAP[segment])
             return SEGMENT_TITLE_MAP[segment];
-        if (!roleConfig)
-            return formatSegment(segment);
-        const navItem = roleConfig.items.find((item: any) => item.href === fullPath);
+
+        // Try to find in nav items
+        const navItem = allAccreditationNavItems.find((item: any) => item.href === fullPath);
         return navItem ? navItem.title : formatSegment(segment);
-    };
-
-    const SEGMENT_HREF_MAP: Record<string, (role: string) => string> = {
-        evaluations: (role: string) => role === 'applicant' ? '/accreditation/applicant/evaluations' : `/accreditation/${role}/evaluations/applications`,
-    };
-
-    const getSegmentHref = (segment: string, defaultPath: string, role: string) => {
-        return SEGMENT_HREF_MAP[segment] ? SEGMENT_HREF_MAP[segment](role) : defaultPath;
     };
 
     const breadcrumbs = $derived.by(() => {
@@ -50,16 +41,17 @@
 
         const pathname = $page.url.pathname;
         const allSegments = pathname.split('/').filter(s => s && !s.startsWith('('));
-        // Since routes are now under /accreditation, index 0 is 'accreditation'
-        const role = allSegments[1] || '';
-        const roleConfig = portalNavigation[role as UserRole];
-        const portalSegments = allSegments.slice(2);
+
+        // Remove 'accreditation' from segments for breadcrumb calculation
+        const portalSegments = allSegments.filter(s => s !== 'accreditation');
 
         return portalSegments.map((segment, index) => {
-            const rawPath = `/accreditation/${role}/${portalSegments.slice(0, index + 1).join('/')}`;
+            const currentSegments = portalSegments.slice(0, index + 1);
+            const rawPath = `/accreditation/${currentSegments.join('/')}`;
+
             return {
-                label: getSegmentTitle(segment, rawPath, roleConfig),
-                href: getSegmentHref(segment, rawPath, role),
+                label: getSegmentTitle(segment, rawPath),
+                href: rawPath,
             };
         });
     });
