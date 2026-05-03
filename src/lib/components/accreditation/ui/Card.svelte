@@ -4,6 +4,6 @@
     const { children, class: className } = $props();
 </script>
 
-<div class={cn('-sm border bg-card text-card-foreground shadow-sm', className)}>
+<div class={cn('rounded-sm border bg-card text-card-foreground shadow-sm', className)}>
     {@render children()}
 </div>
