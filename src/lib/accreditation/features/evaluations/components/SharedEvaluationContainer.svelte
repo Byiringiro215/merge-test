@@ -14,6 +14,10 @@
         role: 'super-admin' | 'evaluator' | 'supervisor';
     }>();
 
+    $effect(() => {
+        console.warn('SharedEvaluationContainer rendering for ID:', id, 'Role:', role);
+    });
+
     let activeInternalStep = $state(0);
     let completedSteps = $state<number[]>([]);
     let activeTab = $state('General');
@@ -160,7 +164,10 @@
         }
     }
 
-    const showSidebar = $derived((activeMajorStep === 0 && showInitialReview) || activeMajorStep === 3);
+    const showSidebar = $derived(
+        (activeMajorStep === 0 && showInitialReview) || activeMajorStep === 3,
+    );
+    const progressPercentage = $derived((activeMajorStep / (steps.length - 1)) * 100);
 </script>
 
 <div class='flex h-full flex-col overflow-hidden bg-white'>
@@ -168,50 +175,57 @@
         <div class='mx-6 flex min-h-0 flex-1 flex-col'>
             <!-- Horizontal Stepper -->
             <div class='sticky top-0 z-40 bg-white'>
-                <div
-                    class='relative mt-4 mb-6 flex w-full items-start justify-between overflow-visible px-1 pt-1'
-                >
-                    {#each steps as step, idx (idx)}
-                        {@const isActive = idx === activeMajorStep}
-                        {@const isCompleted = idx < activeMajorStep}
-                        <div class='relative flex flex-1 flex-col items-start text-start'>
-                            {#if idx > 0}
-                                <div
-                                    class={cn(
-                                        'absolute top-[12px] right-[calc(100%-12px)] -left-full z-0 ml-[12px] h-px',
-                                        idx <= activeMajorStep ? 'bg-primary h-[1.5px]' : 'bg-slate-100',
-                                    )}
-                                ></div>
-                            {/if}
-                            <div
-                                class={cn(
-                                    'relative z-10 mb-3 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
+                <div class='relative mt-4 mb-10 px-1 pt-1 overflow-visible'>
+                    <!-- Background Line -->
+                    <div class='absolute top-[13px] left-[16px] right-[16px] h-px bg-slate-100 z-0'></div>
+                    <!-- Progress Line -->
+                    <div
+                        class='absolute top-[13px] left-[16px] h-[1.5px] bg-primary z-0 transition-all duration-300'
+                        style='width: calc({progressPercentage}% - {(activeMajorStep / (steps.length - 1)) * 32}px)'
+                    ></div>
+
+                    <div class='flex items-start justify-between w-full relative z-10'>
+                        {#each steps as step, idx}
+                            {@const isActive = idx === activeMajorStep}
+                            {@const isCompleted = idx < activeMajorStep}
+                            <div class={cn(
+                                'flex flex-col relative',
+                                idx === 0 ? 'items-start' : idx === steps.length - 1 ? 'items-end' : 'items-center flex-1',
+                            )}>
+                                <div class={cn(
+                                    'h-6 w-6 rounded-full border flex items-center justify-center mb-3 transition-all duration-300 shrink-0 relative z-10',
                                     isActive
                                         ? 'border-primary bg-primary shadow-[0_0_0_4px_rgba(9,119,255,0.15)]'
                                         : isCompleted
                                         ? 'border-primary bg-primary'
                                         : 'border-slate-200 bg-white',
-                                )}
-                            >
-                                {#if isCompleted}
-                                    <Check class='h-3.5 w-3.5 text-white' strokeWidth={3} />
-                                {:else if isActive}
-                                    <div class='h-1.5 w-1.5 rounded-full bg-white'></div>
-                                {:else}
-                                    <div class='h-1.5 w-1.5 rounded-full bg-slate-200'></div>
-                                {/if}
+                                )}>
+                                    {#if isCompleted}
+                                        <Check class='h-3.5 w-3.5 text-white' strokeWidth={3} />
+                                    {:else if isActive}
+                                        <div class='h-1.5 w-1.5 rounded-full bg-white'></div>
+                                    {:else}
+                                        <div class='h-1.5 w-1.5 rounded-full bg-slate-200'></div>
+                                    {/if}
+                                </div>
+                                <div class={cn(
+                                    'flex flex-row items-baseline justify-between w-full gap-1.5 md:flex-col md:items-start md:gap-0',
+                                    !isActive && 'hidden md:flex',
+                                    idx === steps.length - 1 ? 'items-end text-right' : 'items-start text-left',
+                                )}>
+                                    <span class={cn(
+                                        'text-[11px] mb-0.5 whitespace-nowrap',
+                                        idx <= activeMajorStep ? 'text-slate-900' : 'text-slate-400',
+                                    )}>
+                                        {step.label}
+                                    </span>
+                                    <span class='text-[10px] text-slate-400 whitespace-nowrap'>
+                                        {step.sub}
+                                    </span>
+                                </div>
                             </div>
-                            <span
-                                class={cn(
-                                    'mb-0.5 block text-[11px] whitespace-nowrap',
-                                    idx <= activeMajorStep ? 'text-slate-900' : 'text-slate-400',
-                                )}
-                            >
-                                {step.label}
-                            </span>
-                            <span class='text-[10px] whitespace-nowrap text-slate-400'>{step.sub}</span>
-                        </div>
-                    {/each}
+                        {/each}
+                    </div>
                 </div>
             </div>
 
