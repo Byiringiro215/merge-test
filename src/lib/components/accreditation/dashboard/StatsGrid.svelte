@@ -24,8 +24,8 @@
     } as const)[gridCols]);
 </script>
 
-<div class={cn('relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] md:grid-cols-2', gridColsClass, className)}>
-    {#each items as item}
+<div class={cn('relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] sm:grid-cols-2', gridColsClass, className)}>
+    {#each items as item (item.label)}
         <Card class='overflow-hidden rounded-md border border-slate-200 bg-white shadow-none'>
             <CardContent class='flex flex-col gap-4 p-5'>
                 <div class='w-fit rounded-sm border border-[#EAECF0] bg-white p-2.5 shadow-[0_1px_2px_0_rgba(16,24,40,0.05)]'>

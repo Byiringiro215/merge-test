@@ -103,7 +103,7 @@
 {/snippet}
 
 {#snippet locationCell(item: ScheduleItem)}
-    <div class='max-w-[160px] whitespace-normal text-left text-xs leading-relaxed text-[#475467]'>
+    <div class='min-w-[220px] whitespace-normal text-left text-xs leading-relaxed text-[#475467]'>
         {item.location}
     </div>
 {/snippet}
