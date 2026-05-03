@@ -100,7 +100,7 @@
                 oninput={e => handleIdInput(e.currentTarget.value)}
                 placeholder='Enter 16-digit national ID'
                 maxlength={20}
-                class={`w-full rounded-md border py-2.5 pl-9 pr-10 text-sm text-slate-700 outline-none placeholder:text-slate-400 transition-colors bg-white ${
+                class={`w-full rounded-sm border py-2.5 pl-9 pr-10 text-sm text-slate-700 outline-none placeholder:text-slate-400 transition-colors bg-white ${
                     lookupState === 'found'
                         ? 'border-emerald-400 focus:ring-2 focus:ring-emerald-400/20'
                         : lookupState === 'not-found'
@@ -132,7 +132,7 @@
     </div>
 
     {#if showForm}
-        <div class='rounded-xl border border-slate-200 bg-slate-50/40 p-4 space-y-3'>
+        <div class='rounded-sm border border-slate-200 bg-slate-50/40 p-4 space-y-3'>
             <div class='flex items-center justify-between'>
                 <p class='text-[12px] font-semibold text-slate-500 uppercase tracking-wide'>
                     {isEditing ? 'Edit Representative' : 'Representative Details'}
@@ -210,7 +210,7 @@
                 type='button'
                 onclick={handleAdd}
                 disabled={!canAdd}
-                class='mt-1 flex items-center gap-2 rounded-md bg-[#336cb2] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#2a5a96] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer'
+                class='mt-1 flex items-center gap-2 rounded-sm bg-[#336cb2] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2a5a96] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer'
             >
                 <UserPlus class='h-4 w-4' />
                 {isEditing ? 'Update Representative' : 'Add Representative'}
@@ -226,7 +226,7 @@
             </p>
             {#each legalReps as rep, idx (idx)}
                 <div
-                    class={`flex items-start gap-3 rounded-xl border bg-white p-4 shadow-sm transition-colors ${editingIdx === idx ? 'border-[#336cb2]/50 ring-1 ring-[#336cb2]/30' : 'border-slate-200'}`}
+                    class={`flex items-start gap-3 rounded-sm border bg-white p-4 transition-colors ${editingIdx === idx ? 'border-[#336cb2]/50 ring-1 ring-[#336cb2]/30' : 'border-slate-200'}`}
                 >
                     <!-- Avatar -->
                     <div class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#336cb2]/10 text-[14px] font-semibold text-[#336cb2] uppercase'>

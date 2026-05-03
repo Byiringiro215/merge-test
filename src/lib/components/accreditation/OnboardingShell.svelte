@@ -53,9 +53,9 @@
                         <div class='flex gap-3'>
                             <div class='flex flex-col items-center'>
                                 <span
-                                    class={`flex h-9 w-9 items-center justify-center rounded-md border transition-colors ${
+                                    class={`flex h-9 w-9 items-center justify-center rounded-sm border transition-colors ${
                                         isActive
-                                            ? 'border-slate-200 bg-white text-slate-800 shadow-sm'
+                                            ? 'border-slate-200 bg-white text-slate-800'
                                             : isComplete
                                             ? 'border-transparent text-slate-400'
                                             : 'border-transparent text-slate-300'
@@ -90,7 +90,7 @@
     <section class='relative w-full h-full min-h-screen bg-white z-0 lg:ml-[340px]'>
         <!-- Dot pattern background -->
         <div
-            class='absolute inset-x-0 top-0 h-[260px] pointer-events-none'
+            class='fixed inset-x-0 lg:left-[340px] top-0 h-[260px] pointer-events-none'
             style='background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px); background-size: 24px 24px; -webkit-mask-image: radial-gradient(ellipse 100% 100% at center, black 20%, transparent 70%); mask-image: radial-gradient(ellipse 100% 100% at center, black 20%, transparent 70%);'
         >
         </div>

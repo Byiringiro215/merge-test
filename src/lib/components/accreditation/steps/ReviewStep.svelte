@@ -32,7 +32,7 @@
 
 <div class='space-y-4'>
     <!-- Ready banner -->
-    <div class='rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-sm text-center'>
+    <div class='rounded-sm border border-slate-200 bg-slate-50 p-5 text-center'>
         <div class='mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#336cb2]/15 mb-2.5'>
             <CheckCircle class='h-5 w-5 text-[#336cb2]' />
         </div>
@@ -43,7 +43,7 @@
     </div>
 
     <!-- Institution Type -->
-    <div class='rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
+    <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
             <h4 class='text-[13px] font-semibold text-slate-700'>Institution Type</h4>
             <a href='/register/institution/institution-type' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
@@ -60,8 +60,32 @@
         </div>
     </div>
 
+    <!-- Owner Verification -->
+    {#if providerType !== 'School'}
+        <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
+            <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
+                <h4 class='text-[13px] font-semibold text-slate-700'>Owner Verification</h4>
+                <a href='/register/institution/institution-details' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
+            </div>
+            <div class='p-5 space-y-4'>
+                <div>
+                    <span class='text-[11px] text-slate-400 uppercase tracking-wide block mb-1'>Verified Owner ID</span>
+                    <p class='text-[13.5px] font-medium text-slate-800'>
+                        {formData.representativeId || 'Not provided'}
+                    </p>
+                </div>
+                <div>
+                    <span class='text-[11px] text-slate-400 uppercase tracking-wide block mb-1'>Verified Owner Email</span>
+                    <p class='text-[13.5px] font-medium text-slate-800'>
+                        {formData.lookupEmail || 'Not provided'}
+                    </p>
+                </div>
+            </div>
+        </div>
+    {/if}
+
     <!-- Institution Details -->
-    <div class='rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
+    <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
             <h4 class='text-[13px] font-semibold text-slate-700'>Institution Details</h4>
             <a href='/register/institution/institution-details' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
@@ -101,7 +125,7 @@
     </div>
 
     <!-- Address Information -->
-    <div class='rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
+    <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
             <h4 class='text-[13px] font-semibold text-slate-700'>Address Information</h4>
             <a href='/register/institution/address-information' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
@@ -123,7 +147,7 @@
     </div>
 
     <!-- About the Institution -->
-    <div class='rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
+    <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
             <h4 class='text-[13px] font-semibold text-slate-700'>About the Institution</h4>
             <a href='/register/institution/about-the-institution' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
@@ -141,7 +165,7 @@
     </div>
 
     <!-- Legal Representatives -->
-    <div class='rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
+    <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
             <h4 class='text-[13px] font-semibold text-slate-700'>Legal Representatives</h4>
             <a href='/register/institution/legal-representatives' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
@@ -150,7 +174,7 @@
             {#if legalReps.length > 0}
                 <div class='space-y-2.5'>
                     {#each legalReps as rep, idx (idx)}
-                        <div class='flex items-start gap-3 bg-slate-50 rounded-lg p-3 border border-slate-100'>
+                        <div class='flex items-start gap-3 bg-slate-50 rounded-sm p-3 border border-slate-100'>
                             <div class='h-8 w-8 shrink-0 rounded-full bg-[#336cb2]/15 text-[#336cb2] flex items-center justify-center text-[11px] font-semibold uppercase'>
                                 {rep.firstName?.[0] ?? ''}{rep.lastName?.[0] ?? ''}
                             </div>

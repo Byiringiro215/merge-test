@@ -20,14 +20,14 @@
         {
             key: 'School',
             label: 'School',
-            description: 'Includes Technical Secondary Schools (TSS) and Vocational Training Centres (VTC) that deliver competency-based technical and vocational education and training (TVET) programmes recognised by RTB.',
+            description: 'Includes Technical Secondary Schools (TSS) and Vocational Training Centres (VTC) that deliver Short Courses/Recognition of Prior Learning recognised by RTB.',
             icon: BookOpen,
             badge: 'TSS / VTC',
         },
         {
             key: 'Other Institution',
             label: 'Other Institution',
-            description: 'Includes private companies providing workplace-based apprenticeships and industry training, as well as NGOs and non-profit organisations delivering community-based skills development and capacity building programmes.',
+            description: 'Includes companies, trade unions, cooperatives, syndicates and NGOs providing short courses.',
             icon: Building2,
             badge: 'Company / NGO',
         },
@@ -41,15 +41,15 @@
         <button
             type='button'
             onclick={() => onSelect(opt.key)}
-            class={`group relative flex items-start gap-4 rounded-xl border px-5 py-4 text-left transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#336cb2]/30 active:scale-[0.99] ${
+            class={`group relative flex items-start gap-4 rounded-sm border px-5 py-4 text-left transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#336cb2]/30 active:scale-[0.99] ${
                 isSelected
-                    ? 'border-[#336cb2] bg-[#336cb2]/10 shadow-sm ring-1 ring-[#336cb2]/20'
-                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60 hover:shadow-sm'
+                    ? 'border-[#336cb2] bg-[#336cb2]/10 ring-1 ring-[#336cb2]/20'
+                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60'
             }`}
         >
             <!-- Icon -->
             <span
-                class={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+                class={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border transition-colors ${
                     isSelected
                         ? 'border-[#336cb2]/30 bg-[#336cb2]/15 text-[#336cb2]'
                         : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-slate-300 group-hover:text-slate-600'
