@@ -106,7 +106,7 @@
     </div>
 
     <!-- Wizard shell (same layout as the application form) -->
-    <div class='flex min-h-[680px] flex-1 overflow-hidden rounded-2xl border border-slate-100 bg-white'>
+    <div class='flex min-h-[680px] flex-1 overflow-hidden -sm border border-slate-100 bg-white'>
         <!-- Sidebar -->
         <div class='w-[300px] shrink-0 border-r border-slate-100 bg-[#FAFAFA] p-8'>
             <h2 class='mb-10 text-[15px] font-semibold text-slate-700'>Short Course Application</h2>
@@ -119,7 +119,7 @@
                         {@const isActive = currentStep === step.id}
                         {@const isCompleted = currentStep > step.id}
                         <div class='relative z-10 flex gap-4'>
-                            <div class={`flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-[14px] transition-colors ${
+                            <div class={`flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-sm transition-colors ${
                                 isActive
                                     ? 'bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200 text-[#0A77FF]'
                                     : isCompleted
@@ -153,14 +153,14 @@
                 <!-- ── STEP 1: TRADE ──────────────────────────────────────────────── -->
                 {#if currentStep === 1}
                     <div class='flex flex-col items-center text-center'>
-                        <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                        <div class='mb-5 flex h-14 w-14 items-center justify-center -sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
                             <Blocks size={24} class='text-slate-500' strokeWidth={1.5} />
                         </div>
                         <h2 class='text-[17px] font-semibold text-slate-900'>Trade Selection</h2>
                         <p class='mt-1.5 text-[13px] text-slate-500'>The trade this application was submitted for.</p>
                     </div>
 
-                    <div class='mt-10 mb-10 rounded-xl border border-[#0A77FF] bg-blue-50/20 p-5'>
+                    <div class='mt-10 mb-10 -sm border border-[#0A77FF] bg-blue-50/20 p-5'>
                         <div class='flex items-center gap-3'>
                             <Blocks size={18} class='text-[#0A77FF]' strokeWidth={2} />
                             <div>
@@ -176,18 +176,18 @@
                     <div class='flex w-full gap-3'>
                         <button
                             onclick={() => history.back()}
-                            class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'
+                            class='flex flex-1 items-center justify-center -sm border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'
                         >Back</button>
                         <button
                             onclick={next}
-                            class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'
+                            class='flex flex-1 items-center justify-center -sm bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'
                         >Continue</button>
                     </div>
 
                     <!-- ── STEP 2: COMPETENCIES ───────────────────────────────────────── -->
                 {:else if currentStep === 2}
                     <div class='flex flex-col items-center text-center'>
-                        <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                        <div class='mb-5 flex h-14 w-14 items-center justify-center -sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
                             <Hexagon size={24} class='text-slate-500' strokeWidth={1.5} />
                         </div>
                         <h2 class='text-[17px] font-semibold text-slate-900'>Competencies</h2>
@@ -196,12 +196,12 @@
 
                     <div class='mt-8 mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2'>
                         {#each mockApp.competencies as comp (comp)}
-                            <div class='flex items-center justify-between rounded-xl border border-[#0A77FF] bg-blue-50/30 p-3.5'>
+                            <div class='flex items-center justify-between -sm border border-[#0A77FF] bg-blue-50/30 p-3.5'>
                                 <div class='flex items-center gap-3'>
                                     <Hexagon size={15} class='text-[#0A77FF]' strokeWidth={2} />
                                     <span class='text-[12px] font-medium text-slate-600'>{comp}</span>
                                 </div>
-                                <div class='flex h-4 w-4 shrink-0 items-center justify-center rounded border border-[#0A77FF] bg-[#0A77FF]'>
+                                <div class='flex h-4 w-4 shrink-0 items-center justify-center -sm border border-[#0A77FF] bg-[#0A77FF]'>
                                     <Check size={10} class='text-white' strokeWidth={3} />
                                 </div>
                             </div>
@@ -209,14 +209,14 @@
                     </div>
 
                     <div class='flex w-full gap-3'>
-                        <button onclick={back} class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
+                        <button onclick={back} class='flex flex-1 items-center justify-center -sm border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
+                        <button onclick={next} class='flex flex-1 items-center justify-center -sm bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
                     <!-- ── STEP 3: EQUIPMENT ──────────────────────────────────────────── -->
                 {:else if currentStep === 3}
                     <div class='flex flex-col items-center text-center'>
-                        <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                        <div class='mb-5 flex h-14 w-14 items-center justify-center -sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
                             <Briefcase size={24} class='text-slate-500' strokeWidth={1.5} />
                         </div>
                         <h2 class='text-[17px] font-semibold text-slate-900'>Equipment & Facilities</h2>
@@ -225,8 +225,8 @@
 
                     <div class='mt-8 mb-10 flex flex-col gap-3'>
                         {#each mockApp.equipments as eq (eq.name)}
-                            <div class='flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4'>
-                                <div class='h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-slate-100 flex items-center justify-center text-xs text-slate-400'>
+                            <div class='flex items-center gap-4 -sm border border-slate-200 bg-white p-4'>
+                                <div class='h-14 w-20 shrink-0 overflow-hidden -sm bg-slate-100 flex items-center justify-center text-xs text-slate-400'>
                                     No Image
                                 </div>
                                 <div class='flex-1'>
@@ -238,14 +238,14 @@
                     </div>
 
                     <div class='flex w-full gap-3'>
-                        <button onclick={back} class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
+                        <button onclick={back} class='flex flex-1 items-center justify-center -sm border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
+                        <button onclick={next} class='flex flex-1 items-center justify-center -sm bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
                     <!-- ── STEP 4: MOU DOCUMENTS ──────────────────────────────────────── -->
                 {:else if currentStep === 4}
                     <div class='flex flex-col items-center text-center'>
-                        <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                        <div class='mb-5 flex h-14 w-14 items-center justify-center -sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
                             <FileCheck size={24} class='text-slate-500' strokeWidth={1.5} />
                         </div>
                         <h2 class='text-[17px] font-semibold text-slate-900'>MOU Documents</h2>
@@ -254,15 +254,15 @@
 
                     <div class='mt-8 mb-10 flex flex-col gap-3'>
                         {#each mockApp.mouDocs as doc (doc.name)}
-                            <div class='flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4'>
-                                <div class={`flex h-10 w-8 shrink-0 items-center justify-center rounded-md text-white text-[10px] font-bold ${iconBg(doc.extension)}`}>
+                            <div class='flex items-center gap-4 -sm border border-slate-200 bg-white p-4'>
+                                <div class={`flex h-10 w-8 shrink-0 items-center justify-center -sm text-white text-[10px] font-bold ${iconBg(doc.extension)}`}>
                                     {doc.extension}
                                 </div>
                                 <div class='flex flex-1 items-center justify-between'>
                                     <p class='text-[13px] font-medium text-slate-800'>{doc.name}</p>
                                     <span class='text-[11px] text-slate-400'>{doc.size}</span>
                                 </div>
-                                <div class='flex h-6 w-6 items-center justify-center rounded-md bg-[#0A77FF]'>
+                                <div class='flex h-6 w-6 items-center justify-center -sm bg-[#0A77FF]'>
                                     <Check size={14} class='text-white' strokeWidth={3} />
                                 </div>
                             </div>
@@ -270,14 +270,14 @@
                     </div>
 
                     <div class='flex w-full gap-3'>
-                        <button onclick={back} class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
+                        <button onclick={back} class='flex flex-1 items-center justify-center -sm border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
+                        <button onclick={next} class='flex flex-1 items-center justify-center -sm bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
                     <!-- ── STEP 5: CURRICULUM DOCUMENTS (if board === OTHER) ───────────── -->
                 {:else if currentStep === 5 && curriculumRequired}
                     <div class='flex flex-col items-center text-center'>
-                        <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                        <div class='mb-5 flex h-14 w-14 items-center justify-center -sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
                             <FileText size={24} class='text-slate-500' strokeWidth={1.5} />
                         </div>
                         <h2 class='text-[17px] font-semibold text-slate-900'>Curriculum Documents</h2>
@@ -286,15 +286,15 @@
 
                     <div class='mt-8 mb-10 flex flex-col gap-3'>
                         {#each mockApp.curriculumDocs as doc (doc.name)}
-                            <div class='flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4'>
-                                <div class={`flex h-10 w-8 shrink-0 items-center justify-center rounded-md text-white text-[10px] font-bold ${iconBg(doc.extension)}`}>
+                            <div class='flex items-center gap-4 -sm border border-slate-200 bg-white p-4'>
+                                <div class={`flex h-10 w-8 shrink-0 items-center justify-center -sm text-white text-[10px] font-bold ${iconBg(doc.extension)}`}>
                                     {doc.extension}
                                 </div>
                                 <div class='flex flex-1 items-center justify-between'>
                                     <p class='text-[13px] font-medium text-slate-800'>{doc.name}</p>
                                     <span class='text-[11px] text-slate-400'>{doc.size}</span>
                                 </div>
-                                <div class='flex h-6 w-6 items-center justify-center rounded-md bg-[#0A77FF]'>
+                                <div class='flex h-6 w-6 items-center justify-center -sm bg-[#0A77FF]'>
                                     <Check size={14} class='text-white' strokeWidth={3} />
                                 </div>
                             </div>
@@ -302,14 +302,14 @@
                     </div>
 
                     <div class='flex w-full gap-3'>
-                        <button onclick={back} class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
+                        <button onclick={back} class='flex flex-1 items-center justify-center -sm border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
+                        <button onclick={next} class='flex flex-1 items-center justify-center -sm bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
                     <!-- ── STEP: STAFF ALLOCATION ─────────────────────────────────────── -->
                 {:else if currentStep === (curriculumRequired ? 6 : 5)}
                     <div class='flex flex-col items-center text-center'>
-                        <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                        <div class='mb-5 flex h-14 w-14 items-center justify-center -sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
                             <Users size={24} class='text-slate-500' strokeWidth={1.5} />
                         </div>
                         <h2 class='text-[17px] font-semibold text-slate-900'>Staff Allocation</h2>
@@ -318,10 +318,10 @@
 
                     <div class='mt-8 mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2'>
                         {#each mockApp.staff as s (s.position)}
-                            <div class='flex flex-col rounded-xl border border-slate-200 bg-white p-4'>
+                            <div class='flex flex-col -sm border border-slate-200 bg-white p-4'>
                                 <p class='text-[13px] font-semibold text-slate-800'>{s.position}</p>
                                 <p class='mt-0.5 text-[12px] text-slate-500'>{s.qualification} · {s.status}</p>
-                                <p class='mt-2 w-fit rounded bg-slate-50 px-1.5 py-0.5 text-[11px] uppercase tracking-wider text-slate-400'>
+                                <p class='mt-2 w-fit -sm bg-slate-50 px-1.5 py-0.5 text-[11px] uppercase tracking-wider text-slate-400'>
                                     Count: {s.quantity}
                                 </p>
                             </div>
@@ -329,14 +329,14 @@
                     </div>
 
                     <div class='flex w-full gap-3'>
-                        <button onclick={back} class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
+                        <button onclick={back} class='flex flex-1 items-center justify-center -sm border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
+                        <button onclick={next} class='flex flex-1 items-center justify-center -sm bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
                     <!-- ── STEP: SUMMARY ──────────────────────────────────────────────── -->
                 {:else if currentStep === totalSteps}
                     <div class='flex flex-col items-center text-center'>
-                        <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                        <div class='mb-5 flex h-14 w-14 items-center justify-center -sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
                             <CheckCheck size={24} class='text-slate-500' strokeWidth={1.5} />
                         </div>
                         <h2 class='text-[17px] font-semibold text-slate-900'>Application Summary</h2>
@@ -353,7 +353,7 @@
                             { id: 9, title: 'Staff Allocation', desc: `${mockApp.staff.length} staff member${mockApp.staff.length !== 1 ? 's' : ''} allocated` },
                         ] as section (section.id)}
                             {@const isExpanded = expandedSection === section.id}
-                            <div class='overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm'>
+                            <div class='overflow-hidden -sm border border-slate-200 bg-white shadow-sm'>
                                 <button
                                     onclick={() => expandedSection = isExpanded ? null : section.id}
                                     class='flex w-full items-center justify-between p-4'
@@ -377,10 +377,10 @@
                     </div>
 
                     <div class='flex w-full gap-3'>
-                        <button onclick={back} class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
+                        <button onclick={back} class='flex flex-1 items-center justify-center -sm border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
                         <a
                             href='/accreditation/applicant/applications'
-                            class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'
+                            class='flex flex-1 items-center justify-center -sm bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'
                         >Done</a>
                     </div>
                 {/if}
