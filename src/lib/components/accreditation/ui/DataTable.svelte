@@ -95,7 +95,7 @@
         </div>
     {/if}
 
-    <div class='overflow-hidden rounded-md border border-slate-200 bg-white shadow-none'>
+    <div class='overflow-hidden -sm border border-slate-200 bg-white shadow-none'>
         <div class='no-scrollbar overflow-x-auto'>
             <table class='w-full min-w-[1000px] border-collapse text-left'>
                 <thead>
