@@ -94,7 +94,6 @@
                 { label: 'Sessions', href: '/admin/sessions' },
                 { label: 'Permissions', href: '/admin/permissions' },
                 { label: 'Service Accounts', href: '/admin/service-accounts' },
-                { label: 'Aaron', href: '/admin/aaron' },
             ],
         },
     ];
