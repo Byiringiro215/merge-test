@@ -1,7 +1,7 @@
 <script lang='ts'>
     import type { Student } from '$lib/datamodel/student';
     import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
+
     import { page } from '$app/state';
     import { api } from '$lib/api';
     import { Button } from '$lib/components/ui/button';
@@ -111,7 +111,7 @@
         <Button
             variant='ghost'
             class='mb-4 gap-2 text-gray-600 hover:text-gray-900'
-            onclick={() => goto(resolve('/students'))}
+            onclick={() => goto('/students')}
         >
             <ArrowLeftIcon class='h-4 w-4' />
             Back to Students
