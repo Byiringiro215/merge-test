@@ -34,8 +34,8 @@
         mouDocs: [{ name: 'MOU_Signed.pdf', size: '2.1 MB', extension: 'PDF' }],
         curriculumDocs: [{ name: 'Curriculum_2026.pdf', size: '5.4 MB', extension: 'PDF' }],
         staff: [
-            { position: 'Instructor', qualification: "Master's Degree", status: 'Full-Time', quantity: 2 },
-            { position: 'Teaching Assistant', qualification: "Bachelor's Degree", status: 'Full-Time', quantity: 3 },
+            { position: 'Instructor', qualification: 'Master\'s Degree', status: 'Full-Time', quantity: 2 },
+            { position: 'Teaching Assistant', qualification: 'Bachelor\'s Degree', status: 'Full-Time', quantity: 3 },
         ],
     });
 
@@ -184,7 +184,7 @@
                         >Continue</button>
                     </div>
 
-                <!-- ── STEP 2: COMPETENCIES ───────────────────────────────────────── -->
+                    <!-- ── STEP 2: COMPETENCIES ───────────────────────────────────────── -->
                 {:else if currentStep === 2}
                     <div class='flex flex-col items-center text-center'>
                         <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
@@ -213,7 +213,7 @@
                         <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
-                <!-- ── STEP 3: EQUIPMENT ──────────────────────────────────────────── -->
+                    <!-- ── STEP 3: EQUIPMENT ──────────────────────────────────────────── -->
                 {:else if currentStep === 3}
                     <div class='flex flex-col items-center text-center'>
                         <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
@@ -242,7 +242,7 @@
                         <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
-                <!-- ── STEP 4: MOU DOCUMENTS ──────────────────────────────────────── -->
+                    <!-- ── STEP 4: MOU DOCUMENTS ──────────────────────────────────────── -->
                 {:else if currentStep === 4}
                     <div class='flex flex-col items-center text-center'>
                         <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
@@ -274,7 +274,7 @@
                         <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
-                <!-- ── STEP 5: CURRICULUM DOCUMENTS (if board === OTHER) ───────────── -->
+                    <!-- ── STEP 5: CURRICULUM DOCUMENTS (if board === OTHER) ───────────── -->
                 {:else if currentStep === 5 && curriculumRequired}
                     <div class='flex flex-col items-center text-center'>
                         <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
@@ -306,7 +306,7 @@
                         <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
-                <!-- ── STEP: STAFF ALLOCATION ─────────────────────────────────────── -->
+                    <!-- ── STEP: STAFF ALLOCATION ─────────────────────────────────────── -->
                 {:else if currentStep === (curriculumRequired ? 6 : 5)}
                     <div class='flex flex-col items-center text-center'>
                         <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
@@ -333,7 +333,7 @@
                         <button onclick={next} class='flex flex-1 items-center justify-center rounded-xl bg-[#0A77FF] py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
-                <!-- ── STEP: SUMMARY ──────────────────────────────────────────────── -->
+                    <!-- ── STEP: SUMMARY ──────────────────────────────────────────────── -->
                 {:else if currentStep === totalSteps}
                     <div class='flex flex-col items-center text-center'>
                         <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
