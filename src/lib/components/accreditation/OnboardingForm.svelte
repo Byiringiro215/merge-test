@@ -32,6 +32,16 @@
     let aboutText = $state<Record<string, string>>({ ...globalAboutText });
     let providerType = $state<string>(globalProviderType);
 
+    // Default values for combined lookup as requested
+    $effect(() => {
+        if (providerType && providerType !== 'School') {
+            if (!formData.representativeId)
+                formData.representativeId = '22222222222222222';
+            if (!formData.lookupEmail)
+                formData.lookupEmail = 'owner@example.com';
+        }
+    });
+
     // Sync state back to module-level globals so data persists when component unmounts
     $effect(() => {
         globalFormData = formData;
@@ -84,17 +94,8 @@
             : 'Save & Continue',
     );
 
-    const primaryWidth = $derived(showSecondaryBtn ? 'w-2/3' : 'w-full');
-
-    const secondaryWidth = 'w-1/3';
-
     function handlePrimaryAction() {
-        if (step === 'institution-type') {
-            if (!providerType)
-                return;
-            goto(`/register/institution/${nextStep!.key}`);
-        }
-        else if (step === 'institution-details' && institutionLookupStore.value === 'existing') {
+        if (step === 'institution-details' && institutionLookupStore.value === 'existing') {
             goto('/dashboard');
         }
         else if (isLastStep) {
@@ -116,7 +117,7 @@
     <div class='space-y-8'>
         <!-- Step header -->
         <div class='space-y-3 text-center'>
-            <div class='mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 text-[#336cb2] font-semibold text-lg'>
+            <div class='mx-auto flex h-14 w-14 items-center justify-center rounded-sm border border-slate-200 text-[#336cb2] font-semibold text-lg'>
                 {currentStepIndex + 1}
             </div>
             <div>
@@ -166,12 +167,12 @@
         </div>
 
         <!-- Navigation buttons -->
-        <div class='flex items-center gap-4 pt-4'>
+        <div class='flex flex-col-reverse sm:flex-row items-center gap-4 pt-4'>
             {#if showSecondaryBtn}
                 <button
                     type='button'
                     onclick={handleSecondaryAction}
-                    class={`flex ${secondaryWidth} items-center justify-center rounded-sm border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 cursor-pointer`}
+                    class='flex w-full sm:w-1/3 items-center justify-center rounded-sm border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 cursor-pointer'
                 >
                     {secondaryBtnLabel}
                 </button>
@@ -180,7 +181,7 @@
                 type='button'
                 onclick={handlePrimaryAction}
                 disabled={!isStepComplete}
-                class={`flex ${primaryWidth} items-center justify-center rounded-sm bg-[#336cb2] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#2a5a96] focus:ring-4 focus:ring-[#336cb2]/20 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#336cb2]`}
+                class={`flex ${showSecondaryBtn ? 'w-full sm:w-2/3' : 'w-full'} items-center justify-center rounded-sm bg-[#336cb2] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2a5a96] focus:ring-4 focus:ring-[#336cb2]/20 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#336cb2]`}
             >
                 {primaryBtnLabel}
             </button>

@@ -33,7 +33,7 @@
         {value}
         {placeholder}
         oninput={e => onChange(e.currentTarget.value)}
-        class='w-full resize-none rounded-md border border-slate-200 p-4 text-[13.5px] text-slate-600 outline-none transition focus:border-[#336cb2] focus:ring-1 focus:ring-[#336cb2]/20 placeholder:text-slate-500/70'
+        class='w-full resize-none rounded-sm border border-slate-200 p-4 text-[13.5px] text-slate-600 outline-none transition focus:border-[#336cb2] focus:ring-1 focus:ring-[#336cb2]/20 placeholder:text-slate-500/70'
     ></textarea>
     <div class='flex justify-between items-center pr-1'>
         <span
