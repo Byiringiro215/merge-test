@@ -2,7 +2,7 @@
     import type { UserRole } from '$lib/accreditation/types/auth';
     import { page } from '$app/stores';
     import { portalNavigation } from '$lib/accreditation/config/navigation';
-    import { getPageHeader } from '$lib/accreditation/context/page-header.svelte.ts';
+    import { getPageHeader } from '$lib/accreditation/context/page-header.svelte';
     import { ChevronRight } from '@lucide/svelte';
 
     const pageHeader = getPageHeader();
