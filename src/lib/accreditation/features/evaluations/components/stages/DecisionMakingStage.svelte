@@ -162,7 +162,7 @@
 
 <!-- Invite Supervisor Modal -->
 {#if showInviteModal}
-    <div class='fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 p-4 transition-opacity'>
+    <div class='fixed inset-0 z-100 flex items-center justify-center bg-slate-900/80 p-4 transition-opacity'>
         <div class='w-full max-w-lg bg-white rounded-sm overflow-hidden'>
             <div class='flex items-start justify-between p-6 border-b border-slate-100'>
                 <div class='flex items-start gap-4'>

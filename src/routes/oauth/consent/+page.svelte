@@ -1,6 +1,6 @@
 <script lang='ts'>
     import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
+
     import { page } from '$app/state';
     import { api } from '$lib/api';
     import { getAuthState } from '$lib/auth/index.svelte';
@@ -52,7 +52,7 @@
 
     $effect(() => {
         if (!auth.isLoading && !auth.isAuthenticated) {
-            goto(resolve(`/signin?redirect=${encodeURIComponent(currentUrl)}` as any));
+            goto(`/signin?redirect=${encodeURIComponent(currentUrl)}`);
         }
     });
 
@@ -419,11 +419,11 @@
                                 By clicking "Allow Access", you agree to {clientName}'s request.
                             </p>
                             <div class='font-inter flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-[#565D6D]'>
-                                <a href={resolve('/privacy' as any)} class='hover:text-[#205FAD] hover:underline'>Privacy Policy</a>
+                                <a href='/privacy' class='hover:text-[#205FAD] hover:underline'>Privacy Policy</a>
                                 <span class='text-[#D8DDE6]'>•</span>
-                                <a href={resolve('/terms' as any)} class='hover:text-[#205FAD] hover:underline'>Terms of Service</a>
+                                <a href='/terms' class='hover:text-[#205FAD] hover:underline'>Terms of Service</a>
                                 <span class='text-[#D8DDE6]'>•</span>
-                                <a href={resolve('/security' as any)} class='inline-flex items-center gap-1.5 hover:text-[#205FAD] hover:underline'>
+                                <a href='/security' class='inline-flex items-center gap-1.5 hover:text-[#205FAD] hover:underline'>
                                     <LockKeyhole class='h-4 w-4' />
                                     Security Details
                                 </a>

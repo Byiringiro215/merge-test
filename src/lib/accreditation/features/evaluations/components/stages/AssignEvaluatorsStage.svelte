@@ -1,5 +1,5 @@
 <script lang='ts'>
-    import { cn } from '$lib/accreditation/utils/cn';
+    import { cn } from '$lib/components/accreditation/utils/cn';
     import { CheckCircle2, Clock, UserPlus, Users } from '@lucide/svelte';
 
     const {
@@ -26,36 +26,49 @@
         setIsEvaluating: (evaluating: boolean) => void;
     }>();
 
-    const isProceedDisabled = $derived(!assignedInitialPrincipal || !assignedInitialSecondary1 || !assignedInitialSecondary2);
+    const isProceedDisabled = $derived(
+        !assignedInitialPrincipal || !assignedInitialSecondary1 || !assignedInitialSecondary2,
+    );
 </script>
 
-<div class='max-w-5xl mx-auto py-12 px-6 w-full flex flex-col md:grid md:grid-cols-2 gap-12 items-stretch h-full'>
+<div
+    class='mx-auto flex h-full w-full max-w-5xl flex-col items-stretch gap-12 px-6 py-12 md:grid md:grid-cols-2'
+>
     <!-- Header -->
-    <div class='order-1 md:col-start-1 md:row-start-1 flex flex-col items-center md:items-start text-center md:text-left pt-5'>
-        <div class='h-12 w-12 rounded-sm border border-slate-100 flex items-center justify-center mb-6'>
+    <div
+        class='order-1 flex flex-col items-center pt-5 text-center sm:flex-row sm:items-start sm:text-left md:col-start-1 md:row-start-1 md:flex-col md:items-start md:text-left'
+    >
+        <div class='mb-6 flex h-12 w-12 shrink-0 items-center justify-center rounded-sm border border-slate-100 sm:mb-0 sm:mr-6 md:mb-6 md:mr-0'>
             <Users class='h-6 w-6 text-slate-400' strokeWidth={1.5} />
         </div>
-        <h2 class='text-xl text-slate-900 mb-1'>Assign Evaluators</h2>
-        <p class='text-sm text-slate-500 mb-6'>
-            Assign evaluators to the application. You can optionally review the documents before scheduling.
-        </p>
+        <div class='flex flex-col'>
+            <h2 class='mb-1 text-xl text-slate-900'>Assign Evaluators</h2>
+            <p class='mb-6 text-sm text-slate-500'>
+                Assign evaluators to the application. You can optionally review the documents before
+                scheduling.
+            </p>
+        </div>
     </div>
 
     <!-- Evaluator Cards -->
-    <div class='order-2 md:col-start-2 md:row-start-1 md:row-span-2 w-full'>
-        <div class='w-full space-y-4 mb-10'>
+    <div class='order-2 w-full md:col-start-2 md:row-span-2 md:row-start-1'>
+        <div class='mb-10 w-full space-y-4'>
             <h4 class='text-sm text-slate-700'>Assign Evaluating Team</h4>
 
             <!-- Principal Evaluator -->
             <button
                 class={cn(
-                    'border rounded-sm p-4 w-full transition-colors cursor-pointer group text-left',
-                    assignedInitialPrincipal ? 'border-[var(--primary)] bg-blue-50/10' : 'border-slate-200 bg-slate-50/50 hover:border-[#0A77FF]/50',
+                    'group w-full cursor-pointer rounded-sm border p-4 text-left transition-colors',
+                    assignedInitialPrincipal
+                        ? 'border-primary bg-blue-50/10'
+                        : 'border-slate-200 bg-slate-50/50 hover:border-[#0A77FF]/50',
                 )}
                 onclick={() => setPendingEvaluatorRole('Initial Principal')}
             >
-                <div class='flex items-center gap-3 w-full'>
-                    <div class='h-10 w-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0'>
+                <div class='flex w-full items-center gap-3'>
+                    <div
+                        class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white'
+                    >
                         {#if assignedInitialPrincipalStatus === 'accepted'}
                             <CheckCircle2 class='h-4 w-4 text-emerald-500' />
                         {:else if assignedInitialPrincipalStatus === 'pending'}
@@ -64,16 +77,20 @@
                             <UserPlus class='h-4 w-4 text-[#0A77FF]' />
                         {/if}
                     </div>
-                    <div class='text-left flex-1'>
-                        <h4 class='text-sm text-slate-900'>{assignedInitialPrincipal || 'Principal Evaluator'}</h4>
-                        <p class='text-[11px] text-slate-400 leading-tight'>Lead evaluator & decision maker</p>
+                    <div class='flex-1 text-left'>
+                        <h4 class='text-sm text-slate-900'>
+                            {assignedInitialPrincipal || 'Principal Evaluator'}
+                        </h4>
+                        <p class='text-[11px] leading-tight text-slate-400'>Lead evaluator & decision maker</p>
                     </div>
                 </div>
                 {#if assignedInitialPrincipalStatus === 'accepted'}
-                    <div class='mt-3 pt-3 border-t border-slate-100'>
-                        <div class='flex items-center justify-between mb-1'>
-                            <span class='text-[10px] text-slate-400 font-medium'>Review Response</span>
-                            <span class='text-[10px] text-emerald-600 font-bold uppercase tracking-wider'>Accept</span>
+                    <div class='mt-3 border-t border-slate-100 pt-3'>
+                        <div class='mb-1 flex items-center justify-between'>
+                            <span class='text-[10px] font-medium text-slate-400'>Review Response</span>
+                            <span class='text-[10px] font-bold tracking-wider text-emerald-600 uppercase'
+                            >Accept</span
+                            >
                         </div>
                         <p class='text-[11px] text-slate-500 italic'>"Documents look correct and complete."</p>
                     </div>
@@ -83,13 +100,17 @@
             <!-- Secondary Evaluator 1 -->
             <button
                 class={cn(
-                    'border border-dashed rounded-sm p-4 w-full transition-colors cursor-pointer group text-left',
-                    assignedInitialSecondary1 ? 'border-solid border-[var(--primary)] bg-blue-50/10' : 'border-slate-200 hover:bg-slate-50',
+                    'group w-full cursor-pointer rounded-sm border border-dashed p-4 text-left transition-colors',
+                    assignedInitialSecondary1
+                        ? 'border-primary border-solid bg-blue-50/10'
+                        : 'border-slate-200 hover:bg-slate-50',
                 )}
                 onclick={() => setPendingEvaluatorRole('Initial Secondary 1')}
             >
-                <div class='flex items-center gap-3 w-full'>
-                    <div class='h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0'>
+                <div class='flex w-full items-center gap-3'>
+                    <div
+                        class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100'
+                    >
                         {#if assignedInitialSecondary1Status === 'accepted'}
                             <CheckCircle2 class='h-4 w-4 text-emerald-500' />
                         {:else if assignedInitialSecondary1Status === 'pending'}
@@ -98,16 +119,20 @@
                             <UserPlus class='h-4 w-4 text-slate-400' />
                         {/if}
                     </div>
-                    <div class='text-left flex-1'>
-                        <h4 class='text-[13px] text-slate-900'>{assignedInitialSecondary1 || 'Secondary Evaluator 1'}</h4>
-                        <p class='text-[11px] text-slate-400 leading-tight'>Assistant & commenter</p>
+                    <div class='flex-1 text-left'>
+                        <h4 class='text-[13px] text-slate-900'>
+                            {assignedInitialSecondary1 || 'Secondary Evaluator 1'}
+                        </h4>
+                        <p class='text-[11px] leading-tight text-slate-400'>Assistant & commenter</p>
                     </div>
                 </div>
                 {#if assignedInitialSecondary1Status === 'accepted'}
-                    <div class='mt-3 pt-3 border-t border-slate-100'>
-                        <div class='flex items-center justify-between mb-1'>
-                            <span class='text-[10px] text-slate-400 font-medium'>Review Response</span>
-                            <span class='text-[10px] text-emerald-600 font-bold uppercase tracking-wider'>Accept</span>
+                    <div class='mt-3 border-t border-slate-100 pt-3'>
+                        <div class='mb-1 flex items-center justify-between'>
+                            <span class='text-[10px] font-medium text-slate-400'>Review Response</span>
+                            <span class='text-[10px] font-bold tracking-wider text-emerald-600 uppercase'
+                            >Accept</span
+                            >
                         </div>
                         <p class='text-[11px] text-slate-500 italic'>"No issues found in the trade modules."</p>
                     </div>
@@ -117,13 +142,17 @@
             <!-- Secondary Evaluator 2 -->
             <button
                 class={cn(
-                    'border border-dashed rounded-sm p-4 w-full transition-colors cursor-pointer group text-left',
-                    assignedInitialSecondary2 ? 'border-solid border-[var(--primary)] bg-blue-50/10' : 'border-slate-200 hover:bg-slate-50',
+                    'group w-full cursor-pointer rounded-sm border border-dashed p-4 text-left transition-colors',
+                    assignedInitialSecondary2
+                        ? 'border-primary border-solid bg-blue-50/10'
+                        : 'border-slate-200 hover:bg-slate-50',
                 )}
                 onclick={() => setPendingEvaluatorRole('Initial Secondary 2')}
             >
-                <div class='flex items-center gap-3 w-full'>
-                    <div class='h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0'>
+                <div class='flex w-full items-center gap-3'>
+                    <div
+                        class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100'
+                    >
                         {#if assignedInitialSecondary2Status === 'accepted'}
                             <CheckCircle2 class='h-4 w-4 text-emerald-500' />
                         {:else if assignedInitialSecondary2Status === 'pending'}
@@ -132,16 +161,20 @@
                             <UserPlus class='h-4 w-4 text-slate-400' />
                         {/if}
                     </div>
-                    <div class='text-left flex-1'>
-                        <h4 class='text-[13px] text-slate-900'>{assignedInitialSecondary2 || 'Secondary Evaluator 2'}</h4>
-                        <p class='text-[11px] text-slate-400 leading-tight'>Assistant & commenter</p>
+                    <div class='flex-1 text-left'>
+                        <h4 class='text-[13px] text-slate-900'>
+                            {assignedInitialSecondary2 || 'Secondary Evaluator 2'}
+                        </h4>
+                        <p class='text-[11px] leading-tight text-slate-400'>Assistant & commenter</p>
                     </div>
                 </div>
                 {#if assignedInitialSecondary2Status === 'accepted'}
-                    <div class='mt-3 pt-3 border-t border-slate-100'>
-                        <div class='flex items-center justify-between mb-1'>
-                            <span class='text-[10px] text-slate-400 font-medium'>Review Response</span>
-                            <span class='text-[10px] text-blue-600 font-bold uppercase tracking-wider'>Comment</span>
+                    <div class='mt-3 border-t border-slate-100 pt-3'>
+                        <div class='mb-1 flex items-center justify-between'>
+                            <span class='text-[10px] font-medium text-slate-400'>Review Response</span>
+                            <span class='text-[10px] font-bold tracking-wider text-blue-600 uppercase'
+                            >Comment</span
+                            >
                         </div>
                         <p class='text-[11px] text-slate-500 italic'>"Curriculum needs minor clarification."</p>
                     </div>
@@ -151,12 +184,14 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class='order-3 md:col-start-1 md:row-start-2 flex flex-col gap-3 w-full max-w-sm md:mt-auto pb-10'>
+    <div
+        class='order-3 flex w-full flex-col gap-3 pb-10 md:col-start-1 md:row-start-2 md:mt-auto'
+    >
         <div class='w-full' title={isProceedDisabled ? 'Assign all evaluators before proceeding' : ''}>
             <button
                 onclick={() => setActiveMajorStep(1)}
                 disabled={isProceedDisabled}
-                class='w-full py-3 bg-[var(--primary)] text-white rounded-sm text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm'
+                class='bg-primary w-full cursor-pointer rounded-sm py-3 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50'
             >
                 Proceed to Scheduling
             </button>
@@ -166,7 +201,7 @@
                 setShowInitialReview(true);
                 setIsEvaluating(false);
             }}
-            class='w-full py-3 border border-slate-200 rounded-sm text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer'
+            class='w-full cursor-pointer rounded-sm border border-slate-200 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50'
         >
             View Initial Review (Optional)
         </button>

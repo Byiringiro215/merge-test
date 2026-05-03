@@ -1,5 +1,5 @@
 <script lang='ts'>
-    import { resolve } from '$app/paths';
+
     import {
         Card,
         CardContent,
@@ -83,7 +83,7 @@
             >
 
             <a
-                href={resolve('/logs' as any)}
+                href='/logs'
                 class='text-sm sm:pr-10 font-normal text-secondary hover:text-blue-700'
             >View Log</a
             >

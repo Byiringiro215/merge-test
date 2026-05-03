@@ -41,25 +41,41 @@
         }
         return true;
     }));
+
+    let scrollContainer: HTMLElement | undefined = $state();
+
+    $effect(() => {
+        // Dependencies
+        const path = $page.url.pathname;
+        if (scrollContainer && path) {
+            // Wait for DOM update
+            setTimeout(() => {
+                const activeLink = scrollContainer?.querySelector('.text-primary') as HTMLElement;
+                if (activeLink) {
+                    activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }, 50);
+        }
+    });
 </script>
 
 <div class='mb-6 flex w-full flex-col items-center justify-between'>
-    <div class='flex w-full items-center justify-between gap-2'>
+    <div
+        bind:this={scrollContainer}
+        class='no-scrollbar flex w-full items-center justify-start gap-2 overflow-x-auto pb-1'
+        style='mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);'
+    >
         {#each navItems as item}
             {@const isActive = $page.url.pathname === item.href}
             <a
                 href={item.href}
                 class={cn(
-                    'group relative flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm px-4 py-3 transition-colors duration-200 whitespace-nowrap',
-                    isActive
-                        ? 'text-primary'
-                        : 'text-[#353E49] hover:bg-slate-50 hover:text-primary',
+                    'group relative flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-sm px-6 py-3 transition-colors duration-200',
+                    isActive ? 'text-primary' : 'text-[#353E49] hover:bg-slate-50 hover:text-primary',
                 )}
             >
                 {#if isActive}
-                    <div
-                        class='absolute inset-0 z-0 rounded-sm bg-[#F9FAFB]'
-                    ></div>
+                    <div class='absolute inset-0 z-0 rounded-sm bg-[#F9FAFB]'></div>
                 {/if}
                 <item.icon
                     class={cn(

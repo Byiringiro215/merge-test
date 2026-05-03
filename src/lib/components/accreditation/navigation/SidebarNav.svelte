@@ -19,7 +19,7 @@
             alt='RTB Logo'
             width='36'
             height='36'
-            class='rounded-xl'
+            class='-sm'
         />
         <div>
             <p class='text-sm font-bold text-[#353E49]'>
@@ -59,7 +59,7 @@
         <button
             type='button'
             onclick={onCloseMobile}
-            class='flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+            class='flex w-full cursor-pointer items-center gap-3 -sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
         >
             <LifeBuoy class='text-[#667085]' strokeWidth={1.5} size={20} />
             <span class='text-[#344054]'>Support</span>
@@ -67,7 +67,7 @@
         <button
             type='button'
             onclick={onCloseMobile}
-            class='flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+            class='flex w-full cursor-pointer items-center gap-3 -sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
         >
             <Settings class='text-[#667085]' strokeWidth={1.5} size={20} />
             <span class='text-[#344054]'>Settings</span>
