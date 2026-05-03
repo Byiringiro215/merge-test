@@ -1,6 +1,5 @@
 <script lang='ts'>
     import type { NavItem } from '$lib/types/nav';
-    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { getAuthState, logout } from '$lib/auth/index.svelte';
     import {
@@ -149,7 +148,7 @@
         class='flex h-16 items-center justify-between border-b border-gray-200 px-6 lg:px-15'
     >
         <!-- Logo -->
-        <a href={resolve('/')} class='flex items-center gap-1'>
+        <a href='/' class='flex items-center gap-1'>
             <div class='h-10 w-10 flex items-center'>
                 <img
                     src='/rtb-logo.png'
@@ -165,7 +164,7 @@
             {#each navItems as item (item.id)}
                 {@const isActive = activeDepartment?.id === item.id}
                 <a
-                    href={resolve(item.href as any)}
+                    href={item.href}
                     class="flex items-center gap-2 rounded-[6px] px-4 py-2 text-sm font-normal transition-colors {isActive
                         ? 'bg-[#205FAD1A] text-[#205FAD]'
                         : 'text-[#565D6D] hover:bg-gray-50 hover:text-gray-900'}"
@@ -253,7 +252,7 @@
                     {@const isActive = isSubNavActive(subItem.href)}
                     <a
                         bind:this={subNavRefs[index]}
-                        href={resolve(subItem.href as any)}
+                        href={subItem.href}
                         class="relative py-3 text-sm font-normal transition-colors duration-200 {isActive
                             ? 'text-primary'
                             : 'text-gray-500 hover:text-gray-900'}"
@@ -341,7 +340,7 @@
                                             subItem.href,
                                         )}
                                         <a
-                                            href={resolve(subItem.href as any)}
+                                            href={subItem.href}
                                             onclick={closeMobileMenu}
                                             class="block rounded-[6px] px-3 py-2 text-sm transition-colors {isSubActive
                                                 ? 'text-[#205FAD] font-normal bg-[#205FAD1A]'
@@ -355,7 +354,7 @@
                         {:else}
                             <!-- Department without sub-nav: navigate directly -->
                             <a
-                                href={resolve(item.href as any)}
+                                href={item.href}
                                 onclick={closeMobileMenu}
                                 class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-normal transition-colors {isActive
                                     ? 'bg-[#205FAD1A] text-[#205FAD]'

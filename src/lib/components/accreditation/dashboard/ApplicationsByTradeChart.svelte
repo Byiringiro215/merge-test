@@ -12,7 +12,7 @@
     ];
 </script>
 
-<Card class='h-full animate-slide-up overflow-hidden rounded-md border border-slate-200 bg-white shadow-none'>
+<Card class='h-full animate-slide-up overflow-hidden -sm border border-slate-200 bg-white shadow-none'>
     <CardContent class='flex h-full flex-col p-4'>
         <div class='flex items-center justify-between'>
             <div class='relative h-60 w-60'>

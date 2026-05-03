@@ -19,7 +19,7 @@
 
 <div class='fixed inset-0 z-100 flex animate-in items-center justify-center bg-slate-900/90 p-4 transition-all fade-in duration-200'>
     <div class={cn(
-        'flex flex-col overflow-hidden rounded-md bg-white shadow-2xl transition-all duration-300',
+        'flex flex-col overflow-hidden -sm bg-white shadow-2xl transition-all duration-300',
         isMaximized ? 'h-full w-full' : 'h-[85vh] w-full max-w-5xl',
     )}>
         <!-- Header -->
@@ -93,12 +93,12 @@
 
                     <!-- Simulated Content Skeleton -->
                     <div class='pointer-events-none px-12 pb-12 space-y-4 opacity-20'>
-                        <div class='h-4 w-3/4 rounded bg-slate-200'></div>
-                        <div class='h-4 w-full rounded bg-slate-200'></div>
-                        <div class='h-4 w-5/6 rounded bg-slate-200'></div>
-                        <div class='h-32 w-full rounded bg-slate-100'></div>
-                        <div class='h-4 w-2/3 rounded bg-slate-200'></div>
-                        <div class='h-4 w-full rounded bg-slate-200'></div>
+                        <div class='h-4 w-3/4 -sm bg-slate-200'></div>
+                        <div class='h-4 w-full -sm bg-slate-200'></div>
+                        <div class='h-4 w-5/6 -sm bg-slate-200'></div>
+                        <div class='h-32 w-full -sm bg-slate-100'></div>
+                        <div class='h-4 w-2/3 -sm bg-slate-200'></div>
+                        <div class='h-4 w-full -sm bg-slate-200'></div>
                     </div>
                 </div>
             </div>

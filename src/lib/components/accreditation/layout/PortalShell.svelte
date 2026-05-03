@@ -17,6 +17,7 @@
 
 <div class={cn(
     'h-screen overflow-hidden bg-white text-slate-900 transition-all duration-300',
+    role === 'applicant' ? 'applicant-portal' : '',
     pageHeader.hideSidebar ? 'flex flex-col' : 'md:grid md:grid-cols-[250px_1fr]',
 )}>
     <!-- Sidebar -->
