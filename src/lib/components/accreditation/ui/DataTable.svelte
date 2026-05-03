@@ -73,7 +73,7 @@
                     />
                 </div>
 
-                <div class='flex items-center gap-2'>
+                <div class='flex flex-wrap items-center gap-2'>
                     {#if filters}
                         {@render filters()}
                     {:else}
@@ -85,7 +85,7 @@
                             <span>US, AU, +4</span>
                             <X class='h-3 w-3 cursor-pointer text-slate-400 transition-colors hover:text-slate-600' />
                         </div>
-                        <button class='flex cursor-pointer items-center gap-2 rounded-sm border border-slate-100 bg-white px-3 py-3 text-xs text-[#344054] transition-colors hover:bg-slate-100'>
+                        <button class='flex cursor-pointer items-center gap-2 rounded-sm border border-slate-100 bg-white px-3 py-2.5 text-xs text-[#344054] transition-colors hover:bg-slate-100'>
                             <ListFilter class='h-4 w-4 text-slate-500' />
                             <span>More filters</span>
                         </button>
