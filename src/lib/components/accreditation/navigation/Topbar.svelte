@@ -34,7 +34,7 @@
                 <button
                     type='button'
                     onclick={onOpenMobile}
-                    class='-ml-1 rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 md:hidden'
+                    class='-ml-1 rounded-sm cursor-pointer p-1.5 text-slate-500 transition-colors hover:bg-slate-100 md:hidden'
                     aria-label='Open sidebar'
                 >
                     <Menu class='h-5 w-5' />

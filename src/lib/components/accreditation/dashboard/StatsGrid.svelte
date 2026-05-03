@@ -25,8 +25,8 @@
     } as const)[gridCols]);
 </script>
 
-<div class={cn('relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] md:grid-cols-2', gridColsClass, className)}>
-    {#each items as item}
+<div class={cn('relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] sm:grid-cols-2', gridColsClass, className)}>
+    {#each items as item (item.label)}
         {#if item.href}
             <a href={item.href} class='block'>
                 <Card class='overflow-hidden rounded-md border border-slate-200 bg-white shadow-none transition-colors hover:border-[#0A77FF] hover:bg-blue-50/30'>
