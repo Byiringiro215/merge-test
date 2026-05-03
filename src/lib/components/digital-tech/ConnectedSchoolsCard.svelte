@@ -21,11 +21,11 @@
     const { value, change, breakdowns }: Props = $props();
 </script>
 
-<Card class='p-5 bg-white border border-gray-100 shadow-sm rounded-xl h-full'>
+<Card class='p-5 bg-white border border-gray-100 shadow-sm rounded-lg h-full'>
     <div class='flex items-start justify-between mb-2'>
         <span class='text-sm font-medium text-gray-500'>Connected Schools</span>
         <div
-            class='flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50'
+            class='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50'
         >
             <WifiIcon class='h-5 w-5 text-blue-500' />
         </div>

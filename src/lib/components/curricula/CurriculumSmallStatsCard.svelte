@@ -40,7 +40,7 @@
 <Card class='p-5  shadow-none! border border-[#DEE1E6]'>
     <div class='flex items-start gap-4'>
         <!-- Icon -->
-        <div class={`p-3 rounded-xl ${iconBgColor}`}>
+        <div class={`p-3 rounded-lg ${iconBgColor}`}>
             <Icon class={`h-5 w-5 ${iconColor}`} />
         </div>
 

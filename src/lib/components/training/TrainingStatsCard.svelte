@@ -42,7 +42,7 @@
     };
 </script>
 
-<Card class='p-4 bg-white border border-gray-100 shadow-sm rounded-xl h-full'>
+<Card class='p-4 bg-white border border-gray-100 shadow-sm rounded-lg h-full'>
     <div class='flex flex-col h-full'>
         <!-- Title and Icon -->
         <div class='flex items-start justify-between mb-1'>

@@ -57,7 +57,7 @@
     };
 
     const hoverColors = {
-        Fiber: '#2563EB',
+        Fiber: '#1A4B8A',
         Cellular: '#9333EA',
         Wireless: '#EA580C',
         Satellite: '#9CA3AF',

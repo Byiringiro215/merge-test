@@ -208,7 +208,7 @@
                     .transition()
                     .duration(150)
                     .ease(easeCubicOut)
-                    .attr('fill', '#2563EB')
+                    .attr('fill', '#1A4B8A')
                     .attr('d', roundedTopBar(xPos - 2, yTop, barWidth + 4, h));
 
                 if (!tooltip)

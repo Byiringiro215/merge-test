@@ -22,7 +22,7 @@
     }: Props = $props();
 </script>
 
-<Card class=' rounded-xl shadow-none border-[#DEE1E6] h-[215px]'>
+<Card class=' rounded-lg shadow-none border-[#DEE1E6] h-[215px]'>
     <!-- Header -->
     <div class='p-6'>
         <div class='flex items-start justify-between'>

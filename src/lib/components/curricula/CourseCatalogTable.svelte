@@ -260,7 +260,7 @@
     }
 </script>
 
-<Card class='border border-gray-200 rounded-xl shadow-sm'>
+<Card class='border border-gray-200 rounded-lg shadow-sm'>
     <CardHeader class='px-6 py-5'>
         <div
             class='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'
