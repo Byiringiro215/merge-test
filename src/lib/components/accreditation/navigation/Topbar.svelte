@@ -68,7 +68,7 @@
 
                 {#if open}
                     <div
-                        class='absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-md bg-white p-1 shadow-lg ring-1 ring-slate-200'
+                        class='absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden -sm bg-white p-1 shadow-lg ring-1 ring-slate-200'
                         onmouseenter={handleOpen}
                         onmouseleave={handleClose}
                         role='menu'
@@ -114,8 +114,8 @@
             {:else}
                 <div class='flex w-full items-center justify-between gap-10'>
                     <div class='space-y-2 py-2'>
-                        <div class='h-5 w-[240px] animate-pulse rounded bg-slate-100'></div>
-                        <div class='h-3 w-[320px] animate-pulse rounded bg-slate-50'></div>
+                        <div class='h-5 w-[240px] animate-pulse -sm bg-slate-100'></div>
+                        <div class='h-3 w-[320px] animate-pulse -sm bg-slate-50'></div>
                     </div>
                 </div>
             {/if}

@@ -54,7 +54,7 @@
 
         {#if hasApplications}
             <!-- DashboardFilledState would go here -->
-            <div class='p-8 text-center border-2 border-dashed rounded-lg text-slate-400'>
+            <div class='p-8 text-center border-2 border-dashed -sm text-slate-400'>
                 Dashboard Content (Applications List)
             </div>
         {:else}
