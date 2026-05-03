@@ -1,0 +1,496 @@
+Loading svelte-check in workspace: /media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web
+Getting Svelte diagnostics...
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/certificates/components/CertificateAccessContent.svelte:420:5
+Error: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. (ts)
+    onConfirm={confirmGrantAccess}
+    applicantName={selectedApplication?.applicant?.name}
+    tradeName={selectedApplication?.trade?.name}
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/certificates/components/CertificateAccessContent.svelte:421:5
+Error: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. (ts)
+    applicantName={selectedApplication?.applicant?.name}
+    tradeName={selectedApplication?.trade?.name}
+/>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/certificates/components/CertificateAccessContent.svelte:427:5
+Error: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. (ts)
+    onConfirm={confirmRevokeAccess}
+    applicantName={selectedApplication?.applicant?.name}
+    tradeName={selectedApplication?.trade?.name}
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/certificates/components/CertificateAccessContent.svelte:428:5
+Error: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. (ts)
+    applicantName={selectedApplication?.applicant?.name}
+    tradeName={selectedApplication?.trade?.name}
+/>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/curriculum/components/CurriculumReviewView.svelte:205:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="mb-8">
+            <label class="mb-2 block text-[13px] font-medium text-slate-500">Evaluator remarks (required)</label>
+            <div class="relative">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/EvaluatorsContent.svelte:65:22
+Error: Type 'string' is not assignable to type 'StatusType'. (ts)
+    <div class='text-left'>
+        <StatusBadge status={item.status} />
+    </div>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/ScheduleContent.svelte:100:22
+Error: Type 'string' is not assignable to type 'StatusType'. (ts)
+    <div class='text-left'>
+        <StatusBadge status={item.status} />
+    </div>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/SharedApplicationsList.svelte:92:22
+Error: Type 'string' is not assignable to type 'StatusType'. (ts)
+    <div class='text-left'>
+        <StatusBadge status={item.status} />
+    </div>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:46:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-[13px] text-slate-700">Province</label>
+            <input readonly value="Western" class="w-full px-4 py-3 rounded-sm border border-slate-200 text-sm text-slate-700 bg-white cursor-default" />
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:50:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-[13px] text-slate-700">District</label>
+            <input readonly value="Nyabihu" class="w-full px-4 py-3 rounded-sm border border-slate-200 text-sm text-slate-700 bg-white cursor-default" />
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:56:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-[13px] text-slate-700">Sector</label>
+            <input readonly value="Mukamira" class="w-full px-4 py-3 rounded-sm border border-slate-200 text-sm text-slate-700 bg-white cursor-default" />
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:60:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-[13px] text-slate-700">Cell</label>
+            <input readonly value="Mukamira" class="w-full px-4 py-3 rounded-sm border border-slate-200 text-sm text-slate-700 bg-white cursor-default" />
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:66:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-[13px] text-slate-700">Village</label>
+            <input readonly value="Mukamira" class="w-full px-4 py-3 rounded-sm border border-slate-200 text-sm text-slate-700 bg-white cursor-default" />
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:70:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-[13px] text-slate-700">City</label>
+            <input readonly value="Mukamira" class="w-full px-4 py-3 rounded-sm border border-slate-200 text-sm text-slate-700 bg-white cursor-default" />
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:75:11
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+        <div class="space-y-1.5">
+          <label class="text-[13px] text-slate-700">Address Line</label>
+          <input readonly value="Mukamira Road" class="w-full px-4 py-3 rounded-sm border border-slate-200 text-sm text-slate-700 bg-white cursor-default" />
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:84:9
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+      <div class="space-y-3">
+        <label class="text-sm text-slate-700">Date Range</label>
+        <div class="flex gap-3">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:87:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="flex-1 space-y-1">
+            <label class="text-[11px] text-slate-500">From</label>
+            <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/ScheduleDueDiligenceStage.svelte:97:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="flex-1 space-y-1">
+            <label class="text-[11px] text-slate-500">To</label>
+            <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:84:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-2">
+            <label class="text-[13px] text-slate-700">Name of Institution</label>
+            <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:92:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-2 text-left">
+              <label class="text-[13px] text-slate-700">Institution Type</label>
+              <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:101:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-2">
+              <label class="text-[13px] text-slate-700">P.O Box</label>
+              <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:109:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-2">
+            <label class="text-[13px] text-slate-700">Email Address</label>
+            <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:116:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-2">
+            <label class="text-[13px] text-slate-700">Phone Number</label>
+            <div class="flex mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:137:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-2">
+              <label class="text-[13px] text-slate-700">Province</label>
+              <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:144:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-2">
+              <label class="text-[13px] text-slate-700">District</label>
+              <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:153:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-2">
+              <label class="text-[13px] text-slate-700">Sector</label>
+              <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:160:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-2">
+              <label class="text-[13px] text-slate-700">Cell</label>
+              <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:168:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-2">
+            <label class="text-[13px] text-slate-700">Village/City</label>
+            <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:175:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-2">
+            <label class="text-[13px] text-slate-700">Address Line</label>
+            <div class="relative mt-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:190:51
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                <tr class="border-b border-slate-100">
+                  <th class="w-10 pl-6 pr-2 py-4"><div class="h-5 w-5 rounded-sm border border-slate-200 bg-white" /></th>
+                  <th class="py-4 text-[13px] font-normal text-slate-500">Name</th>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:205:53
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                  <tr class="hover:bg-slate-50/30 transition-colors">
+                    <td class="w-10 pl-6 pr-2 py-5"><div class="h-5 w-5 rounded-sm border border-slate-200 bg-white" /></td>
+                    <td class="py-5">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:236:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-2">
+              <label class="text-[13px] font-medium text-slate-700">Institution Mission</label>
+              <textarea readonly class="w-full px-4 py-4 rounded-sm border border-slate-200 text-sm text-slate-600 focus:outline-none bg-white cursor-default leading-relaxed min-h-[100px] resize-none">To provide high-quality technical education and vocational training that meets domestic and international standards, empowering students with the skills needed for the global workforce.</textarea>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:240:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-2">
+              <label class="text-[13px] font-medium text-slate-700">Institution Vision</label>
+              <textarea readonly class="w-full px-4 py-4 rounded-sm border border-slate-200 text-sm text-slate-600 focus:outline-none bg-white cursor-default leading-relaxed min-h-[100px] resize-none">To be a center of excellence in technical innovation and vocational training, recognized for producing highly skilled professionals who drive economic growth and sustainability.</textarea>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:244:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-2">
+              <label class="text-[13px] font-medium text-slate-700">Key Objectives</label>
+              <textarea readonly class="w-full px-4 py-4 rounded-sm border border-slate-200 text-sm text-slate-600 focus:outline-none bg-white cursor-default leading-relaxed min-h-[120px] resize-none">1. Maintain 95% student placement rate within 6 months of graduation. 2. Establish 5+ international industry partnerships annually. 3. Continuously upgrade laboratory and workshop facilities to match current industry technologies.</textarea>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:287:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-1">
+              <label class="text-[12px] text-slate-500">Comment Input</label>
+              <div class="relative">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:381:52
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                <tr class="bg-slate-50/50 border-b border-slate-100">
+                  <th class="w-10 p-4 text-center"><div class="h-4 w-4 border border-slate-200 rounded-[3px] mx-auto" /></th>
+                  <th class="px-3 py-3 text-left text-[12px] font-normal text-slate-400">File name</th>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:389:54
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                  <tr class="hover:bg-slate-50/30 transition-colors group">
+                    <td class="w-10 p-4 text-center"><div class="h-4 w-4 border border-slate-200 rounded-[3px] mx-auto" /></td>
+                    <td class="px-3 py-3">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:441:52
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                <tr class="bg-slate-50/50 border-b border-slate-100">
+                  <th class="w-10 p-4 text-center"><div class="h-4 w-4 border border-slate-200 rounded-[3px] mx-auto" /></th>
+                  <th class="px-3 py-4 text-left text-[11px] font-normal text-slate-400">Position & Qualification</th>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/stages/EvaluationReviewStage.svelte:450:54
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                  <tr class="hover:bg-slate-50/30 transition-colors group">
+                    <td class="w-10 p-4 text-center"><div class="h-4 w-4 border border-slate-200 rounded-[3px] mx-auto" /></td>
+                    <td class="px-3 py-4">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/SharedEvaluationContainer.svelte:41:34
+Warn: This reference only captures the initial value of `role`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+
+  let showInitialReview = $state(role !== "super-admin");
+  let pendingEvaluatorRole = $state<string | null>(null);
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/SharedEvaluationContainer.svelte:140:17
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+              {#if idx > 0}
+                <div class={cn(
+                  "absolute top-[12px] left-[-100%] right-[calc(100%-12px)] ml-[12px] h-[1px] z-0",
+                  idx <= activeMajorStep ? "bg-[var(--primary)] h-[1.5px]" : "bg-slate-100"
+                )} />
+              {/if}
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/SharedEvaluationContainer.svelte:153:19
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                {:else if isActive}
+                  <div class="h-1.5 w-1.5 rounded-full bg-white" />
+                {:else}
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/evaluations/components/SharedEvaluationContainer.svelte:155:19
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                {:else}
+                  <div class="h-1.5 w-1.5 rounded-full bg-slate-200" />
+                {/if}
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/notifications/components/NotificationsContent.svelte:173:11
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+        {#if !notification.read}
+          <div class="absolute top-0 bottom-0 left-0 w-1 bg-blue-500 rounded-l-sm" />
+        {/if}
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/profile/components/SharedProfileContainer.svelte:11:11
+Warn: This reference only captures the initial value of `userName`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+  let formData = $state({
+    name: userName,
+    email: userEmail,
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/profile/components/SharedProfileContainer.svelte:12:12
+Warn: This reference only captures the initial value of `userEmail`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+    name: userName,
+    email: userEmail,
+    phone: "",
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/profile/components/SharedProfileContainer.svelte:89:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-xs text-[#344054] font-medium">Email Address</label>
+            <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/profile/components/SharedProfileContainer.svelte:98:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-xs text-[#344054] font-medium">Job Title / Role</label>
+            <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/profile/components/SharedProfileContainer.svelte:125:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-xs text-[#344054] font-medium">Current Password</label>
+            <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/profile/components/SharedProfileContainer.svelte:132:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-xs text-[#344054] font-medium">New Password</label>
+            <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/profile/components/SharedProfileContainer.svelte:139:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+          <div class="space-y-1.5">
+            <label class="text-xs text-[#344054] font-medium">Confirm New Password</label>
+            <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/users/components/InviteUserModal.svelte:29:11
+Warn: This reference only captures the initial value of `defaultRole`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+    email: "",
+    role: defaultRole || "",
+  });
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/accreditation/features/users/components/InviteUserModal.svelte:52:30
+Warn: This reference only captures the initial value of `variant`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+  const defaultTitle = "Invite User";
+  const defaultDescription = variant === "full" 
+    ? "Invited users will receive access to manage applications and perform evaluations."
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/components/accreditation/dashboard/SharedDashboardContainer.svelte:12:19
+Warn: This reference only captures the initial value of `userName`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+    // Using userName to avoid unused variable error
+    const _name = userName;
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/lib/components/students/TradeEnrollmentChart.svelte:213:25
+Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+    // Legend items for ChartLegend component
+    const legendItems = data.map(item => ({
+        label: item.trade,
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/applications/+page.svelte:276:9
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+      <div class="relative">
+        <div class="absolute bottom-[20px] left-[23px] top-[20px] border-l border-slate-200" />
+        <div class="flex flex-col gap-10">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/applications/+page.svelte:360:39
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                      isSelected ? "border-[#0A77FF] bg-[#0A77FF]" : "border-slate-300 bg-white")}>
+                      {#if isSelected}<div class="h-1.5 w-1.5 rounded-full bg-white" />{/if}
+                    </div>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/applications/+page.svelte:488:19
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+                <div>
+                  <label class="mb-2 block text-[13px] font-medium text-slate-700">
+                    Quantity <span class="text-red-500">*</span>
+                  </label>
+                  <div class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/applications/+page.svelte:504:19
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+                <div>
+                  <label class="mb-2 block text-[13px] font-medium text-slate-700">Proof <span class="text-red-500">*</span></label>
+                  <div class="flex overflow-hidden rounded-xl border border-slate-200 bg-white items-center">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/applications/+page.svelte:607:23
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                    <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                      <div class="h-full bg-[#0A77FF] transition-all duration-300" style="width: {doc.progress}%" />
+                    </div>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/applications/+page.svelte:679:23
+Warn: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+                    <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                      <div class="h-full bg-[#0A77FF] transition-all duration-300" style="width: {doc.progress}%" />
+                    </div>
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/applications/+page.svelte:740:19
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+                <div>
+                  <label class="mb-2 block text-[13px] font-medium text-slate-700">Quantity <span class="text-red-500">*</span></label>
+                  <div class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2">
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/applications/[id]/+page.svelte:9:9
+Warn: This reference only captures the initial value of `appId`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+  const mockApp = {
+    id: appId,
+    trade: "Software Engineering & Embedded Systems",
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/profile/+page.svelte:76:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-1.5">
+              <label class="text-xs text-[#344054] font-medium">Full Name</label>
+              <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/profile/+page.svelte:84:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-1.5">
+              <label class="text-xs text-[#344054] font-medium">Email Address</label>
+              <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/profile/+page.svelte:93:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-1.5">
+              <label class="text-xs text-[#344054] font-medium">Job Title / Role</label>
+              <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/profile/+page.svelte:102:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-1.5">
+              <label class="text-xs text-[#344054] font-medium">Phone Number</label>
+              <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/profile/+page.svelte:122:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-1.5">
+              <label class="text-xs text-[#344054] font-medium">Current Password</label>
+              <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/profile/+page.svelte:129:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-1.5">
+              <label class="text-xs text-[#344054] font-medium">New Password</label>
+              <input
+
+/media/newvolume/Documents/Notes/JavaScript/work_space/TDMP/tdmp-web/src/routes/accreditation/(applicant)/applicant/profile/+page.svelte:136:15
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="space-y-1.5">
+              <label class="text-xs text-[#344054] font-medium">Confirm New Password</label>
+              <input
+
+====================================
+svelte-check found 7 errors and 63 warnings in 16 files

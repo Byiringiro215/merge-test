@@ -1,8 +1,11 @@
 <script lang='ts'>
     import { goto } from '$app/navigation';
+    import { page } from '$app/state';
     import { cn } from '$lib/accreditation/utils/cn';
+    import StatsGrid from '$lib/components/accreditation/dashboard/StatsGrid.svelte';
     import PageContainer from '$lib/components/accreditation/layout/PageContainer.svelte';
     import {
+        AlertTriangle,
         ArrowLeft,
         Blocks,
         Briefcase,
@@ -12,6 +15,7 @@
         ChevronDown,
         ChevronRight,
         ChevronUp,
+        Clock,
         FileCheck,
         FileText,
         FolderPlus,
@@ -41,15 +45,16 @@
         { id: '1', name: 'Masonry', board: 'RTB' },
         { id: '2', name: 'Plumbing', board: 'RTB' },
         { id: '3', name: 'Electrical Installation', board: 'RTB' },
-        { id: '4', name: 'Software Engineering & Embedded Systems', board: 'OTHER' },
+        { id: '4', name: 'Software Engineering & Embedded Systems', board: 'RTB' },
         { id: '5', name: 'Carpentry', board: 'RTB' },
         { id: '6', name: 'Welding', board: 'RTB' },
         { id: '7', name: 'HVAC', board: 'RTB' },
         { id: '8', name: 'Accounting & Finance', board: 'RTNB' },
         { id: '9', name: 'Business Management', board: 'RTNB' },
+        { id: 'other', name: 'Other (Custom Trade)', board: 'OTHER' },
     ];
 
-    const competenciesList = [
+    const competenciesList = $state([
         { id: '1', name: 'JavaScript' },
         { id: '2', name: 'Fundamentals Of Programming Using C' },
         { id: '3', name: 'Masonry' },
@@ -57,16 +62,24 @@
         { id: '5', name: 'Software Engineering & Embedded Systems' },
         { id: '6', name: 'Carpentry Basics' },
         { id: '7', name: 'Advanced Wiring' },
-    ];
+    ]);
 
     // ── State ──────────────────────────────────────────────────────────────────
     let currentStep = $state(1);
     let showWizard = $state(false);
 
+    $effect(() => {
+        if (page.url.searchParams.get('new') === 'true') {
+            showWizard = true;
+        }
+    });
+
     let selectedTrade = $state<string | null>(null);
     let selectedCompetencies = $state<string[]>([]);
     let tradeSearch = $state('');
     let competencySearch = $state('');
+    let customTradeName = $state('');
+    let newCompetencyName = $state('');
 
     // Step 3 – Equipment
     let equipmentName = $state('');
@@ -93,12 +106,14 @@
     // ── Derived ────────────────────────────────────────────────────────────────
     const selectedTradeData = $derived(trades.find(t => t.id === selectedTrade));
     const curriculumRequired = $derived(selectedTradeData?.board === 'OTHER');
-    const selectedTradeName = $derived(selectedTradeData?.name ?? 'Unknown');
+    const selectedTradeName = $derived(
+        selectedTrade === 'other' ? (customTradeName || 'Custom Trade') : (selectedTradeData?.name ?? 'Unknown'),
+    );
     const selectedCompetencyNames = $derived(
         competenciesList.filter(c => selectedCompetencies.includes(c.id)).map(c => c.name),
     );
 
-    const filteredTrades = $derived(trades.filter(t => t.name.toLowerCase().includes(tradeSearch.toLowerCase())));
+    const filteredTrades = $derived(trades.filter(t => t.id === 'other' || t.name.toLowerCase().includes(tradeSearch.toLowerCase())));
     const filteredCompetencies = $derived(competenciesList.filter(c => c.name.toLowerCase().includes(competencySearch.toLowerCase())));
 
     // ── Existing applications list ──────────────────────────────────────────────
@@ -113,6 +128,33 @@
         Approved: 'bg-emerald-50 text-emerald-700',
         Rejected: 'bg-red-50 text-red-700',
     };
+
+    const stats = $derived([
+        {
+            label: 'Total Applications',
+            value: existingApplications.length.toString(),
+            icon: FileText,
+            iconColor: '#0A77FF',
+        },
+        {
+            label: 'Pending',
+            value: existingApplications.filter(a => a.status === 'Pending').length.toString(),
+            icon: Clock,
+            iconColor: '#FF8D28',
+        },
+        {
+            label: 'Approved',
+            value: existingApplications.filter(a => a.status === 'Approved').length.toString(),
+            icon: CheckCircle2,
+            iconColor: '#34C759',
+        },
+        {
+            label: 'Rejected',
+            value: existingApplications.filter(a => a.status === 'Rejected').length.toString(),
+            icon: AlertTriangle,
+            iconColor: '#FF383C',
+        },
+    ]);
 
     // ── Helpers ────────────────────────────────────────────────────────────────
     function boardLabel(board: string) {
@@ -137,12 +179,23 @@
 
     // ── Navigation ─────────────────────────────────────────────────────────────
     function handleTradeContinue() {
-        if (selectedTrade)
+        if (selectedTrade) {
+            if (selectedTrade === 'other' && !customTradeName.trim())
+                return;
             currentStep = 2;
+        }
     }
     function handleCompetencyContinue() {
         if (selectedCompetencies.length > 0)
             currentStep = 3;
+    }
+    function handleAddCompetency() {
+        if (newCompetencyName.trim()) {
+            const newId = `custom-${Math.random()}`;
+            competenciesList.push({ id: newId, name: newCompetencyName.trim() });
+            selectedCompetencies = [...selectedCompetencies, newId];
+            newCompetencyName = '';
+        }
     }
     function handleEquipmentContinue() {
         currentStep = 4;
@@ -276,21 +329,9 @@
     {#if !showWizard}
         <!-- ── List View ─────────────────────────────────────────────────────── -->
         <div class='flex flex-col gap-6'>
-            <div class='grid grid-cols-2 gap-4 sm:grid-cols-4'>
-                {#each [
-                    { label: 'Total Applications', value: existingApplications.length, color: 'text-[#0A77FF]' },
-                    { label: 'Pending', value: existingApplications.filter(a => a.status === 'Pending').length, color: 'text-amber-600' },
-                    { label: 'Approved', value: existingApplications.filter(a => a.status === 'Approved').length, color: 'text-emerald-600' },
-                    { label: 'Rejected', value: existingApplications.filter(a => a.status === 'Rejected').length, color: 'text-red-600' },
-                ] as stat}
-                    <div class='rounded-xl border border-slate-100 bg-white p-5 shadow-sm'>
-                        <p class='mb-1 text-[12px] font-medium text-slate-500'>{stat.label}</p>
-                        <p class={`text-[28px] font-bold ${stat.color}`}>{stat.value}</p>
-                    </div>
-                {/each}
-            </div>
+            <StatsGrid items={stats} />
 
-            <div class='overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm'>
+            <div class='overflow-hidden rounded-2xl border border-slate-100 bg-white'>
                 <div class='border-b border-slate-100 p-6'>
                     <h3 class='text-[15px] font-semibold text-slate-800'>My Applications</h3>
                     <p class='mt-0.5 text-[13px] text-slate-500'>Track the progress of your accreditation applications</p>
@@ -308,7 +349,7 @@
                         </thead>
                         <tbody class='divide-y divide-slate-100'>
                             {#each existingApplications as app}
-                                <tr class='cursor-pointer transition-colors hover:bg-slate-50/30' onclick={() => goto(`/applicant/applications/${app.id}`)}>
+                                <tr class='cursor-pointer transition-colors hover:bg-slate-50/30' onclick={() => goto(`/accreditation/applicant/applications/${app.id}`)}>
                                     <td class='px-6 py-4'><span class='text-[13px] font-semibold text-slate-800'>{app.trade}</span></td>
                                     <td class='px-6 py-4'><span class='rounded bg-slate-100 px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider text-slate-500'>{app.category}</span></td>
                                     <td class='px-6 py-4'><span class='text-[13px] text-slate-600'>{app.stage}</span></td>
@@ -409,29 +450,37 @@
                             <div class='mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2'>
                                 {#each filteredTrades as trade}
                                     {@const isSelected = selectedTrade === trade.id}
-                                    <button onclick={() => selectedTrade = trade.id}
-                                            class={cn('flex items-center justify-between rounded-xl border p-3.5 transition-colors text-left', isSelected ? 'border-[#0A77FF] bg-blue-50/30' : 'border-slate-200 hover:border-[#0A77FF]')}>
-                                        <div class='flex min-w-0 flex-1 items-center gap-2'>
-                                            <Blocks size={14} class='shrink-0 text-[#0A77FF]' strokeWidth={2} />
-                                            <span class='truncate text-[12px] font-medium text-slate-600'>{trade.name}</span>
-                                        </div>
-                                        <div class='ml-2 flex shrink-0 items-center gap-1.5'>
-                                            <span class={cn('text-[10px] px-1.5 py-0.5 rounded font-medium', boardClass(trade.board))}>
-                                                {boardLabel(trade.board)}
-                                            </span>
-                                            <div class={cn('flex h-4 w-4 items-center justify-center rounded-full border transition-colors', isSelected ? 'border-[#0A77FF] bg-[#0A77FF]' : 'border-slate-300 bg-white')}>
-                                                {#if isSelected}<div class='h-1.5 w-1.5 rounded-full bg-white'></div>{/if}
+                                    <div class='flex flex-col gap-2'>
+                                        <button onclick={() => selectedTrade = trade.id}
+                                                class={cn('flex items-center justify-between rounded-xl border p-3.5 transition-colors text-left', isSelected ? 'border-[#0A77FF] bg-blue-50/30' : 'border-slate-200 hover:border-[#0A77FF]')}>
+                                            <div class='flex min-w-0 flex-1 items-center gap-2'>
+                                                <Blocks size={14} class='shrink-0 text-[#0A77FF]' strokeWidth={2} />
+                                                <span class='truncate text-[12px] font-medium text-slate-600'>{trade.name}</span>
                                             </div>
-                                        </div>
-                                    </button>
+                                            <div class='ml-2 flex shrink-0 items-center gap-1.5'>
+                                                <span class={cn('text-[10px] px-1.5 py-0.5 rounded font-medium', boardClass(trade.board))}>
+                                                    {boardLabel(trade.board)}
+                                                </span>
+                                                <div class={cn('flex h-4 w-4 items-center justify-center rounded-full border transition-colors', isSelected ? 'border-[#0A77FF] bg-[#0A77FF]' : 'border-slate-300 bg-white')}>
+                                                    {#if isSelected}<div class='h-1.5 w-1.5 rounded-full bg-white'></div>{/if}
+                                                </div>
+                                            </div>
+                                        </button>
+                                        {#if isSelected && trade.id === 'other'}
+                                            <div class='px-1 pb-1'>
+                                                <input type='text' placeholder='Enter custom trade name' bind:value={customTradeName}
+                                                       class='w-full rounded-xl border border-slate-200 py-2.5 px-4 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-[#0A77FF] focus:outline-none focus:ring-1 focus:ring-[#0A77FF]' />
+                                            </div>
+                                        {/if}
+                                    </div>
                                 {/each}
                             </div>
 
                             <div class='flex w-full gap-3'>
                                 <button class='flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-3 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50'
                                         onclick={() => showWizard = false}>Back</button>
-                                <button onclick={handleTradeContinue} disabled={!selectedTrade}
-                                        class={cn('flex flex-1 items-center justify-center rounded-xl py-3 text-[13px] font-semibold text-white transition-colors', selectedTrade ? 'bg-[#0A77FF] hover:bg-[#0864d6]' : 'bg-blue-300 cursor-not-allowed')}>
+                                <button onclick={handleTradeContinue} disabled={!selectedTrade || (selectedTrade === 'other' && !customTradeName.trim())}
+                                        class={cn('flex flex-1 items-center justify-center rounded-xl py-3 text-[13px] font-semibold text-white transition-colors', selectedTrade && (selectedTrade !== 'other' || customTradeName.trim()) ? 'bg-[#0A77FF] hover:bg-[#0864d6]' : 'bg-blue-300 cursor-not-allowed')}>
                                     Continue
                                 </button>
                             </div>
@@ -472,6 +521,17 @@
                                 <input type='text' placeholder='Search' bind:value={competencySearch}
                                        class='w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-[#0A77FF] focus:outline-none focus:ring-1 focus:ring-[#0A77FF]' />
                             </div>
+
+                            {#if selectedTrade === 'other'}
+                                <div class='mb-6 flex items-center gap-2'>
+                                    <input type='text' placeholder='Enter custom competency name' bind:value={newCompetencyName}
+                                           class='flex-1 rounded-xl border border-slate-200 py-2.5 px-4 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-[#0A77FF] focus:outline-none focus:ring-1 focus:ring-[#0A77FF]' />
+                                    <button onclick={handleAddCompetency} disabled={!newCompetencyName.trim()}
+                                            class={cn('rounded-xl px-5 py-2.5 text-[13px] font-semibold text-white transition-colors', newCompetencyName.trim() ? 'bg-[#0A77FF] hover:bg-blue-600' : 'bg-blue-300 cursor-not-allowed')}>
+                                        Add
+                                    </button>
+                                </div>
+                            {/if}
 
                             <div class='mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2'>
                                 {#each filteredCompetencies as comp}

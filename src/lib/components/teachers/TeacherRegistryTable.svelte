@@ -2,7 +2,7 @@
     import type { StaffSummary } from '$lib/datamodel/staff';
     import type { ColumnDef } from '@tanstack/table-core';
     import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
+
     import DataTable from '$lib/components/data-table/data-table.svelte';
     import { Button } from '$lib/components/ui/button/index.js';
     import {
@@ -177,7 +177,7 @@
         variant='ghost'
         size='icon'
         class='shrink-0 cursor-pointer'
-        onclick={() => goto(resolve(`/teachers/${member.staffNumber}`))}
+        onclick={() => goto(`/teachers/${member.staffNumber}`)}
     >
         <Eye class='h-4 w-4' />
     </Button>

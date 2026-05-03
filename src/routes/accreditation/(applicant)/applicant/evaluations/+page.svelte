@@ -131,7 +131,7 @@
 
         {#if activeTab === 'Applications'}
             <!-- Application Selector -->
-            <div class='flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm text-left sm:flex-row sm:items-center'>
+            <div class='flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 text-left sm:flex-row sm:items-center'>
                 <div>
                     <h2 class='mb-1 text-sm font-bold uppercase tracking-widest text-slate-800'>Selected Application</h2>
                     <div class='flex items-center gap-3'>
@@ -156,7 +156,7 @@
                 <!-- Left Column: Timeline & Progress -->
                 <div class='flex flex-col gap-6 lg:col-span-2'>
                     <!-- Progress Card -->
-                    <div class='rounded-2xl border border-slate-200 bg-white p-8 shadow-sm'>
+                    <div class='rounded-2xl border border-slate-200 bg-white p-8'>
                         <h3 class='mb-2 text-[16px] font-bold text-slate-800'>Evaluation Progress</h3>
                         <p class='mb-8 text-[13px] text-slate-500'>Track the status of your accreditation application through the evaluation stages.</p>
 
@@ -205,7 +205,7 @@
                     </div>
 
                     <!-- Feedback Timeline -->
-                    <div class='rounded-2xl border border-slate-200 bg-white p-8 shadow-sm'>
+                    <div class='rounded-2xl border border-slate-200 bg-white p-8'>
                         <h3 class='mb-6 border-b border-slate-100 pb-4 text-[16px] font-bold text-slate-800'>Recent Feedback & Activity</h3>
 
                         <div class='relative'>
@@ -242,7 +242,7 @@
 
                 <!-- Right Column: Status Summary -->
                 <div class='flex flex-col gap-6'>
-                    <div class='rounded-2xl border border-slate-200 bg-white p-6 shadow-sm'>
+                    <div class='rounded-2xl border border-slate-200 bg-white p-6'>
                         <h3 class='mb-4 border-b border-slate-100 pb-3 text-[14px] font-bold text-slate-800'>Current Status</h3>
 
                         <div class='flex flex-col gap-4'>
@@ -317,7 +317,7 @@
                     {/if}
                 </div>
             {/if}
-            <div class='mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm text-left'>
+            <div class='mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white text-left'>
                 <div class='border-b border-slate-100 p-8'>
                     <h3 class='mb-1 text-[16px] font-bold text-slate-800'>Certificates</h3>
                     <p class='text-[13px] text-slate-500'>View and manage certificates for your allowed applications.</p>
