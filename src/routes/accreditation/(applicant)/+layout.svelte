@@ -15,7 +15,7 @@
     :global(.applicant-portal input:not([class*='rounded-full'])),
     :global(.applicant-portal select:not([class*='rounded-full'])),
     :global(.applicant-portal textarea:not([class*='rounded-full'])),
-    :global(.applicant-portal a[class*='rounded']:not([class*='rounded-full'])) {
+    :global(.applicant-portal a[class*='-sm']:not([class*='rounded-full'])) {
         border-radius: 4px !important;
     }
 </style>
