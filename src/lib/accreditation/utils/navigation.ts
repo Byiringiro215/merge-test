@@ -1,14 +1,16 @@
-import type { UserRole } from '$lib/accreditation/types/auth';
-import { portalNavigation } from '$lib/accreditation/config/navigation';
+import { allAccreditationNavItems } from '$lib/accreditation/config/navigation';
 
-export function getPortalNavigation(role: UserRole, pathname: string) {
-    const config = portalNavigation[role];
+export function getPortalNavigation(role: string, pathname: string) {
+    // Filter items based on simulated roles
+    const filteredItems = allAccreditationNavItems.filter(item =>
+        item.roles.includes(role as any),
+    );
 
-    return config.items.map(item => ({
+    return filteredItems.map(item => ({
         ...item,
         isActive:
-      item.match === 'exact'
-          ? pathname === item.href
-          : pathname === item.href || pathname.startsWith(`${item.href}/`),
+            item.match === 'exact'
+                ? pathname === item.href
+                : pathname === item.href || pathname.startsWith(`${item.href}/`),
     }));
 }

@@ -1,5 +1,4 @@
-import { redirect } from '@sveltejs/kit';
-
 export function load() {
-    throw redirect(302, '/signin');
+    // Let the layout handle the redirect logic based on auth state
+    return {};
 }
