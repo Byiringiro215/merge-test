@@ -28,13 +28,13 @@ export const allAccreditationNavItems: AccreditationNavItem[] = [
     },
     {
         title: 'Applications',
-        href: '/accreditation/applicant/applications',
+        href: '/accreditation/applications',
         icon: FileSpreadsheet,
         roles: ['applicant', 'curriculum-evaluator', 'super-admin', 'merged'],
     },
     {
         title: 'Evaluations',
-        href: '/accreditation/evaluator/applications',
+        href: '/accreditation/applications',
         icon: BadgeCheck,
         roles: ['evaluator', 'super-admin', 'supervisor', 'merged'],
     },
