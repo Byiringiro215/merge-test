@@ -20,7 +20,7 @@
 
 <main class='flex min-h-screen bg-white'>
     <!-- Sidebar -->
-    <aside class='fixed top-0 left-0 bottom-0 w-[340px] flex-col justify-between border-r border-slate-200 bg-[#f8fafc] px-8 pt-8 pb-4 z-10 overflow-y-auto hidden lg:flex'>
+    <aside class='fixed top-0 left-0 bottom-0 w-[340px] flex-col justify-between border-r border-slate-200 bg-[#f8fafc] px-8 pt-8 pb-4 z-10 overflow-y-auto no-scrollbar hidden lg:flex'>
         <div class='space-y-10'>
             <div class='space-y-6'>
                 <div class='flex items-center gap-3'>

@@ -12,7 +12,7 @@
     ];
 </script>
 
-<Card class='h-full animate-slide-up overflow-hidden rounded-md border border-slate-200 bg-white shadow-none'>
+<Card class='h-full animate-slide-up overflow-hidden -sm border border-slate-200 bg-white shadow-none'>
     <CardContent class='flex h-full flex-col p-4'>
         <div class='flex items-start justify-between'>
             <div class='w-full space-y-1'>
@@ -50,7 +50,7 @@
         </div>
 
         <div class='mt-auto flex justify-end border-t border-slate-100 pt-6'>
-            <button class='cursor-pointer rounded-[6px] border border-slate-200 px-4 py-1.5 text-xs text-slate-600 transition-colors hover:bg-slate-50'>
+            <button class='cursor-pointer -sm border border-slate-200 px-4 py-1.5 text-xs text-slate-600 transition-colors hover:bg-slate-50'>
                 View full report
             </button>
         </div>

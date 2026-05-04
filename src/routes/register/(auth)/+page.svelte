@@ -1,5 +1,5 @@
 <script lang='ts'>
-// This page redirects to /accreditation/register/user via +page.ts
+// This page redirects to /register/user via +page.ts
 </script>
 
 <div class='flex items-center justify-center min-h-screen'>
