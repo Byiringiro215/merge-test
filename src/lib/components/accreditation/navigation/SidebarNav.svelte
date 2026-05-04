@@ -3,7 +3,7 @@
     import { portalNavigationConfig } from '$lib/accreditation/config/navigation';
     import { cn } from '$lib/accreditation/utils/cn';
     import { getPortalNavigation } from '$lib/accreditation/utils/navigation';
-    import { LogOut } from '@lucide/svelte';
+    import { LifeBuoy, LogOut, Settings } from '@lucide/svelte';
 
     const { role, onCloseMobile }: { role: string; onCloseMobile?: () => void } = $props();
 
@@ -18,13 +18,13 @@
             alt='RTB Logo'
             width='36'
             height='36'
-            class='-sm'
+            class='rounded-sm'
         />
         <div>
             <p class='text-sm font-bold text-[#353E49]'>
                 RTB Accreditation
             </p>
-            <p class='text-xs text-primary'>
+            <p class='text-xs text-[#2069C1]'>
                 {config.shortLabel} Portal
             </p>
         </div>
@@ -38,16 +38,16 @@
                 class={cn(
                     'flex items-center gap-3 rounded-sm px-3 py-3 text-sm transition-colors',
                     item.isActive
-                        ? 'bg-[#F9FAFB] text-primary font-medium'
+                        ? 'bg-[#F9FAFB] text-[#2069C1] font-medium'
                         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800',
                 )}
             >
                 <item.icon
-                    class={cn(item.isActive ? 'text-primary' : 'text-[#84888C]')}
+                    class={cn(item.isActive ? 'text-[#2069C1]' : 'text-[#84888C]')}
                     strokeWidth={1.5}
                     size={20}
                 />
-                <span class={cn(item.isActive ? 'text-primary' : 'text-[#353E49]')}>
+                <span class={cn(item.isActive ? 'text-[#2069C1]' : 'text-[#353E49]')}>
                     {item.title}
                 </span>
             </a>
@@ -55,6 +55,23 @@
     </nav>
 
     <div class='mt-auto space-y-1 pt-4'>
+        <button
+            type='button'
+            onclick={onCloseMobile}
+            class='flex w-full cursor-pointer items-center gap-3 rounded-sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+        >
+            <LifeBuoy class='text-[#667085]' strokeWidth={1.5} size={20} />
+            <span class='text-[#344054]'>Support</span>
+        </button>
+        <button
+            type='button'
+            onclick={onCloseMobile}
+            class='flex w-full cursor-pointer items-center gap-3 rounded-sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+        >
+            <Settings class='text-[#667085]' strokeWidth={1.5} size={20} />
+            <span class='text-[#344054]'>Settings</span>
+        </button>
+
         <div class='sticky bottom-0 mt-4 flex items-center gap-3 border-t border-[#EAECF0] bg-white px-1 py-4'>
             <div class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100'>
                 <span class='text-xs font-semibold text-slate-600'>OR</span>

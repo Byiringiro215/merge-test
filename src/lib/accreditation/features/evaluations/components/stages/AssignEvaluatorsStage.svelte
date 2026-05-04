@@ -60,8 +60,8 @@
                 class={cn(
                     'group w-full cursor-pointer rounded-sm border p-4 text-left transition-colors',
                     assignedInitialPrincipal
-                        ? 'border-primary bg-blue-50/10'
-                        : 'border-slate-200 bg-slate-50/50 hover:border-[#0A77FF]/50',
+                        ? 'border-[#2069C1] bg-blue-50/10'
+                        : 'border-slate-200 bg-slate-50/50 hover:border-[#2069C1]/50',
                 )}
                 onclick={() => setPendingEvaluatorRole('Initial Principal')}
             >
@@ -74,7 +74,7 @@
                         {:else if assignedInitialPrincipalStatus === 'pending'}
                             <Clock class='h-4 w-4 text-amber-500' />
                         {:else}
-                            <UserPlus class='h-4 w-4 text-[#0A77FF]' />
+                            <UserPlus class='h-4 w-4 text-[#2069C1]' />
                         {/if}
                     </div>
                     <div class='flex-1 text-left'>
@@ -102,7 +102,7 @@
                 class={cn(
                     'group w-full cursor-pointer rounded-sm border border-dashed p-4 text-left transition-colors',
                     assignedInitialSecondary1
-                        ? 'border-primary border-solid bg-blue-50/10'
+                        ? 'border-[#2069C1] border-solid bg-blue-50/10'
                         : 'border-slate-200 hover:bg-slate-50',
                 )}
                 onclick={() => setPendingEvaluatorRole('Initial Secondary 1')}
@@ -120,7 +120,7 @@
                         {/if}
                     </div>
                     <div class='flex-1 text-left'>
-                        <h4 class='text-[13px] text-slate-900'>
+                        <h4 class='text-sm text-slate-900'>
                             {assignedInitialSecondary1 || 'Secondary Evaluator 1'}
                         </h4>
                         <p class='text-[11px] leading-tight text-slate-400'>Assistant & commenter</p>
@@ -144,7 +144,7 @@
                 class={cn(
                     'group w-full cursor-pointer rounded-sm border border-dashed p-4 text-left transition-colors',
                     assignedInitialSecondary2
-                        ? 'border-primary border-solid bg-blue-50/10'
+                        ? 'border-[#2069C1] border-solid bg-blue-50/10'
                         : 'border-slate-200 hover:bg-slate-50',
                 )}
                 onclick={() => setPendingEvaluatorRole('Initial Secondary 2')}
@@ -162,7 +162,7 @@
                         {/if}
                     </div>
                     <div class='flex-1 text-left'>
-                        <h4 class='text-[13px] text-slate-900'>
+                        <h4 class='text-sm text-slate-900'>
                             {assignedInitialSecondary2 || 'Secondary Evaluator 2'}
                         </h4>
                         <p class='text-[11px] leading-tight text-slate-400'>Assistant & commenter</p>
@@ -191,7 +191,7 @@
             <button
                 onclick={() => setActiveMajorStep(1)}
                 disabled={isProceedDisabled}
-                class='bg-primary w-full cursor-pointer rounded-sm py-3 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50'
+                class='bg-[#2069C1] w-full cursor-pointer rounded-sm py-3 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50'
             >
                 Proceed to Scheduling
             </button>

@@ -10,7 +10,7 @@
             label: 'Applications',
             value: '2',
             icon: FileText,
-            iconColor: '#0A77FF',
+            iconColor: '#2069C1',
             href: '/accreditation/applicant/applications',
         },
         {

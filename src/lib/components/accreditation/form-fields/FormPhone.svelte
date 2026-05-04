@@ -27,7 +27,7 @@
         {label}
         {#if required}<span class='text-red-500'>*</span>{/if}
     </span>
-    <div class='relative flex rounded-sm border border-slate-200 bg-white transition focus-within:border-[#336cb2] focus-within:ring-1 focus-within:ring-[#336cb2]/20'>
+    <div class='relative flex rounded-sm border border-slate-200 bg-white transition focus-within:border-[#2069C1] focus-within:ring-1 focus-within:ring-[#2069C1]/20'>
         <div class='flex items-center justify-center border-r border-slate-200 px-3 text-sm text-slate-600 gap-1 cursor-pointer hover:bg-slate-50 transition-colors rounded-l-sm'>
             +250 <ChevronDown class='h-3.5 w-3.5 text-slate-400 ml-0.5' />
         </div>

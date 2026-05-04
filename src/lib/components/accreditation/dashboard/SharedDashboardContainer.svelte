@@ -10,7 +10,7 @@
     const { role, userName } = $props<{ role: string; userName?: string }>();
 
     const stats = [
-        { label: 'Applications', value: '24', icon: NotepadText, iconColor: '#0A77FF' },
+        { label: 'Applications', value: '24', icon: NotepadText, iconColor: '#2069C1' },
         { label: 'Pending', value: '8', icon: ClipboardClock, iconColor: '#FF8D28' },
         { label: 'Evaluated', value: '5', icon: CheckCheck, iconColor: '#34C759' },
         { label: 'Rejected', value: '11', icon: AlertTriangle, iconColor: '#FF383C' },

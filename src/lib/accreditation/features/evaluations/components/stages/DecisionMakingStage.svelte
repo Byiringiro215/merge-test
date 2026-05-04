@@ -41,7 +41,7 @@
                 <p class='text-sm text-slate-500'>Review the evaluation results and grant certificate access</p>
             </div>
 
-            <div class='bg-slate-50 border border-slate-200 rounded-lg p-6 space-y-4'>
+            <div class='bg-slate-50 border border-slate-200 rounded-sm p-6 space-y-4'>
                 <div class='flex items-center justify-between'>
                     <span class='text-sm text-slate-700'>Application Status</span>
                     <div class='flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-full'>
@@ -69,7 +69,7 @@
                 </div>
             </div>
 
-            <div class='bg-white border border-slate-200 rounded-lg p-6 space-y-4'>
+            <div class='bg-white border border-slate-200 rounded-sm p-6 space-y-4'>
                 <h3 class='text-sm font-semibold text-slate-900'>Certificate Access Control</h3>
                 <p class='text-sm text-slate-600'>Grant the applicant access to download their accreditation certificate.</p>
                 <div class='flex items-center gap-4 pt-4'>
@@ -109,7 +109,7 @@
                         </div>
                         <div class='text-left flex-1'>
                             <div class='flex items-center gap-2'>
-                                <h4 class='text-[13px] text-slate-900'>Supervisor</h4>
+                                <h4 class='text-sm text-slate-900'>Supervisor</h4>
                                 {#if invitationStatus === 'sent'}
                                     <span class='text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full'>Invited</span>
                                 {:else if invitationStatus === 'pending'}
@@ -126,7 +126,7 @@
                     <button
                         onclick={() => console.warn('Confirm decision')}
                         disabled={invitationStatus !== 'sent'}
-                        class='flex-1 py-2.5 bg-[#0A77FF] text-white rounded-sm text-sm hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+                        class='flex-1 py-2.5 bg-[#2069C1] text-white rounded-sm text-sm hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
                     >
                         Confirm
                     </button>
@@ -141,7 +141,7 @@
                     </div>
                     <div class='flex flex-col'>
                         <span class='text-[11px] text-slate-500 leading-tight'>Submitted by</span>
-                        <span class='text-[13px] text-slate-900 leading-tight'>John Smith</span>
+                        <span class='text-sm text-slate-900 leading-tight'>John Smith</span>
                     </div>
                 </div>
                 <div class='grid grid-cols-2 gap-4 mt-2'>
@@ -150,7 +150,7 @@
                             <img src='https://ui-avatars.com/api/?name={application.institution.name}&background=FF8A65&color=fff&rounded=true' alt='logo' class='h-full w-full object-cover' />
                         </div>
                         <div class='flex flex-col'>
-                            <span class='text-[13px] text-slate-900 leading-tight'>{application.institution.name}</span>
+                            <span class='text-sm text-slate-900 leading-tight'>{application.institution.name}</span>
                             <span class='text-[11px] text-slate-500'>{application.institution.email || application.institution.website || ''}</span>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
             <div class='flex items-start justify-between p-6 border-b border-slate-100'>
                 <div class='flex items-start gap-4'>
                     <div class='h-10 w-10 mt-2 rounded-sm border border-slate-100 flex items-center justify-center shrink-0'>
-                        <UserPlus class='h-5 w-5 text-[#0A77FF]' strokeWidth={1.5} />
+                        <UserPlus class='h-5 w-5 text-[#2069C1]' strokeWidth={1.5} />
                     </div>
                     <div>
                         <h3 class='text-lg text-[#323539]'>Invite Supervisor</h3>
@@ -187,7 +187,7 @@
                             type='email'
                             placeholder='Enter his/her email'
                             bind:value={supervisorEmail}
-                            class='w-full pl-4 pr-12 py-3 bg-white border mt-2 border-slate-200 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-[#0A77FF]/10 focus:border-[#0A77FF] transition-all'
+                            class='w-full pl-4 pr-12 py-3 bg-white border mt-2 border-slate-200 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-[#2069C1]/10 focus:border-[#2069C1] transition-all'
                         />
                         <Mail class='absolute right-4 top-1/2 mt-1 -translate-y-1/2 h-4 w-4 text-slate-400' />
                     </div>
@@ -195,7 +195,7 @@
                 <p class='text-xs text-slate-400 italic'>He/she will receive an invitation email</p>
                 <div class='flex items-center gap-3 pt-2'>
                     <button onclick={() => showInviteModal = false} class='flex-1 py-2.5 text-sm cursor-pointer text-slate-700 bg-white border border-slate-200 rounded-sm hover:bg-slate-50 transition-colors'>Exit</button>
-                    <button onclick={handleInviteSupervisor} disabled={!supervisorEmail} class='flex-1 py-2.5 text-sm cursor-pointer text-white bg-[#0A77FF] rounded-sm hover:bg-[#0966ff] transition-colors shadow-sm disabled:opacity-50'>Invite</button>
+                    <button onclick={handleInviteSupervisor} disabled={!supervisorEmail} class='flex-1 py-2.5 text-sm cursor-pointer text-white bg-[#2069C1] rounded-sm hover:bg-[#0966ff] transition-colors shadow-sm disabled:opacity-50'>Invite</button>
                 </div>
             </div>
         </div>
