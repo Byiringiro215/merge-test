@@ -2,7 +2,6 @@
     import { mockApplications } from '$lib/accreditation/utils/application-utils';
     import { cn } from '$lib/accreditation/utils/cn';
     import { Building2, Check, Files, UngroupIcon, Users } from '@lucide/svelte';
-
     import AddEvaluatorModal from './AddEvaluatorModal.svelte';
     import AssignEvaluatorsStage from './stages/AssignEvaluatorsStage.svelte';
     import DecisionMakingStage from './stages/DecisionMakingStage.svelte';
@@ -14,6 +13,10 @@
         id: string;
         role: 'super-admin' | 'evaluator' | 'supervisor';
     }>();
+
+    $effect(() => {
+        console.warn('SharedEvaluationContainer rendering for ID:', id, 'Role:', role);
+    });
 
     let activeInternalStep = $state(0);
     let completedSteps = $state<number[]>([]);
@@ -39,19 +42,17 @@
     let assignedScheduledSecondary1 = $state<string | null>(null);
     let assignedScheduledSecondary2 = $state<string | null>(null);
 
-    let showInitialReview = $state<boolean | null>(null);
-    // Sync initial value from role prop reactively
+    let showInitialReview = $state(false);
+
     $effect(() => {
-        if (showInitialReview === null) {
-            showInitialReview = role !== 'super-admin';
-        }
+        showInitialReview = role !== 'super-admin';
     });
     let pendingEvaluatorRole = $state<string | null>(null);
 
     const equipmentList = [
-        { id: 1, name: 'Server', quantity: '2 Pieces' },
-        { id: 2, name: 'Server', quantity: '2 Pieces' },
-        { id: 3, name: 'Server', quantity: '2 Pieces' },
+        { id: 1, name: 'Server', quantity: 2 },
+        { id: 2, name: 'Server', quantity: 2 },
+        { id: 3, name: 'Server', quantity: 2 },
     ];
 
     const documentList = [
@@ -70,11 +71,23 @@
     ];
 
     const dueDiligenceEquipment = [
-        { id: 1, name: 'Server', quantity: '2 Pieces', found: true, image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc48?w=100&h=80&fit=crop' },
-        { id: 2, name: 'Server', quantity: '2 Pieces', found: true, image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc48?w=100&h=80&fit=crop' },
+        {
+            id: 1,
+            name: 'Server',
+            quantity: '2 Pieces',
+            found: true,
+            image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc48?w=100&h=80&fit=crop',
+        },
+        {
+            id: 2,
+            name: 'Server',
+            quantity: '2 Pieces',
+            found: true,
+            image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc48?w=100&h=80&fit=crop',
+        },
     ];
 
-    const application = mockApplications.find(app => app.id === id) || mockApplications[0];
+    const application = mockApplications.find((app: { id: any }) => app.id === id) || mockApplications[0];
 
     const steps = [
         { label: 'Initial Review', sub: 'Documents Review' },
@@ -85,11 +98,27 @@
     ];
 
     const sidebarSteps = [
-        { label: 'Institution Details', sub: 'Select the trade(s) you are applying for', icon: Building2 },
-        { label: 'Trade & Competency', sub: 'Select the trade(s) you are applying for', icon: UngroupIcon },
-        { label: 'Equipment and Facilities', sub: 'List available equipment and upload proof', icon: Building2 },
+        {
+            label: 'Institution Details',
+            sub: 'Select the trade(s) you are applying for',
+            icon: Building2,
+        },
+        {
+            label: 'Trade & Competency',
+            sub: 'Select the trade(s) you are applying for',
+            icon: UngroupIcon,
+        },
+        {
+            label: 'Equipment and Facilities',
+            sub: 'List available equipment and upload proof',
+            icon: Building2,
+        },
         { label: 'Curriculum Documents', sub: 'Upload curriculum and training materials', icon: Files },
-        { label: 'Staff Allocation', sub: 'Indicate staff availability for the selected trade', icon: Users },
+        {
+            label: 'Staff Allocation',
+            sub: 'Indicate staff availability for the selected trade',
+            icon: Users,
+        },
     ];
 
     const tabs = ['General', 'Address', 'Personnel', 'About'];
@@ -138,57 +167,74 @@
     const showSidebar = $derived(
         (activeMajorStep === 0 && showInitialReview) || activeMajorStep === 3,
     );
+    const progressPercentage = $derived((activeMajorStep / (steps.length - 1)) * 100);
 </script>
 
-<div class='flex flex-col bg-white h-full overflow-hidden'>
-    <div class='flex flex-1 overflow-hidden min-h-0'>
-        <div class='flex flex-1 flex-col min-h-0 mx-6'>
+<div class='flex h-full flex-col overflow-hidden bg-white'>
+    <div class='flex min-h-0 flex-1 overflow-hidden'>
+        <div class='mx-6 flex min-h-0 flex-1 flex-col'>
             <!-- Horizontal Stepper -->
             <div class='sticky top-0 z-40 bg-white'>
-                <div class='flex items-start justify-between w-full mt-4 mb-6 px-1 pt-1 relative overflow-visible'>
-                    {#each steps as step, idx}
-                        {@const isActive = idx === activeMajorStep}
-                        {@const isCompleted = idx < activeMajorStep}
-                        <div class='flex flex-col items-start text-start relative flex-1'>
-                            {#if idx > 0}
-                                <div class={cn(
-                                    'absolute top-[12px] -left-full right-[calc(100%-12px)] ml-[12px] h-px z-0',
-                                    idx <= activeMajorStep
-                                        ? 'bg-primary h-[1.5px]'
-                                        : 'bg-slate-100',
-                                )}></div>
-                            {/if}
+                <div class='relative mt-4 mb-10 px-1 pt-1 overflow-visible'>
+                    <!-- Background Line -->
+                    <div class='absolute top-[13px] left-[16px] right-[16px] h-px bg-slate-100 z-0'></div>
+                    <!-- Progress Line -->
+                    <div
+                        class='absolute top-[13px] left-[16px] h-[1.5px] bg-primary z-0 transition-all duration-300'
+                        style='width: calc({progressPercentage}% - {(activeMajorStep / (steps.length - 1)) * 32}px)'
+                    ></div>
+
+                    <div class='flex items-start justify-between w-full relative z-10'>
+                        {#each steps as step, idx}
+                            {@const isActive = idx === activeMajorStep}
+                            {@const isCompleted = idx < activeMajorStep}
                             <div class={cn(
-                                'h-6 w-6 rounded-full border flex items-center justify-center mb-3 transition-all duration-300 shrink-0 relative z-10',
-                                isActive
-                                    ? 'border-primary bg-primary shadow-[0_0_0_4px_rgba(9,119,255,0.15)]'
-                                    : isCompleted
-                                    ? 'border-primary bg-primary'
-                                    : 'border-slate-200 bg-white',
+                                'flex flex-col relative',
+                                idx === 0 ? 'items-start' : idx === steps.length - 1 ? 'items-end' : 'items-center flex-1',
                             )}>
-                                {#if isCompleted}
-                                    <Check class='h-3.5 w-3.5 text-white' strokeWidth={3} />
-                                {:else if isActive}
-                                    <div class='h-1.5 w-1.5 rounded-full bg-white'></div>
-                                {:else}
-                                    <div class='h-1.5 w-1.5 rounded-full bg-slate-200'></div>
-                                {/if}
+                                <div class={cn(
+                                    'h-6 w-6 rounded-full border flex items-center justify-center mb-3 transition-all duration-300 shrink-0 relative z-10',
+                                    isActive
+                                        ? 'border-primary bg-primary shadow-[0_0_0_4px_rgba(9,119,255,0.15)]'
+                                        : isCompleted
+                                        ? 'border-primary bg-primary'
+                                        : 'border-slate-200 bg-white',
+                                )}>
+                                    {#if isCompleted}
+                                        <Check class='h-3.5 w-3.5 text-white' strokeWidth={3} />
+                                    {:else if isActive}
+                                        <div class='h-1.5 w-1.5 rounded-full bg-white'></div>
+                                    {:else}
+                                        <div class='h-1.5 w-1.5 rounded-full bg-slate-200'></div>
+                                    {/if}
+                                </div>
+                                <div class={cn(
+                                    'flex flex-row items-baseline justify-between w-full gap-1.5 md:flex-col md:items-start md:gap-0',
+                                    !isActive && 'hidden md:flex',
+                                    idx === steps.length - 1 ? 'items-end text-right' : 'items-start text-left',
+                                )}>
+                                    <span class={cn(
+                                        'text-[11px] mb-0.5 whitespace-nowrap',
+                                        idx <= activeMajorStep ? 'text-slate-900' : 'text-slate-400',
+                                    )}>
+                                        {step.label}
+                                    </span>
+                                    <span class='text-[10px] text-slate-400 whitespace-nowrap'>
+                                        {step.sub}
+                                    </span>
+                                </div>
                             </div>
-                            <span class={cn('text-[11px] block mb-0.5 whitespace-nowrap', idx <= activeMajorStep ? 'text-slate-900' : 'text-slate-400')}>
-                                {step.label}
-                            </span>
-                            <span class='text-[10px] text-slate-400 whitespace-nowrap'>{step.sub}</span>
-                        </div>
-                    {/each}
+                        {/each}
+                    </div>
                 </div>
             </div>
 
-            <div class='flex flex-1 overflow-hidden min-h-0'>
+            <div class='flex min-h-0 flex-1 overflow-hidden'>
                 <!-- Sidebar -->
                 {#if showSidebar}
-                    <div class='w-[300px] bg-[#F9FAFB] flex flex-col h-full shrink-0 p-8 overflow-y-auto'>
+                    <div class='flex h-full w-[300px] shrink-0 flex-col overflow-y-auto bg-[#F9FAFB] p-8'>
                         <div class='mb-10'>
-                            <h2 class='text-sm text-slate-800 mb-9 mt-3'>Application Details</h2>
+                            <h2 class='mt-3 mb-9 text-sm text-slate-800'>Application Details</h2>
                             <button
                                 onclick={() => {
                                     if (activeMajorStep === 0 && role === 'super-admin') {
@@ -199,34 +245,47 @@
                                         window.history.back();
                                     }
                                 }}
-                                class='flex items-center gap-2 text-[12px] text-primary hover:opacity-80 transition-opacity cursor-pointer'
+                                class='text-primary flex cursor-pointer items-center gap-2 text-[12px] transition-opacity hover:opacity-80'
                             >
                                 ← Exit
                             </button>
                         </div>
-                        <div class='flex flex-col gap-6 relative'>
-                            {#each sidebarSteps as step, idx}
+                        <div class='relative flex flex-col gap-6'>
+                            {#each sidebarSteps as step, idx (idx)}
                                 {@const isCompleted = completedSteps.includes(idx)}
                                 {@const isActive = idx === activeInternalStep}
                                 <button
-                                    class={cn('flex gap-4 cursor-pointer group relative text-left', isActive || isCompleted ? 'opacity-100' : 'opacity-40 hover:opacity-100')}
+                                    class={cn(
+                                        'group relative flex cursor-pointer gap-4 text-left',
+                                        isActive || isCompleted ? 'opacity-100' : 'opacity-40 hover:opacity-100',
+                                    )}
                                     onclick={() => (activeInternalStep = idx)}
                                 >
-                                    <div class={cn(
-                                        'h-9 w-9 rounded-sm border flex items-center justify-center shrink-0 relative z-10 transition-all',
-                                        isActive
-                                            ? 'border-slate-100'
-                                            : isCompleted
-                                            ? 'border-green-500 text-green-500'
-                                            : 'border-slate-100',
-                                    )}>
-                                        <step.icon strokeWidth={isCompleted ? 1 : 1.2} class={cn('h-5 w-5', isCompleted ? 'text-green-500' : 'text-slate-400')} />
+                                    <div
+                                        class={cn(
+                                            'relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border transition-all',
+                                            isActive
+                                                ? 'border-slate-100'
+                                                : isCompleted
+                                                ? 'border-green-500 text-green-500'
+                                                : 'border-slate-100',
+                                        )}
+                                    >
+                                        <step.icon
+                                            strokeWidth={isCompleted ? 1 : 1.2}
+                                            class={cn('h-5 w-5', isCompleted ? 'text-green-500' : 'text-slate-400')}
+                                        />
                                     </div>
-                                    <div class='flex flex-col pt-0.5 justify-center'>
-                                        <span class={cn('text-[12px] transition-colors mb-1', isActive ? 'text-slate-900' : isCompleted ? '' : 'text-slate-500')}>
+                                    <div class='flex flex-col justify-center pt-0.5'>
+                                        <span
+                                            class={cn(
+                                                'mb-1 text-[12px] transition-colors',
+                                                isActive ? 'text-slate-900' : isCompleted ? '' : 'text-slate-500',
+                                            )}
+                                        >
                                             {step.label}
                                         </span>
-                                        <span class='text-[10px] text-slate-400 leading-tight pr-2'>{step.sub}</span>
+                                        <span class='pr-2 text-[10px] leading-tight text-slate-400'>{step.sub}</span>
                                     </div>
                                 </button>
                             {/each}
@@ -235,7 +294,12 @@
                 {/if}
 
                 <!-- Main Content -->
-                <div class={cn('flex-1 bg-white overflow-y-auto min-h-0', showSidebar && 'flex flex-col items-center')}>
+                <div
+                    class={cn(
+                        'min-h-0 flex-1 overflow-y-auto bg-white',
+                        showSidebar && 'flex flex-col items-center',
+                    )}
+                >
                     {#if activeMajorStep === 0 && !showInitialReview && role === 'super-admin'}
                         <AssignEvaluatorsStage
                             {assignedInitialPrincipal}
@@ -261,7 +325,8 @@
                             {documentList}
                             {equipmentList}
                             {completedSteps}
-                            setCompletedSteps={fn => (completedSteps = fn(completedSteps))}
+                            setCompletedSteps={(fn: (steps: number[]) => number[]) =>
+                            (completedSteps = fn(completedSteps))}
                             {activeMajorStep}
                             setActiveMajorStep={s => (activeMajorStep = s)}
                             {handleNext}
@@ -335,4 +400,4 @@
             }}
         />
     {/if}
-</div>v>
+</div>

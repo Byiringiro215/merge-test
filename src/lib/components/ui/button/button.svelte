@@ -49,7 +49,6 @@
 </script>
 
 <script lang='ts'>
-    import { resolve } from '$app/paths';
 
     let {
         class: className,
@@ -69,7 +68,7 @@
         bind:this={ref}
         data-slot='button'
         class={cn(buttonVariants({ variant, size }), className)}
-        href={resolve((disabled ? '' : (href ?? '')) as any)}
+        href={disabled ? '' : (href ?? '')}
         aria-disabled={disabled}
         role={disabled ? 'link' : undefined}
         tabindex={disabled ? -1 : undefined}

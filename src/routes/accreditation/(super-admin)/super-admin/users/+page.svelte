@@ -13,7 +13,9 @@
         Trash2,
         TriangleAlert,
         User,
+        UserCheck,
         Users,
+        UserX,
     } from '@lucide/svelte';
 
     interface UserRecord {
@@ -139,10 +141,21 @@
     <StatusBadge status={user.status} />
 {/snippet}
 
-{#snippet actionsCell()}
+{#snippet actionsCell(_user: UserRecord)}
     <div class='flex items-center justify-start gap-3'>
-        <Trash2 class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-red-500' />
-        <Pencil class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#7F56D9]' />
+        {#if activeTab === 'curriculum-evaluator'}
+            <button class='flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-green-600 transition-colors hover:bg-green-50'>
+                <UserCheck class='h-3.5 w-3.5' />
+                Activate
+            </button>
+            <button class='flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-red-500 transition-colors hover:bg-red-50'>
+                <UserX class='h-3.5 w-3.5' />
+                Deactivate
+            </button>
+        {:else}
+            <Trash2 class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-red-500' />
+            <Pencil class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#7F56D9]' />
+        {/if}
     </div>
 {/snippet}
 
@@ -189,7 +202,7 @@
 
         <!-- Stat Cards -->
         <div class='xl:grid-cols-5 relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] md:grid-cols-2'>
-            {#each stats as stat}
+            {#each stats as stat (stat.label)}
                 <div class='animate-slide-up overflow-hidden rounded-md border border-slate-200 bg-white shadow-none'>
                     <div class='flex flex-col gap-4 p-5'>
                         <div class='w-fit rounded-sm border border-[#EAECF0] bg-white p-2.5 shadow-[0_1px_2px_0_rgba(16,24,40,0.05)]'>

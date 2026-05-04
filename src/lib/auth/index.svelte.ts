@@ -1,6 +1,6 @@
 import type { Schema } from '$lib/api/paths';
 import { goto, invalidateAll } from '$app/navigation';
-import { resolve } from '$app/paths';
+
 import { api } from '$lib/api';
 
 // -- Types --------------------------------------------------------------------
@@ -124,7 +124,7 @@ export async function logout() {
   checkCache.clear();
 
   await invalidateAll();
-  goto(resolve('/signin'));
+  goto('/signin');
 }
 
 export async function refreshAccessToken(): Promise<boolean> {

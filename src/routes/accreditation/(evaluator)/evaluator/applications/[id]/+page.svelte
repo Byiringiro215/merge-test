@@ -1,6 +1,6 @@
 <script lang='ts'>
     import { page } from '$app/stores';
-    import SharedEvaluationContainer from '$lib/accreditation/features/evaluations/components/SharedEvaluationContainer.svelte';
+    import EvaluatorApplicationView from '$lib/accreditation/features/evaluations/components/EvaluatorApplicationView.svelte';
     import { mockApplications } from '$lib/accreditation/utils/application-utils';
     import PageContainer from '$lib/components/accreditation/layout/PageContainer.svelte';
 
@@ -14,5 +14,5 @@
     noPadding={true}
     noScroll={true}
 >
-    <SharedEvaluationContainer {id} role='evaluator' />
+    <EvaluatorApplicationView {id} />
 </PageContainer>

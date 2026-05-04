@@ -1,12 +1,13 @@
 <script lang='ts'>
     import { AlertTriangle, CheckCheck, ClipboardClock, NotepadText } from '@lucide/svelte';
     import ApplicationsByTradeChart from './ApplicationsByTradeChart.svelte';
+    import DashboardEmptyState from './DashboardEmptyState.svelte';
     import MostRequestedModules from './MostRequestedModules.svelte';
     import RecentApplicationsTable from './RecentApplicationsTable.svelte';
     import StackedAnalyticsChart from './StackedAnalyticsChart.svelte';
     import StatsGrid from './StatsGrid.svelte';
 
-    const { role } = $props<{ role: string; userName?: string }>();
+    const { role, userName } = $props<{ role: string; userName?: string }>();
 
     const stats = [
         { label: 'Applications', value: '24', icon: NotepadText, iconColor: '#0A77FF' },
@@ -55,16 +56,27 @@
 </script>
 
 <div class='space-y-6'>
+    <div class='mb-4'>
+        <h2 class='text-2xl font-bold text-slate-900'>Welcome back, {userName || 'User'}!</h2>
+        <p class='text-sm text-slate-500'>Here's what's happening with your accreditation requests today.</p>
+    </div>
+
     <StatsGrid items={stats} />
 
-    <StackedAnalyticsChart data={chartData} />
+    {#if role === 'applicant' || role === 'merged'}
+        <DashboardEmptyState />
+    {/if}
 
-    {#if role === 'super-admin' || role === 'supervisor'}
+    {#if role === 'merged' || role === 'super-admin' || role === 'supervisor' || role === 'evaluator'}
+        <StackedAnalyticsChart data={chartData} />
+    {/if}
+
+    {#if role === 'merged' || role === 'super-admin' || role === 'supervisor'}
         <div class='mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2'>
             <ApplicationsByTradeChart />
             <MostRequestedModules />
         </div>
     {/if}
 
-    <RecentApplicationsTable />
+    <RecentApplicationsTable {role} />
 </div>
