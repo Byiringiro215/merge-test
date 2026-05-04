@@ -77,7 +77,7 @@
             style='mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);'
         >
             {#each navItems as item}
-                {@const isActive = $page.url.pathname === item.href || ($page.url.pathname === '/accreditation/applications' && item.title === 'Applications')}
+                {@const isActive = ($page.url.pathname as string) === item.href.split('?')[0] || (($page.url.pathname as string) === '/accreditation/applications' && item.title === 'Applications')}
                 <a
                     href={item.href}
                     class={cn(
