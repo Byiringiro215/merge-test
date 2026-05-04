@@ -12,6 +12,5 @@
     <EvaluationsSubNav role='supervisor' />
     <SharedApplicationsList
         role='supervisor'
-        basePath='/accreditation/supervisor/evaluations/applications'
     />
 </PageContainer>
