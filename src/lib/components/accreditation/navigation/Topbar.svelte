@@ -6,7 +6,7 @@
     import { Bell, ChevronDown, LogOut, Menu, ShieldCheck, User } from '@lucide/svelte';
     import PortalBreadcrumbs from './PortalBreadcrumbs.svelte';
 
-    const { role, onOpenMobile }: { role: UserRole; onOpenMobile?: () => void } = $props();
+    const { role, authRole, onOpenMobile }: { role: UserRole; authRole?: UserRole; onOpenMobile?: () => void } = $props();
     const pageHeader = getPageHeader();
     const simulation = getSimulationState();
 

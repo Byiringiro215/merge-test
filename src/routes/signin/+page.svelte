@@ -448,7 +448,7 @@
 
                     <!-- Register Now Button -->
                     <a
-                        href='/accreditation/register'
+                        href='/register'
                         class='w-full h-12 bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold rounded-lg flex items-center justify-center transition-all active:scale-[0.98]'
                     >
                         Register Now
