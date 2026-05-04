@@ -14,36 +14,28 @@
     const simulation = getSimulationState();
     const activeRole = $derived(simulation?.role || propRole);
 
-    const basePath = $derived(
-        activeRole === 'super-admin' || activeRole === 'merged'
-            ? '/accreditation/super-admin/evaluations'
-            : activeRole === 'supervisor'
-            ? '/accreditation/supervisor/evaluations'
-            : '/accreditation/evaluator',
-    );
-
-    const allNavItems = $derived([
+    const allNavItems = [
         {
             title: 'Applications',
-            href: `/accreditation/applications?role=${activeRole}`,
+            href: '/accreditation/applications',
             icon: NotepadText,
         },
         {
             title: 'Evaluators',
-            href: `${basePath}/evaluators`,
+            href: '/accreditation/evaluators',
             icon: ShieldUser,
         },
         {
             title: 'Evaluation Criteria Files',
-            href: `${basePath}/criteria`,
+            href: '/accreditation/criteria',
             icon: FolderOpen,
         },
         {
             title: 'Due Diligence Schedule',
-            href: `${basePath}/schedule`,
+            href: '/accreditation/schedule',
             icon: CalendarCheck2,
         },
-    ]);
+    ];
 
     const navItems = $derived(allNavItems.filter((item) => {
         if (activeRole === 'evaluator' && item.title === 'Evaluators') {

@@ -1,9 +1,13 @@
 <script lang='ts'>
+    import { getSimulationState } from '$lib/accreditation/context/simulation.svelte';
     import ScheduleContent from '$lib/accreditation/features/evaluations/components/ScheduleContent.svelte';
     import PageContainer from '$lib/components/accreditation/layout/PageContainer.svelte';
     import EvaluationsSubNav from '$lib/components/accreditation/navigation/EvaluationsSubNav.svelte';
     import DateRangePicker from '$lib/components/accreditation/ui/DateRangePicker.svelte';
     import { Calendar } from '@lucide/svelte';
+
+    const simulation = getSimulationState();
+    const activeRole = $derived(simulation?.role || 'merged');
 
     let showPicker = $state(false);
     let dateRange = $state({
@@ -17,11 +21,11 @@
 </script>
 
 <PageContainer
-    role='super-admin'
-    title='Manage Accreditation Evalutions'
-    description='View & manage active applications and requests'
+    role={activeRole}
+    title='Accreditation Evaluations'
+    description='View and manage due diligence schedule'
 >
-    <EvaluationsSubNav role='super-admin'>
+    <EvaluationsSubNav role={activeRole}>
         <button
             type='button'
             onclick={() => showPicker = !showPicker}
@@ -44,5 +48,5 @@
             />
         {/if}
     </EvaluationsSubNav>
-    <ScheduleContent role='super-admin' />
+    <ScheduleContent role={activeRole} />
 </PageContainer>
