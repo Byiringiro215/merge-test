@@ -78,4 +78,3 @@ export const portalNavigationConfig: Record<UserRole, { label: string; shortLabe
     'supervisor': { label: 'Supervisor Portal', shortLabel: 'Supervisor' },
     'merged': { label: 'Accreditation Portal', shortLabel: 'Accreditation' },
 };
-
