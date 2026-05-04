@@ -1,3 +1,4 @@
+import type { UserRole } from '$lib/accreditation/types/auth';
 import {
     BadgeCheck,
     Bell,
@@ -9,12 +10,20 @@ import {
     Users,
 } from '@lucide/svelte';
 
-export const allAccreditationNavItems = [
+export interface AccreditationNavItem {
+    title: string;
+    href: string;
+    icon: any;
+    match?: 'exact';
+    roles: UserRole[];
+}
+
+export const allAccreditationNavItems: AccreditationNavItem[] = [
     {
         title: 'Dashboard',
         href: '/accreditation/dashboard',
         icon: House,
-        match: 'exact' as const,
+        match: 'exact',
         roles: ['applicant', 'evaluator', 'curriculum-evaluator', 'super-admin', 'supervisor', 'merged'],
     },
     {
@@ -61,7 +70,7 @@ export const allAccreditationNavItems = [
     },
 ];
 
-export const portalNavigationConfig = {
+export const portalNavigationConfig: Record<UserRole, { label: string; shortLabel: string }> = {
     'applicant': { label: 'Applicant Portal', shortLabel: 'Applicant' },
     'evaluator': { label: 'Evaluator Portal', shortLabel: 'Evaluator' },
     'super-admin': { label: 'Super Admin Portal', shortLabel: 'Super Admin' },
@@ -69,3 +78,4 @@ export const portalNavigationConfig = {
     'supervisor': { label: 'Supervisor Portal', shortLabel: 'Supervisor' },
     'merged': { label: 'Accreditation Portal', shortLabel: 'Accreditation' },
 };
+
