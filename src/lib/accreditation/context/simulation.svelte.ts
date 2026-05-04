@@ -3,9 +3,9 @@ import { getContext, setContext } from 'svelte';
 export type SimulatedRole = 'applicant' | 'evaluator' | 'curriculum-evaluator' | 'super-admin' | 'supervisor' | 'merged';
 
 class SimulationState {
-    role = $state<SimulatedRole>('merged');
+    role = $state<SimulatedRole | null>(null);
 
-    setRole(newRole: SimulatedRole) {
+    setRole(newRole: SimulatedRole | null) {
         this.role = newRole;
     }
 }

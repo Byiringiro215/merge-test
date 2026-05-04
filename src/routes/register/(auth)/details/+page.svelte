@@ -9,19 +9,20 @@
     import { fade, fly } from 'svelte/transition';
 
     // Form State (Previously Step 3, now Step 4 in the new flow, but let's just keep the UI for now)
-    let firstName = $state('');
-    let lastName = $state('');
-    let position = $state('');
-    let gender = $state('');
-    let email = $state('');
-    let phoneNumber = $state('');
+    // Form State with Mock Data
+    let firstName = $state('Jean');
+    let lastName = $state('Ntaganda');
+    let position = $state('Director General');
+    let gender = $state('Male');
+    let email = $state('j.ntaganda@sdms.gov.rw');
+    let phoneNumber = $state('0788123456');
 
     const nextStep = () => {
-    // For now, just stay on this page or go to next (if implemented)
+        goto('/signin');
     };
 
     const prevStep = () => {
-        goto('/accreditation/register/user');
+        goto('/register/user');
     };
 </script>
 
