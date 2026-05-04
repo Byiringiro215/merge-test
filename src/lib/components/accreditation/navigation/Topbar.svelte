@@ -1,14 +1,27 @@
 <script lang='ts'>
+    import type { SimulatedRole } from '$lib/accreditation/context/simulation.svelte';
     import type { UserRole } from '$lib/accreditation/types/auth';
     import { getPageHeader } from '$lib/accreditation/context/page-header.svelte';
-    import { Bell, LogOut, Menu, User } from '@lucide/svelte';
+    import { getSimulationState } from '$lib/accreditation/context/simulation.svelte';
+    import { Bell, ChevronDown, LogOut, Menu, ShieldCheck, User } from '@lucide/svelte';
     import PortalBreadcrumbs from './PortalBreadcrumbs.svelte';
 
     const { role, onOpenMobile }: { role: UserRole; onOpenMobile?: () => void } = $props();
     const pageHeader = getPageHeader();
+    const simulation = getSimulationState();
 
     let open = $state(false);
+    let simulationOpen = $state(false);
     let closeTimeout: any;
+
+    const roles: { id: SimulatedRole; label: string }[] = [
+        { id: 'merged', label: 'Merged (All)' },
+        { id: 'applicant', label: 'Applicant' },
+        { id: 'evaluator', label: 'Evaluator' },
+        { id: 'curriculum-evaluator', label: 'Curriculum Evaluator' },
+        { id: 'super-admin', label: 'Super Admin' },
+        { id: 'supervisor', label: 'Supervisor' },
+    ];
 
     function handleOpen() {
         if (closeTimeout)
@@ -25,6 +38,11 @@
     function toggleOpen() {
         open = !open;
     }
+
+    function selectRole(newRole: SimulatedRole) {
+        simulation?.setRole(newRole);
+        simulationOpen = false;
+    }
 </script>
 
 <header class='bg-white'>
@@ -34,7 +52,7 @@
                 <button
                     type='button'
                     onclick={onOpenMobile}
-                    class='-ml-1 rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 md:hidden'
+                    class='-ml-1 rounded-sm cursor-pointer p-1.5 text-slate-500 transition-colors hover:bg-slate-100 md:hidden'
                     aria-label='Open sidebar'
                 >
                     <Menu class='h-5 w-5' />
@@ -44,6 +62,39 @@
         </div>
 
         <div class='flex items-center gap-3'>
+            <!-- Simulation Toggle -->
+            <div class='relative'>
+                <button
+                    type='button'
+                    onclick={() => simulationOpen = !simulationOpen}
+                    class='flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 border border-slate-200 transition-colors hover:bg-slate-100 cursor-pointer'
+                >
+                    <ShieldCheck class='h-3.5 w-3.5 text-primary' />
+                    <span>Mode: <span class='text-slate-900 capitalize'>{simulation?.role || role}</span></span>
+                    <ChevronDown class='h-3 w-3 transition-transform {simulationOpen ? 'rotate-180' : ''}' />
+                </button>
+
+                {#if simulationOpen}
+                    <div class='absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-md bg-white p-1 shadow-lg ring-1 ring-slate-200'>
+                        <div class='px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400'>
+                            Simulate Permissions
+                        </div>
+                        {#each roles as r}
+                            <button
+                                type='button'
+                                onclick={() => selectRole(r.id)}
+                                class='flex w-full items-center justify-between rounded-sm px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 {simulation?.role === r.id ? 'bg-slate-50 font-medium text-primary' : ''}'
+                            >
+                                <span>{r.label}</span>
+                                {#if simulation?.role === r.id}
+                                    <div class='h-1.5 w-1.5 rounded-full bg-primary'></div>
+                                {/if}
+                            </button>
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+
             <button type='button' class='cursor-pointer p-2 text-[#667085] transition-colors hover:text-slate-700'>
                 <Bell class='h-4.5 w-4.5' />
             </button>
@@ -68,14 +119,14 @@
 
                 {#if open}
                     <div
-                        class='absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-md bg-white p-1 shadow-lg ring-1 ring-slate-200'
+                        class='absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden -sm bg-white p-1 shadow-lg ring-1 ring-slate-200'
                         onmouseenter={handleOpen}
                         onmouseleave={handleClose}
                         role='menu'
                         tabindex='0'
                     >
                         <a
-                            href={`/accreditation/${role}/profile`}
+                            href='/accreditation/applicant/profile'
                             class='flex w-full items-center gap-2 rounded-sm px-3 py-2 text-sm text-slate-700 hover:bg-slate-50'
                             onclick={() => (open = false)}
                         >
@@ -114,8 +165,8 @@
             {:else}
                 <div class='flex w-full items-center justify-between gap-10'>
                     <div class='space-y-2 py-2'>
-                        <div class='h-5 w-[240px] animate-pulse rounded bg-slate-100'></div>
-                        <div class='h-3 w-[320px] animate-pulse rounded bg-slate-50'></div>
+                        <div class='h-5 w-[240px] animate-pulse -sm bg-slate-100'></div>
+                        <div class='h-3 w-[320px] animate-pulse -sm bg-slate-50'></div>
                     </div>
                 </div>
             {/if}

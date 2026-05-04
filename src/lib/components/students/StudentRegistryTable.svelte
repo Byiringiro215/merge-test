@@ -2,7 +2,7 @@
     import type { StudentSummary } from '$lib/datamodel/student';
     import type { ColumnDef, Table } from '@tanstack/table-core';
     import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
+
     import DataTable from '$lib/components/data-table/data-table.svelte';
     import { Button } from '$lib/components/ui/button/index.js';
     import {
@@ -20,7 +20,7 @@
     import { createRawSnippet } from 'svelte';
 
     const navigateToStudent = (studentNumber: string) => {
-        goto(resolve(`/students/${studentNumber}`));
+        goto(`/students/${studentNumber}`);
     };
 
     interface Props {
