@@ -98,7 +98,7 @@
     <button
         onclick={(e) => {
             e.stopPropagation();
-            goto(`/curriculum-evaluator/applications/${item.id}`);
+            goto(`/accreditation/curriculum-evaluator/applications/${item.id}`);
         }}
         class='cursor-pointer whitespace-nowrap rounded-sm bg-[#0A77FF] px-3 py-2 text-[13px] font-medium text-white transition-all hover:opacity-90'
     >
@@ -126,6 +126,6 @@
         showPagination={true}
         currentPage={1}
         totalPages={1}
-        onRowClick={item => goto(`/curriculum-evaluator/applications/${item.id}`)}
+        onRowClick={item => goto(`/accreditation/curriculum-evaluator/applications/${item.id}`)}
     />
 </div>

@@ -2,7 +2,7 @@
     import type { Resource } from '$lib/auth/index.svelte';
     import type { NavItem } from '$lib/types/nav';
     import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
+
     import { page } from '$app/state';
     import { getAuthState, hasPermission } from '$lib/auth/index.svelte';
     import Footer from '$lib/components/layout/Footer.svelte';
@@ -106,7 +106,7 @@
 
     $effect(() => {
         if (!auth.isLoading && !auth.isAuthenticated) {
-            goto(resolve(`/signin?redirect=${encodeURIComponent(page.url.pathname)}` as any));
+            goto(`/signin?redirect=${encodeURIComponent(page.url.pathname)}`);
         }
     });
 
@@ -115,7 +115,9 @@
             const base = `/${page.url.pathname.split('/').filter(Boolean)[0]}`;
             const resource = routeResourceMap[base];
             if (resource && !hasPermission(resource, 'read')) {
-                goto(resolve('/dashboard'));
+                if (page.url.pathname !== '/dashboard') {
+                    goto('/dashboard');
+                }
             }
         }
     });
