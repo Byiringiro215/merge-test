@@ -39,43 +39,43 @@
         <!-- Left: Location -->
         <div class='max-w-lg flex-1'>
             <div class='mb-6'>
-                <h2 class='text-md text-slate-900'>Institution Location</h2>
+                <h2 class='text-sm font-semibold text-slate-900'>Institution Location</h2>
                 <p class='text-sm text-slate-500'>Consider the location while scheduling the Due Diligence</p>
             </div>
 
             <div class='mt-10 grid grid-cols-1 gap-6'>
                 <div class='grid grid-cols-2 gap-4'>
                     <div class='space-y-1.5'>
-                        <label for='province' class='text-[13px] text-slate-700'>Province</label>
+                        <label for='province' class='text-sm text-slate-700'>Province</label>
                         <input id='province' readonly value='Western' class='w-full cursor-default rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700' />
                     </div>
                     <div class='space-y-1.5'>
-                        <label for='district' class='text-[13px] text-slate-700'>District</label>
+                        <label for='district' class='text-sm text-slate-700'>District</label>
                         <input id='district' readonly value='Nyabihu' class='w-full cursor-default rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700' />
                     </div>
                 </div>
                 <div class='grid grid-cols-2 gap-4'>
                     <div class='space-y-1.5'>
-                        <label for='sector' class='text-[13px] text-slate-700'>Sector</label>
+                        <label for='sector' class='text-sm text-slate-700'>Sector</label>
                         <input id='sector' readonly value='Mukamira' class='w-full cursor-default rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700' />
                     </div>
                     <div class='space-y-1.5'>
-                        <label for='cell' class='text-[13px] text-slate-700'>Cell</label>
+                        <label for='cell' class='text-sm text-slate-700'>Cell</label>
                         <input id='cell' readonly value='Mukamira' class='w-full cursor-default rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700' />
                     </div>
                 </div>
                 <div class='grid grid-cols-2 gap-4'>
                     <div class='space-y-1.5'>
-                        <label for='village' class='text-[13px] text-slate-700'>Village</label>
+                        <label for='village' class='text-sm text-slate-700'>Village</label>
                         <input id='village' readonly value='Mukamira' class='w-full cursor-default rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700' />
                     </div>
                     <div class='space-y-1.5'>
-                        <label for='city' class='text-[13px] text-slate-700'>City</label>
+                        <label for='city' class='text-sm text-slate-700'>City</label>
                         <input id='city' readonly value='Mukamira' class='w-full cursor-default rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700' />
                     </div>
                 </div>
                 <div class='space-y-1.5'>
-                    <label for='address-line' class='text-[13px] text-slate-700'>Address Line</label>
+                    <label for='address-line' class='text-sm text-slate-700'>Address Line</label>
                     <input id='address-line' readonly value='Mukamira Road' class='w-full cursor-default rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700' />
                 </div>
             </div>
@@ -94,7 +94,7 @@
                             value={dateFrom}
                             readonly={role === 'evaluator'}
                             oninput={e => role !== 'evaluator' && setDateFrom(e.currentTarget.value)}
-                            class='w-full rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 transition-all focus:border-[#0A77FF] focus:outline-none read-only:cursor-default read-only:bg-slate-50'
+                            class='w-full rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 transition-all focus:border-[#2069C1] focus:outline-none read-only:cursor-default read-only:bg-slate-50'
                         />
                     </div>
                     <div class='flex-1 space-y-1'>
@@ -105,7 +105,7 @@
                             value={dateTo}
                             readonly={role === 'evaluator'}
                             oninput={e => role !== 'evaluator' && setDateTo(e.currentTarget.value)}
-                            class='w-full rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 transition-all focus:border-[#0A77FF] focus:outline-none read-only:cursor-default read-only:bg-slate-50'
+                            class='w-full rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 transition-all focus:border-[#2069C1] focus:outline-none read-only:cursor-default read-only:bg-slate-50'
                         />
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                     <button
                         class={cn(
                             'border rounded-sm p-3 w-full transition-colors cursor-pointer group text-left',
-                            assignedScheduledPrincipal ? 'border-primary bg-blue-50/10' : 'border-slate-200 bg-slate-50/50 hover:border-[#0A77FF]/50',
+                            assignedScheduledPrincipal ? 'border-[#2069C1] bg-blue-50/10' : 'border-slate-200 bg-slate-50/50 hover:border-[#2069C1]/50',
                         )}
                         onclick={() => setPendingEvaluatorRole('Scheduled Principal')}
                     >
@@ -127,7 +127,7 @@
                                 {#if assignedScheduledPrincipal}
                                     <CheckCircle2 class='h-4 w-4 text-emerald-500' />
                                 {:else}
-                                    <UserPlus class='h-4 w-4 text-[#0A77FF]' />
+                                    <UserPlus class='h-4 w-4 text-[#2069C1]' />
                                 {/if}
                             </div>
                             <div class='flex-1 text-left'>
@@ -140,7 +140,7 @@
                     <button
                         class={cn(
                             'border border-dashed rounded-sm p-4 w-full transition-colors cursor-pointer group text-left',
-                            assignedScheduledSecondary1 ? 'border-solid border-primary bg-blue-50/10' : 'border-slate-200 hover:bg-slate-50',
+                            assignedScheduledSecondary1 ? 'border-solid border-[#2069C1] bg-blue-50/10' : 'border-slate-200 hover:bg-slate-50',
                         )}
                         onclick={() => setPendingEvaluatorRole('Scheduled Secondary 1')}
                     >
@@ -153,7 +153,7 @@
                                 {/if}
                             </div>
                             <div class='flex-1 text-left'>
-                                <h4 class='text-[13px] text-slate-900'>{assignedScheduledSecondary1 || 'Secondary Evaluator 1'}</h4>
+                                <h4 class='text-sm text-slate-900'>{assignedScheduledSecondary1 || 'Secondary Evaluator 1'}</h4>
                                 <p class='text-[11px] leading-tight text-slate-400'>Assistant & commenter</p>
                             </div>
                         </div>
@@ -162,7 +162,7 @@
                     <button
                         class={cn(
                             'border border-dashed rounded-sm p-4 w-full transition-colors cursor-pointer group text-left',
-                            assignedScheduledSecondary2 ? 'border-solid border-primary bg-blue-50/10' : 'border-slate-200 hover:bg-slate-50',
+                            assignedScheduledSecondary2 ? 'border-solid border-[#2069C1] bg-blue-50/10' : 'border-slate-200 hover:bg-slate-50',
                         )}
                         onclick={() => setPendingEvaluatorRole('Scheduled Secondary 2')}
                     >
@@ -175,7 +175,7 @@
                                 {/if}
                             </div>
                             <div class='flex-1 text-left'>
-                                <h4 class='text-[13px] text-slate-900'>{assignedScheduledSecondary2 || 'Secondary Evaluator 2'}</h4>
+                                <h4 class='text-sm text-slate-900'>{assignedScheduledSecondary2 || 'Secondary Evaluator 2'}</h4>
                                 <p class='text-[11px] leading-tight text-slate-400'>Assistant & commenter</p>
                             </div>
                         </div>
@@ -198,7 +198,7 @@
                     onclick={() => setActiveMajorStep(2)}
                     disabled={isProceedDisabled}
                     class={cn(
-                        'flex-2 py-3 px-4 bg-[#0A77FF] text-white rounded-sm text-sm transition-all cursor-pointer shadow-sm',
+                        'flex-2 py-3 px-4 bg-[#2069C1] text-white rounded-sm text-sm transition-all cursor-pointer shadow-sm',
                         isProceedDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90',
                     )}
                 >

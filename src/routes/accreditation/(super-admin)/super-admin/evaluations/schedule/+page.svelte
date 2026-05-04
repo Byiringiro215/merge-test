@@ -25,11 +25,11 @@
         <button
             type='button'
             onclick={() => showPicker = !showPicker}
-            class='group relative flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-sm px-6 py-3 text-primary transition-colors duration-200'
+            class='group relative flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-sm px-6 py-3 text-[#2069C1] transition-colors duration-200'
         >
             <div class='absolute inset-0 z-0 rounded-sm bg-[#F9FAFB]'></div>
-            <Calendar class='relative z-10 h-4 w-4 text-primary' strokeWidth={1} />
-            <span class='relative z-10 text-sm font-medium text-primary'>
+            <Calendar class='relative z-10 h-4 w-4 text-[#2069C1]' strokeWidth={1} />
+            <span class='relative z-10 text-sm font-medium text-[#2069C1]'>
                 {formatDate(dateRange.start)} - {formatDate(dateRange.end)}
             </span>
         </button>

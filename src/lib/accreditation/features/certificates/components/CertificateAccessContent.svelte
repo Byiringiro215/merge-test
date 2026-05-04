@@ -139,13 +139,13 @@
 
     const accessStats = [
         { label: 'Completed Evaluations', value: '18', icon: CheckCircle2, iconColor: '#34C759' },
-        { label: 'Certificates Granted', value: '12', icon: Award, iconColor: '#0A77FF' },
+        { label: 'Certificates Granted', value: '12', icon: Award, iconColor: '#2069C1' },
         { label: 'Pending Access', value: '6', icon: Clock, iconColor: '#FF8D28' },
         { label: 'Total Approved', value: '18', icon: FileCheck, iconColor: '#6155F5' },
     ];
 
     const trackingStats = [
-        { label: 'Active Certificates', value: '9', icon: Activity, iconColor: '#0A77FF' },
+        { label: 'Active Certificates', value: '9', icon: Activity, iconColor: '#2069C1' },
         { label: 'Expiring Soon', value: '3', icon: AlertTriangle, iconColor: '#FF8D28' },
         { label: 'Expired', value: '2', icon: Clock, iconColor: '#FF383C' },
         { label: 'Total Issued', value: '12', icon: Award, iconColor: '#34C759' },
@@ -176,7 +176,7 @@
             {item.applicant.avatar || 'U'}
         </div>
         <div class='flex flex-col'>
-            <span class='text-[13px] font-medium text-[#101828]'>{item.applicant.name}</span>
+            <span class='text-sm font-medium text-[#101828]'>{item.applicant.name}</span>
             <span class='text-[11px] text-[#475467]'>{item.applicant.email || ''}</span>
         </div>
     </div>
@@ -188,7 +188,7 @@
             {item.institution.logo}
         </div>
         <div class='flex flex-col'>
-            <span class='text-[13px] font-medium text-[#101828]'>{item.institution.name}</span>
+            <span class='text-sm font-medium text-[#101828]'>{item.institution.name}</span>
             <span class='text-[11px] text-[#475467]'>{item.institution.website}</span>
         </div>
     </div>
@@ -196,27 +196,27 @@
 
 {#snippet tradeCell(item: Application)}
     <div class='flex flex-col text-left'>
-        <span class='text-[13px] font-medium text-slate-600'>{item.trade.name}</span>
+        <span class='text-sm font-medium text-slate-600'>{item.trade.name}</span>
         <span class='text-[11px] uppercase tracking-wider text-[#475467]'>{item.trade.category}</span>
     </div>
 {/snippet}
 
 {#snippet completedOnCell(item: Application)}
-    <span class='text-left text-[13px] font-medium text-slate-600'>{item.completedOn}</span>
+    <span class='text-left text-sm font-medium text-slate-600'>{item.completedOn}</span>
 {/snippet}
 
 {#snippet evaluatorCell(item: Application | Certificate)}
-    <span class='text-left text-[13px] text-slate-500'>{item.evaluator}</span>
+    <span class='text-left text-sm text-slate-500'>{item.evaluator}</span>
 {/snippet}
 
 {#snippet accessCell(item: Application)}
     <div class='flex items-center gap-2 text-left'>
         {#if item.certificateAccess === 'Granted'}
             <CheckCircle2 class='h-4 w-4 text-blue-500' />
-            <span class='text-[13px] font-medium text-blue-600'>Granted</span>
+            <span class='text-sm font-medium text-blue-600'>Granted</span>
         {:else}
             <Clock class='h-4 w-4 text-orange-500' />
-            <span class='text-[13px] font-medium text-orange-600'>Pending</span>
+            <span class='text-sm font-medium text-orange-600'>Pending</span>
         {/if}
     </div>
 {/snippet}
@@ -249,19 +249,19 @@
 
 {#snippet trackingInstitutionCell(item: Certificate)}
     <div class='flex flex-col text-left'>
-        <span class='text-[13px] font-medium text-[#101828]'>{item.institution.name}</span>
+        <span class='text-sm font-medium text-[#101828]'>{item.institution.name}</span>
         <span class='text-[11px] text-[#475467]'>{item.trade.name}</span>
     </div>
 {/snippet}
 
 {#snippet grantedOnCell(item: Certificate)}
     {@const info = getDaysInfo(item.grantedOn)}
-    <span class='text-left text-[13px] text-slate-600'>{formatDate(info.granted)}</span>
+    <span class='text-left text-sm text-slate-600'>{formatDate(info.granted)}</span>
 {/snippet}
 
 {#snippet expiresOnCell(item: Certificate)}
     {@const info = getDaysInfo(item.grantedOn)}
-    <span class={cn('text-left text-[13px] font-medium', info.isExpired ? 'text-red-600' : info.isExpiringSoon ? 'text-orange-600' : 'text-slate-600')}>
+    <span class={cn('text-left text-sm font-medium', info.isExpired ? 'text-red-600' : info.isExpiringSoon ? 'text-orange-600' : 'text-slate-600')}>
         {formatDate(info.expiry)}
     </span>
 {/snippet}
@@ -312,7 +312,7 @@
             onclick={() => activeTab = tab.key}
             class={cn(
                 'relative flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm px-4 py-3 transition-colors duration-200 whitespace-nowrap',
-                isActive ? 'text-primary' : 'text-[#353E49] hover:bg-slate-50 hover:text-primary',
+                isActive ? 'text-[#2069C1]' : 'text-[#353E49] hover:bg-slate-50 hover:text-[#2069C1]',
             )}
         >
             {#if isActive}
@@ -320,7 +320,7 @@
             {/if}
             <span class={cn(
                 'relative z-10 text-sm font-medium transition-colors duration-200',
-                isActive ? 'text-primary' : 'text-[#353E49]',
+                isActive ? 'text-[#2069C1]' : 'text-[#353E49]',
             )}>
                 {tab.label}
             </span>
@@ -356,10 +356,10 @@
         {#if expiredCertificates.length > 0 || expiringCertificates.length > 0}
             <div class='space-y-3'>
                 {#if expiredCertificates.length > 0 && !dismissedExpired}
-                    <div class='relative overflow-hidden rounded-lg border border-red-200 bg-gradient-to-r from-red-50 to-red-50/50 px-5 py-4 shadow-sm'>
+                    <div class='relative overflow-hidden rounded-sm border border-red-200 bg-gradient-to-r from-red-50 to-red-50/50 px-5 py-4 shadow-sm'>
                         <div class='absolute inset-y-0 left-0 w-1 bg-red-500'></div>
                         <div class='flex items-start gap-4 pl-2'>
-                            <div class='mt-0.5 flex h-10 w-10 items-center justify-center rounded-lg bg-red-100'>
+                            <div class='mt-0.5 flex h-10 w-10 items-center justify-center rounded-sm bg-red-100'>
                                 <XCircle class='h-5 w-5 text-red-600' />
                             </div>
                             <div class='flex-1 min-w-0'>
@@ -391,7 +391,7 @@
                             </div>
                             <button
                                 onclick={() => dismissedExpired = true}
-                                class='mt-0.5 flex h-8 w-8 items-center justify-center rounded-md text-red-600 transition-colors hover:bg-red-100'
+                                class='mt-0.5 flex h-8 w-8 items-center justify-center rounded-sm text-red-600 transition-colors hover:bg-red-100'
                                 aria-label='Dismiss expired certificates notification'
                             >
                                 <X class='h-4 w-4' />
@@ -400,10 +400,10 @@
                     </div>
                 {/if}
                 {#if expiringCertificates.length > 0 && !dismissedExpiring}
-                    <div class='relative overflow-hidden rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50/50 px-5 py-4 shadow-sm'>
+                    <div class='relative overflow-hidden rounded-sm border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50/50 px-5 py-4 shadow-sm'>
                         <div class='absolute inset-y-0 left-0 w-1 bg-amber-500'></div>
                         <div class='flex items-start gap-4 pl-2'>
-                            <div class='mt-0.5 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100'>
+                            <div class='mt-0.5 flex h-10 w-10 items-center justify-center rounded-sm bg-amber-100'>
                                 <AlertTriangle class='h-5 w-5 text-amber-600' />
                             </div>
                             <div class='flex-1 min-w-0'>
@@ -436,7 +436,7 @@
                             </div>
                             <button
                                 onclick={() => dismissedExpiring = true}
-                                class='mt-0.5 flex h-8 w-8 items-center justify-center rounded-md text-amber-600 transition-colors hover:bg-amber-100'
+                                class='mt-0.5 flex h-8 w-8 items-center justify-center rounded-sm text-amber-600 transition-colors hover:bg-amber-100'
                                 aria-label='Dismiss expiring certificates notification'
                             >
                                 <X class='h-4 w-4' />

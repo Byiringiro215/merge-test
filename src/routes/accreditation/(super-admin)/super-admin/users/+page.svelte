@@ -182,16 +182,16 @@
                     onclick={() => activeTab = tab as any}
                     class={cn(
                         'relative group flex cursor-pointer items-center justify-center gap-2 rounded-sm px-6 py-3 transition-all duration-200 whitespace-nowrap',
-                        activeTab === tab ? 'text-primary' : 'text-[#353E49] hover:bg-slate-50 hover:text-primary',
+                        activeTab === tab ? 'text-[#2069C1]' : 'text-[#353E49] hover:bg-slate-50 hover:text-[#2069C1]',
                     )}
                 >
                     {#if activeTab === tab}
                         <div class='absolute inset-0 z-0 rounded-sm bg-[#F9FAFB]'></div>
                     {/if}
                     {#if tab === 'supervisor'}
-                        <Users class={cn('relative z-10 h-4 w-4 transition-colors duration-200', activeTab === tab ? 'text-primary' : 'text-[#353E49] group-hover:text-primary')} strokeWidth={1.5} />
+                        <Users class={cn('relative z-10 h-4 w-4 transition-colors duration-200', activeTab === tab ? 'text-[#2069C1]' : 'text-[#353E49] group-hover:text-[#2069C1]')} strokeWidth={1.5} />
                     {:else}
-                        <User class={cn('relative z-10 h-4 w-4 transition-colors duration-200', activeTab === tab ? 'text-primary' : 'text-[#353E49] group-hover:text-primary')} strokeWidth={1.5} />
+                        <User class={cn('relative z-10 h-4 w-4 transition-colors duration-200', activeTab === tab ? 'text-[#2069C1]' : 'text-[#353E49] group-hover:text-[#2069C1]')} strokeWidth={1.5} />
                     {/if}
                     <span class='relative z-10 text-sm font-medium transition-colors duration-200'>
                         {tab === 'curriculum-evaluator' ? 'Curriculum Evaluator' : tab === 'evaluator' ? 'Evaluators' : 'Supervisors'}
@@ -203,7 +203,7 @@
         <!-- Stat Cards -->
         <div class='xl:grid-cols-5 relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] md:grid-cols-2'>
             {#each stats as stat (stat.label)}
-                <div class='animate-slide-up overflow-hidden rounded-md border border-slate-200 bg-white shadow-none'>
+                <div class='animate-slide-up overflow-hidden rounded-sm border border-slate-200 bg-white shadow-none'>
                     <div class='flex flex-col gap-4 p-5'>
                         <div class='w-fit rounded-sm border border-[#EAECF0] bg-white p-2.5 shadow-[0_1px_2px_0_rgba(16,24,40,0.05)]'>
                             <stat.icon class='h-5 w-5' style='color: {stat.color}' strokeWidth={1.5} />

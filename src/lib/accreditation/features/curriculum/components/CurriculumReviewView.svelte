@@ -92,7 +92,7 @@
 <div class='flex w-full max-w-5xl flex-col gap-6 text-left lg:max-w-6xl xl:max-w-7xl'>
     <button
         onclick={() => goto('/accreditation/curriculum-evaluator/applications')}
-        class='group flex w-fit items-center gap-2 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-800'
+        class='group flex w-fit items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800'
     >
         <ArrowLeft class='h-4 w-4 transition-transform group-hover:-translate-x-1' />
         Back to Applications
@@ -102,11 +102,11 @@
         <!-- Left: Main Content -->
         <div class='space-y-6 lg:col-span-2'>
             <!-- Header Card -->
-            <div class='rounded-md border border-slate-200 bg-white p-6'>
+            <div class='rounded-sm border border-slate-200 bg-white p-6'>
                 <div class='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
                     <div class='space-y-2'>
-                        <h3 class='text-md text-[#101828]'>{application.institution.name}</h3>
-                        <p class='text-[13px] text-[#64748B]'>
+                        <h3 class='text-sm font-semibold text-[#101828]'>{application.institution.name}</h3>
+                        <p class='text-sm text-[#64748B]'>
                             Review the curriculum package for {application.trade.name} and confirm whether the submitted materials support accreditation requirements.
                         </p>
                     </div>
@@ -118,10 +118,10 @@
             </div>
 
             <!-- Curriculum Materials -->
-            <div class='rounded-md border border-slate-200 bg-white p-6'>
+            <div class='rounded-sm border border-slate-200 bg-white p-6'>
                 <div class='mb-6'>
-                    <h3 class='text-md text-[#101828]'>Curriculum Materials</h3>
-                    <p class='text-[13px] text-[#64748B]'>Review the submitted package before making a curriculum decision.</p>
+                    <h3 class='text-sm font-semibold text-[#101828]'>Curriculum Materials</h3>
+                    <p class='text-sm text-[#64748B]'>Review the submitted package before making a curriculum decision.</p>
                 </div>
 
                 <div class='space-y-4'>
@@ -131,16 +131,16 @@
                                 onclick={() => (selectedDocument = doc)}
                                 class='flex w-full cursor-pointer items-center gap-4 rounded-sm border border-slate-200 bg-white p-4 text-left transition-transform hover:-translate-y-0.5'
                             >
-                                <div class='relative flex h-10 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-50 shadow-sm'>
+                                <div class='relative flex h-10 w-8 shrink-0 items-center justify-center rounded-sm border border-slate-200 bg-slate-50 shadow-sm'>
                                     <div class='absolute bottom-1 left-1 right-1 flex items-center justify-center rounded-[3px] bg-red-500 px-1 py-0.5'>
                                         <span class='text-[8px] font-bold tracking-widest text-white'>{doc.type}</span>
                                     </div>
                                 </div>
                                 <div class='flex-1'>
-                                    <p class='text-[13px] font-medium text-slate-800'>{doc.name}</p>
+                                    <p class='text-sm font-medium text-slate-800'>{doc.name}</p>
                                     <p class='text-[11px] text-slate-500'>{doc.size}</p>
                                 </div>
-                                <div class='flex h-5 w-5 items-center justify-center rounded-md bg-[#0A77FF]'>
+                                <div class='flex h-5 w-5 items-center justify-center rounded-sm bg-[#2069C1]'>
                                     <svg class='h-3.5 w-3.5 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='3'>
                                         <path stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7' />
                                     </svg>
@@ -150,7 +150,7 @@
                                 <p class='text-[11px] font-medium text-slate-500'>{doc.note}</p>
                                 <button
                                     onclick={() => (selectedDocument = doc)}
-                                    class='cursor-pointer text-[13px] font-medium text-[#0A77FF] transition-colors hover:text-[#085fca]'
+                                    class='cursor-pointer text-sm font-medium text-[#2069C1] transition-colors hover:text-[#085fca]'
                                 >
                                     View document
                                 </button>
@@ -161,9 +161,9 @@
             </div>
 
             <!-- Review Checklist -->
-            <div class='rounded-md border border-slate-200 bg-white p-6'>
-                <h3 class='text-md text-[#101828]'>Curriculum Review Checklist</h3>
-                <p class='mb-4 text-[13px] text-[#64748B]'>
+            <div class='rounded-sm border border-slate-200 bg-white p-6'>
+                <h3 class='text-sm font-semibold text-[#101828]'>Curriculum Review Checklist</h3>
+                <p class='mb-4 text-sm text-[#64748B]'>
                     Follow the same review rhythm used elsewhere in the portal, but keep the content focused on curriculum evidence.
                 </p>
 
@@ -172,8 +172,8 @@
                         <div class='rounded-sm border border-slate-100 bg-white p-4 transition-colors hover:bg-slate-50/70'>
                             <div class='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
                                 <div class='space-y-1'>
-                                    <p class='text-[13px] font-medium text-slate-900'>{area.title}</p>
-                                    <p class='text-[13px] leading-relaxed text-slate-500'>{area.description}</p>
+                                    <p class='text-sm font-medium text-slate-900'>{area.title}</p>
+                                    <p class='text-sm leading-relaxed text-slate-500'>{area.description}</p>
                                 </div>
                                 <span class={cn('shrink-0 rounded-sm px-2.5 py-1 text-[12px]', getStatusClasses(area.status))}>
                                     {area.status}
@@ -185,10 +185,10 @@
             </div>
 
             <!-- Reviewer Guidance -->
-            <div class='rounded-md border border-slate-200 bg-white p-6'>
-                <h3 class='text-md text-[#101828]'>Reviewer Guidance</h3>
-                <p class='mb-4 text-[13px] text-[#64748B]'>Reference notes for this curriculum review.</p>
-                <p class='whitespace-pre-line text-[13px] leading-relaxed text-slate-600'>
+            <div class='rounded-sm border border-slate-200 bg-white p-6'>
+                <h3 class='text-sm font-semibold text-[#101828]'>Reviewer Guidance</h3>
+                <p class='mb-4 text-sm text-[#64748B]'>Reference notes for this curriculum review.</p>
+                <p class='whitespace-pre-line text-sm leading-relaxed text-slate-600'>
                     Start by confirming that the submitted curriculum package is complete and internally consistent.
                     Then verify whether the learning outcomes, module structure, and assessment tools clearly support the required accreditation standards for {application.trade.name}.
 
@@ -200,9 +200,9 @@
         <!-- Right: Decision Sidebar -->
         <div class='h-fit space-y-6 lg:sticky lg:top-6'>
             <!-- Decision Panel -->
-            <div class='rounded-md border border-slate-200 bg-white p-6 shadow-none'>
-                <h3 class='text-md text-[#101828]'>Evaluation Decision</h3>
-                <p class='mb-6 text-[13px] text-[#64748B]'>Use the existing decision flow and keep remarks explicit.</p>
+            <div class='rounded-sm border border-slate-200 bg-white p-6 shadow-none'>
+                <h3 class='text-sm font-semibold text-[#101828]'>Evaluation Decision</h3>
+                <p class='mb-6 text-sm text-[#64748B]'>Use the existing decision flow and keep remarks explicit.</p>
 
                 <div class='mb-8 flex flex-col gap-3'>
                     <button
@@ -215,7 +215,7 @@
                         )}
                     >
                         <CheckCircle class={cn('h-5 w-5', status === 'approve' ? 'text-emerald-500' : 'text-slate-400')} />
-                        <span class='text-[13px]'>Approve Curriculum</span>
+                        <span class='text-sm'>Approve Curriculum</span>
                     </button>
 
                     <button
@@ -228,7 +228,7 @@
                         )}
                     >
                         <RotateCcw class={cn('h-5 w-5', status === 'revert' ? 'text-orange-500' : 'text-slate-400')} />
-                        <span class='text-[13px]'>Revert for Correction</span>
+                        <span class='text-sm'>Revert for Correction</span>
                     </button>
 
                     <button
@@ -241,20 +241,20 @@
                         )}
                     >
                         <Clock class={cn('h-5 w-5', status === 'defer' ? 'text-amber-500' : 'text-slate-400')} />
-                        <span class='text-[13px]'>Defer Application</span>
+                        <span class='text-sm'>Defer Application</span>
                     </button>
                 </div>
 
                 {#if status === 'revert' || status === 'defer'}
                     <div class='mb-8'>
-                        <label for='evaluator-remarks' class='mb-2 block text-[13px] font-medium text-slate-500'>Evaluator remarks (required)</label>
+                        <label for='evaluator-remarks' class='mb-2 block text-sm font-medium text-slate-500'>Evaluator remarks (required)</label>
                         <div class='relative'>
                             <MessageSquare class='absolute left-4 top-4 h-4 w-4 text-slate-400' />
                             <textarea
                                 id='evaluator-remarks'
                                 bind:value={comment}
                                 placeholder={status === 'revert' ? 'Explain what needs correction...' : 'Explain grounds for deferral...'}
-                                class='min-h-[120px] w-full resize-none rounded-sm border border-slate-200 bg-slate-50 p-4 pl-12 text-[13px] transition-all focus:border-[#0A77FF] focus:outline-none'
+                                class='min-h-[120px] w-full resize-none rounded-sm border border-slate-200 bg-slate-50 p-4 pl-12 text-sm transition-all focus:border-[#2069C1] focus:outline-none'
                             ></textarea>
                         </div>
                     </div>
@@ -268,10 +268,10 @@
                     }}
                     disabled={!status || (status === 'revert' && !comment)}
                     class={cn(
-                        'w-full rounded-sm py-3 text-[13px] font-medium transition-all',
+                        'w-full rounded-sm py-3 text-sm font-medium transition-all',
                         !status || (status === 'revert' && !comment)
                             ? 'cursor-not-allowed bg-blue-300 text-white'
-                            : 'cursor-pointer bg-[#0A77FF] text-white hover:bg-[#0864d6]',
+                            : 'cursor-pointer bg-[#2069C1] text-white hover:bg-[#0864d6]',
                     )}
                 >
                     {status === 'approve' ? 'Confirm Accept' : status === 'revert' ? 'Confirm Revert' : status === 'defer' ? 'Confirm Defer' : 'Select Decision'}
@@ -279,29 +279,29 @@
             </div>
 
             <!-- Application Info -->
-            <div class='rounded-md border border-slate-200 bg-white p-6 text-slate-900'>
-                <h3 class='text-md text-[#101828]'>Application Info</h3>
-                <p class='mb-4 text-[13px] text-[#64748B]'>Summary details for the selected curriculum package.</p>
+            <div class='rounded-sm border border-slate-200 bg-white p-6 text-slate-900'>
+                <h3 class='text-sm font-semibold text-[#101828]'>Application Info</h3>
+                <p class='mb-4 text-sm text-[#64748B]'>Summary details for the selected curriculum package.</p>
                 <div class='space-y-4'>
                     <div>
                         <p class='mb-1 text-[11px] text-slate-500'>Institution</p>
-                        <p class='text-[13px] font-medium text-slate-900'>{application.institution.name}</p>
+                        <p class='text-sm font-medium text-slate-900'>{application.institution.name}</p>
                     </div>
                     <div>
                         <p class='mb-1 text-[11px] text-slate-500'>Trade Program</p>
-                        <p class='text-[13px] font-medium text-slate-900'>{application.trade.name} ({application.trade.category})</p>
+                        <p class='text-sm font-medium text-slate-900'>{application.trade.name} ({application.trade.category})</p>
                     </div>
                     <div>
                         <p class='mb-1 text-[11px] text-slate-500'>Review Scope</p>
-                        <p class='text-[13px] font-medium text-slate-900'>Curriculum structure, outcomes, and assessment evidence</p>
+                        <p class='text-sm font-medium text-slate-900'>Curriculum structure, outcomes, and assessment evidence</p>
                     </div>
                     <div>
                         <p class='mb-1 text-[11px] text-slate-500'>Applicant</p>
-                        <p class='text-[13px] font-medium text-slate-900'>{application.applicant.name}</p>
+                        <p class='text-sm font-medium text-slate-900'>{application.applicant.name}</p>
                     </div>
                     <div class='rounded-sm border border-slate-100 bg-slate-50 p-4'>
-                        <p class='mb-2 text-[13px] font-medium text-slate-900'>Checklist</p>
-                        <ul class='space-y-2 text-[13px] text-slate-500'>
+                        <p class='mb-2 text-sm font-medium text-slate-900'>Checklist</p>
+                        <ul class='space-y-2 text-sm text-slate-500'>
                             <li>Confirm documents are complete</li>
                             <li>Check outcome-to-module alignment</li>
                             <li>Validate assessment support</li>

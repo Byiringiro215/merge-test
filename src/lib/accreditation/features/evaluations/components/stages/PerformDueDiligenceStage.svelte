@@ -38,7 +38,7 @@
                             </div>
                             <div class='flex-1'>
                                 <div class='flex items-center justify-between'>
-                                    <h4 class='text-[13px] font-bold text-slate-900'>Principal Evaluator</h4>
+                                    <h4 class='text-sm font-bold text-slate-900'>Principal Evaluator</h4>
                                     <span class='text-[10px] font-bold uppercase tracking-widest text-green-500 bg-green-50 px-2 py-0.5 rounded-sm border border-green-100'>Accept</span>
                                 </div>
                                 <p class='text-[12px] text-slate-600 mt-1'>Infrastructure meets all minimum requirements. Validated the networking lab.</p>
@@ -94,11 +94,11 @@
                             placeholder='Text...'
                             value={evaluationNote}
                             oninput={e => setEvaluationNote(e.currentTarget.value)}
-                            class='w-full border border-slate-200 rounded-sm p-4 min-h-[140px] text-sm focus:outline-none focus:ring-1 focus:ring-[#0A77FF] transition-all resize-none'
+                            class='w-full border border-slate-200 rounded-sm p-4 min-h-[140px] text-sm focus:outline-none focus:ring-1 focus:ring-[#2069C1] transition-all resize-none'
                         ></textarea>
                         <div class='absolute bottom-4 right-4 text-[11px] text-slate-400'>{275 - evaluationNote.length} characters left</div>
                     </div>
-                    <button class='flex items-center gap-2 px-8 py-3 bg-[#0A77FF] text-white rounded-sm text-sm hover:opacity-90 transition-all cursor-pointer'>
+                    <button class='flex items-center gap-2 px-8 py-3 bg-[#2069C1] text-white rounded-sm text-sm hover:opacity-90 transition-all cursor-pointer'>
                         Add Note
                         <PlusSquare class='h-4 w-4 text-white/70' strokeWidth={1.5} />
                     </button>
@@ -119,7 +119,7 @@
                         setActiveTab('General');
                         setIsEvaluating(false);
                     }}
-                    class='flex-[2] py-3 px-4 bg-[#0A77FF] text-white rounded-sm text-sm hover:opacity-90 transition-opacity cursor-pointer'
+                    class='flex-[2] py-3 px-4 bg-[#2069C1] text-white rounded-sm text-sm hover:opacity-90 transition-opacity cursor-pointer'
                 >
                     Complete Due Diligence
                 </button>
@@ -133,7 +133,7 @@
             </div>
             <div class='relative max-w-xl'>
                 <Search class='absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300' />
-                <input placeholder='Search' class='w-full pl-11 pr-4 py-3 rounded-sm border border-slate-200 text-sm focus:outline-none focus:border-[#0A77FF]' />
+                <input placeholder='Search' class='w-full pl-11 pr-4 py-3 rounded-sm border border-slate-200 text-sm focus:outline-none focus:border-[#2069C1]' />
             </div>
 
             <div class='flex flex-col gap-3 max-h-[600px] overflow-y-auto max-w-xl'>

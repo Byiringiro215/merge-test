@@ -39,7 +39,7 @@ export const allAccreditationNavItems: AccreditationNavItem[] = [
         roles: ['evaluator', 'super-admin', 'supervisor', 'merged'],
     },
     {
-        title: 'My Evaluations',
+        title: 'My Applications',
         href: '/accreditation/applicant/evaluations',
         icon: CalendarCheck,
         roles: ['applicant', 'merged'],
