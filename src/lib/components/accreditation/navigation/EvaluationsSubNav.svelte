@@ -60,7 +60,7 @@
         if (scrollContainer && path) {
             // Wait for DOM update
             setTimeout(() => {
-                const activeLink = scrollContainer?.querySelector('.text-primary') as HTMLElement;
+                const activeLink = scrollContainer?.querySelector('.text-[#2069C1]') as HTMLElement;
                 if (activeLink) {
                     activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 }
@@ -82,7 +82,7 @@
                     href={item.href}
                     class={cn(
                         'group relative flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-sm px-6 py-3 transition-colors duration-200',
-                        isActive ? 'text-primary' : 'text-[#353E49] hover:bg-slate-50 hover:text-primary',
+                        isActive ? 'text-[#2069C1]' : 'text-[#353E49] hover:bg-slate-50 hover:text-[#2069C1]',
                     )}
                 >
                     {#if isActive}
@@ -91,14 +91,14 @@
                     <item.icon
                         class={cn(
                             'relative z-10 h-4 w-4 transition-colors duration-200',
-                            isActive ? 'text-primary' : 'text-[#353E49] group-hover:text-primary',
+                            isActive ? 'text-[#2069C1]' : 'text-[#353E49] group-hover:text-[#2069C1]',
                         )}
                         strokeWidth={1}
                     />
                     <span
                         class={cn(
                             'relative z-10 text-sm font-medium transition-colors duration-200',
-                            isActive ? 'text-primary' : 'text-[#353E49] group-hover:text-primary',
+                            isActive ? 'text-[#2069C1]' : 'text-[#353E49] group-hover:text-[#2069C1]',
                         )}
                     >
                         {item.title}

@@ -33,8 +33,8 @@
 <div class='space-y-4'>
     <!-- Ready banner -->
     <div class='rounded-sm border border-slate-200 bg-slate-50 p-5 text-center'>
-        <div class='mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#336cb2]/15 mb-2.5'>
-            <CheckCircle class='h-5 w-5 text-[#336cb2]' />
+        <div class='mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#2069C1]/15 mb-2.5'>
+            <CheckCircle class='h-5 w-5 text-[#2069C1]' />
         </div>
         <h3 class='text-[15px] font-semibold text-slate-800'>Ready to Submit!</h3>
         <p class='mt-1 text-[12.5px] text-slate-500 max-w-sm mx-auto'>
@@ -45,8 +45,8 @@
     <!-- Institution Type -->
     <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
-            <h4 class='text-[13px] font-semibold text-slate-700'>Institution Type</h4>
-            <a href='/register/institution/institution-type' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
+            <h4 class='text-sm font-semibold text-slate-700'>Institution Type</h4>
+            <a href='/register/institution/institution-type' class='text-[12px] font-medium text-[#2069C1] hover:text-[#1a56a0] transition'>Edit</a>
         </div>
         <div class='px-5 py-4 flex items-center gap-3'>
             {#if providerType === 'School'}
@@ -64,8 +64,8 @@
     {#if providerType !== 'School'}
         <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
             <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
-                <h4 class='text-[13px] font-semibold text-slate-700'>Owner Verification</h4>
-                <a href='/register/institution/institution-details' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
+                <h4 class='text-sm font-semibold text-slate-700'>Owner Verification</h4>
+                <a href='/register/institution/institution-details' class='text-[12px] font-medium text-[#2069C1] hover:text-[#1a56a0] transition'>Edit</a>
             </div>
             <div class='p-5 space-y-4'>
                 <div>
@@ -87,8 +87,8 @@
     <!-- Institution Details -->
     <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
-            <h4 class='text-[13px] font-semibold text-slate-700'>Institution Details</h4>
-            <a href='/register/institution/institution-details' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
+            <h4 class='text-sm font-semibold text-slate-700'>Institution Details</h4>
+            <a href='/register/institution/institution-details' class='text-[12px] font-medium text-[#2069C1] hover:text-[#1a56a0] transition'>Edit</a>
         </div>
         <div class='p-5 grid grid-cols-2 gap-y-4 gap-x-6'>
             <div class='col-span-2'>
@@ -127,8 +127,8 @@
     <!-- Address Information -->
     <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
-            <h4 class='text-[13px] font-semibold text-slate-700'>Address Information</h4>
-            <a href='/register/institution/address-information' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
+            <h4 class='text-sm font-semibold text-slate-700'>Address Information</h4>
+            <a href='/register/institution/address-information' class='text-[12px] font-medium text-[#2069C1] hover:text-[#1a56a0] transition'>Edit</a>
         </div>
         <div class='p-5 space-y-3'>
             <div>
@@ -149,8 +149,8 @@
     <!-- About the Institution -->
     <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
-            <h4 class='text-[13px] font-semibold text-slate-700'>About the Institution</h4>
-            <a href='/register/institution/about-the-institution' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
+            <h4 class='text-sm font-semibold text-slate-700'>About the Institution</h4>
+            <a href='/register/institution/about-the-institution' class='text-[12px] font-medium text-[#2069C1] hover:text-[#1a56a0] transition'>Edit</a>
         </div>
         <div class='p-5 space-y-4'>
             {#each ['Institution Summary', 'Mission or Mandate', 'Programs Offered'] as field (field)}
@@ -167,19 +167,19 @@
     <!-- Legal Representatives -->
     <div class='rounded-sm border border-slate-200 bg-white overflow-hidden'>
         <div class='border-b border-slate-100 bg-slate-50/50 px-5 py-3 flex items-center justify-between'>
-            <h4 class='text-[13px] font-semibold text-slate-700'>Legal Representatives</h4>
-            <a href='/register/institution/legal-representatives' class='text-[12px] font-medium text-[#336cb2] hover:text-[#2a5a96] transition'>Edit</a>
+            <h4 class='text-sm font-semibold text-slate-700'>Legal Representatives</h4>
+            <a href='/register/institution/legal-representatives' class='text-[12px] font-medium text-[#2069C1] hover:text-[#1a56a0] transition'>Edit</a>
         </div>
         <div class='p-5'>
             {#if legalReps.length > 0}
                 <div class='space-y-2.5'>
                     {#each legalReps as rep, idx (idx)}
                         <div class='flex items-start gap-3 bg-slate-50 rounded-sm p-3 border border-slate-100'>
-                            <div class='h-8 w-8 shrink-0 rounded-full bg-[#336cb2]/15 text-[#336cb2] flex items-center justify-center text-[11px] font-semibold uppercase'>
+                            <div class='h-8 w-8 shrink-0 rounded-full bg-[#2069C1]/15 text-[#2069C1] flex items-center justify-center text-[11px] font-semibold uppercase'>
                                 {rep.firstName?.[0] ?? ''}{rep.lastName?.[0] ?? ''}
                             </div>
                             <div class='min-w-0'>
-                                <p class='text-[13px] font-semibold text-slate-800'>{rep.firstName} {rep.lastName}</p>
+                                <p class='text-sm font-semibold text-slate-800'>{rep.firstName} {rep.lastName}</p>
                                 <p class='text-[12px] text-slate-500'>{rep.position} · {rep.gender}</p>
                                 <p class='text-[12px] text-slate-500'>{rep.email}</p>
                                 {#if rep.phone}<p class='text-[12px] text-slate-400'>+250 {rep.phone}</p>{/if}
@@ -188,7 +188,7 @@
                     {/each}
                 </div>
             {:else}
-                <p class='text-[13px] italic text-slate-400'>No legal representatives added</p>
+                <p class='text-sm italic text-slate-400'>No legal representatives added</p>
             {/if}
         </div>
     </div>

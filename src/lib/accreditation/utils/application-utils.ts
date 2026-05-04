@@ -295,14 +295,14 @@ export function getMockStatsByRole(role: string) {
         return [
             { label: 'Assigned reviews', value: 10, icon: 'ClipboardClock', iconColor: '#FF8D28' },
             { label: 'Ready for approval', value: 2, icon: 'CheckCheck', iconColor: '#34C759' },
-            { label: 'Evidence gaps', value: 3, icon: 'FileSearch', iconColor: '#0A77FF' },
+            { label: 'Evidence gaps', value: 3, icon: 'FileSearch', iconColor: '#2069C1' },
             { label: 'Standards issues', value: 1, icon: 'ShieldAlert', iconColor: '#FF383C' },
         ];
     }
 
     // Default stats for other roles
     return [
-        { label: 'Applications', value: 24, icon: 'NotepadText', iconColor: '#0A77FF' },
+        { label: 'Applications', value: 24, icon: 'NotepadText', iconColor: '#2069C1' },
         { label: 'Pending', value: 8, icon: 'ClipboardClock', iconColor: '#FF8D28' },
         { label: 'Evaluated', value: 5, icon: 'CheckCheck', iconColor: '#34C759' },
         { label: 'Rejected', value: 11, icon: 'AlertTriangle', iconColor: '#FF383C' },

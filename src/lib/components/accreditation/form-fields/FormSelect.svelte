@@ -38,7 +38,7 @@
             {value}
             onchange={e => onChange(e.currentTarget.value)}
             class={cn(
-                'w-full appearance-none rounded-sm border border-slate-200 bg-white px-3 py-3 text-sm outline-none transition focus:border-[#336cb2] focus:ring-1 focus:ring-[#336cb2]/20',
+                'w-full appearance-none rounded-sm border border-slate-200 bg-white px-3 py-3 text-sm outline-none transition focus:border-[#2069C1] focus:ring-1 focus:ring-[#2069C1]/20',
                 !value ? 'text-slate-400' : 'text-slate-600',
             )}
         >

@@ -30,7 +30,7 @@
     const isReadOnly = $derived(role === 'supervisor');
 
     const stats = [
-        { label: 'Total Evaluators', value: '48', icon: Users, iconColor: '#0A77FF' },
+        { label: 'Total Evaluators', value: '48', icon: Users, iconColor: '#2069C1' },
         { label: 'Active', value: '32', icon: User, iconColor: '#34C759' },
         { label: 'Available', value: '12', icon: CheckCheck, iconColor: '#CB30E0' },
         { label: 'Pending', value: '4', icon: ClipboardClock, iconColor: '#6155F5' },
@@ -79,7 +79,7 @@
 {#snippet actionsCell()}
     <div class='flex items-center justify-start gap-3'>
         <Trash2 class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-red-500' />
-        <Pencil class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#0A77FF]' />
+        <Pencil class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#2069C1]' />
     </div>
 {/snippet}
 

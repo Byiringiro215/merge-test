@@ -60,7 +60,7 @@
             <div class='flex items-start justify-between border-b border-slate-100 p-6'>
                 <div class='flex items-start gap-4'>
                     <div class='mt-2 flex h-10 w-13 shrink-0 items-center justify-center rounded-sm border border-slate-100'>
-                        <UserPlus class='h-5 w-5 text-[#0A77FF]' />
+                        <UserPlus class='h-5 w-5 text-[#2069C1]' />
                     </div>
                     <div>
                         <h3 class='text-lg font-medium text-[#323539]'>{title || defaultTitle}</h3>
@@ -120,7 +120,7 @@
                                     id='email'
                                     placeholder='Enter his/her email'
                                     required
-                                    class='mt-2 w-full rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm transition-all focus:border-[#0A77FF] focus:outline-none focus:ring-2 focus:ring-[#0A77FF]/10'
+                                    class='mt-2 w-full rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm transition-all focus:border-[#2069C1] focus:outline-none focus:ring-2 focus:ring-[#2069C1]/10'
                                     type='email'
                                     bind:value={formData.email}
                                 />
@@ -150,7 +150,7 @@
                     </button>
                     <button
                         type='submit'
-                        class='active:scale-[0.98] flex-1 cursor-pointer rounded-sm bg-[#0A77FF] py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#0966ff]'
+                        class='active:scale-[0.98] flex-1 cursor-pointer rounded-sm bg-[#2069C1] py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#0966ff]'
                     >
                         Invite
                     </button>
