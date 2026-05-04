@@ -4,7 +4,7 @@
     import { MoveUpRight } from '@lucide/svelte';
 
     const trades = [
-        { name: 'Software Engineering & Embe...', value: 45, color: '#0A77FF' },
+        { name: 'Software Engineering & Embe...', value: 45, color: '#2069C1' },
         { name: 'Masonry', value: 25, color: '#59A8FF' },
         { name: 'Welding', value: 15, color: '#84C3FF' },
         { name: 'Music & Arts', value: 10, color: '#D1E9FF' },
@@ -20,7 +20,7 @@
                 <div
                     class='h-full w-full rounded-full'
                     style='background: conic-gradient(
-                        #0A77FF 0.0% 45.0%,
+                        #2069C1 0.0% 45.0%,
                         #59A8FF 45.0% 70.0%,
                         #84C3FF 70.0% 85.0%,
                         #D1E9FF 85.0% 95.0%,

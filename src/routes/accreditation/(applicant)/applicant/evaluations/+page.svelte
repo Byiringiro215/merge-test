@@ -120,13 +120,13 @@
                 <button
                     onclick={() => activeTab = tab.id}
                     class={cn(
-                        'flex-1 flex items-center justify-center gap-3 px-8 py-5 text-[15px] font-medium transition-all -sm cursor-pointer',
+                        'flex-1 flex items-center justify-center gap-3 px-8 py-5 text-[15px] font-medium transition-all rounded-sm cursor-pointer',
                         isActive
-                            ? 'text-[#0A77FF] bg-[#F4F7FF]'
-                            : 'text-slate-500 hover:text-[#0A77FF] hover:bg-[#F4F7FF]',
+                            ? 'text-[#2069C1] bg-[#F4F7FF]'
+                            : 'text-slate-500 hover:text-[#2069C1] hover:bg-[#F4F7FF]',
                     )}
                 >
-                    <tab.icon class={cn('h-5 w-5', isActive ? 'text-[#0A77FF]' : 'text-slate-400')} />
+                    <tab.icon class={cn('h-5 w-5', isActive ? 'text-[#2069C1]' : 'text-slate-400')} />
                     {tab.label}
                 </button>
             {/each}
@@ -134,18 +134,18 @@
 
         {#if activeTab === 'Applications'}
             <!-- Application Selector -->
-            <div class='flex flex-col justify-between gap-4 -sm border border-slate-200 bg-white p-6 text-left sm:flex-row sm:items-center'>
+            <div class='flex flex-col justify-between gap-4 rounded-sm border border-slate-200 bg-white p-6 text-left sm:flex-row sm:items-center'>
                 <div>
                     <h2 class='mb-1 text-sm font-bold uppercase tracking-widest text-slate-800'>Selected Application</h2>
                     <div class='flex items-center gap-3'>
                         <span class='text-[16px] font-medium text-slate-900'>{application.trade.name}</span>
-                        <span class='-sm bg-slate-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-slate-600'>{application.trade.category}</span>
+                        <span class='rounded-sm bg-slate-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-slate-600'>{application.trade.category}</span>
                     </div>
                 </div>
                 <div class='relative min-w-[200px]'>
                     <select
                         bind:value={selectedAppId}
-                        class='w-full appearance-none -sm border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-10 text-[13px] font-medium text-slate-700 transition-all focus:border-[#0A77FF] focus:outline-none'
+                        class='w-full appearance-none rounded-sm border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-10 text-sm font-medium text-slate-700 transition-all focus:border-[#2069C1] focus:outline-none'
                     >
                         {#each mockApplications as app}
                             <option value={app.id}>{app.trade.name} - {app.trade.category}</option>
@@ -159,9 +159,9 @@
                 <!-- Left Column: Timeline & Progress -->
                 <div class='flex flex-col gap-6 lg:col-span-2'>
                     <!-- Progress Card -->
-                    <div class='-sm border border-slate-200 bg-white p-8'>
+                    <div class='rounded-sm border border-slate-200 bg-white p-8'>
                         <h3 class='mb-2 text-[16px] font-bold text-slate-800'>Evaluation Progress</h3>
-                        <p class='mb-8 text-[13px] text-slate-500'>Track the status of your accreditation application through the evaluation stages.</p>
+                        <p class='mb-8 text-sm text-slate-500'>Track the status of your accreditation application through the evaluation stages.</p>
 
                         <!-- Horizontal Stepper -->
                         <div class='no-scrollbar w-full overflow-x-auto pb-4'>
@@ -170,7 +170,7 @@
                                 <div class='absolute top-[13px] left-[16px] right-[16px] h-px bg-slate-200 z-0'></div>
                                 <!-- Progress Line -->
                                 <div
-                                    class='absolute top-[13px] left-[16px] h-[1.5px] bg-[#0A77FF] z-0 transition-all duration-300'
+                                    class='absolute top-[13px] left-[16px] h-[1.5px] bg-[#2069C1] z-0 transition-all duration-300'
                                     style='width: calc({progressWidth} - {(currentStep / (steps.length - 1)) * lineGap}px)'
                                 ></div>
 
@@ -185,8 +185,8 @@
                                             <div class={cn(
                                                 'h-6 w-6 rounded-full border flex items-center justify-center mb-3 transition-all duration-300 shrink-0 relative z-10',
                                                 isActive
-                                                    ? 'border-[#0A77FF] bg-[#0A77FF]'
-                                                    : isCompleted ? 'border-[#0A77FF] bg-[#0A77FF]' : 'border-slate-200 bg-white',
+                                                    ? 'border-[#2069C1] bg-[#2069C1]'
+                                                    : isCompleted ? 'border-[#2069C1] bg-[#2069C1]' : 'border-slate-200 bg-white',
                                             )}>
                                                 {#if isCompleted}
                                                     <Check class='h-3.5 w-3.5 text-white' strokeWidth={3} />
@@ -218,7 +218,7 @@
                     </div>
 
                     <!-- Feedback Timeline -->
-                    <div class='-sm border border-slate-200 bg-white p-8'>
+                    <div class='rounded-sm border border-slate-200 bg-white p-8'>
                         <h3 class='mb-6 border-b border-slate-100 pb-4 text-[16px] font-bold text-slate-800'>Recent Feedback & Activity</h3>
 
                         <div class='relative'>
@@ -233,10 +233,10 @@
                                         </div>
                                         <div class='flex flex-col pb-4 pt-2'>
                                             <div class='mb-1 flex items-center gap-2'>
-                                                <span class='text-[13px] font-bold text-slate-800'>{feedback.author}</span>
+                                                <span class='text-sm font-bold text-slate-800'>{feedback.author}</span>
                                                 <span class='text-[11px] font-medium text-slate-400'>• {feedback.date}</span>
                                             </div>
-                                            <p class='mt-2 -sm border border-slate-100 bg-slate-50/50 p-4 text-[13px] font-medium leading-relaxed text-slate-600'>
+                                            <p class='mt-2 rounded-sm border border-slate-100 bg-slate-50/50 p-4 text-sm font-medium leading-relaxed text-slate-600'>
                                                 {feedback.message}
                                             </p>
 
@@ -255,15 +255,15 @@
 
                 <!-- Right Column: Status Summary -->
                 <div class='flex flex-col gap-6'>
-                    <div class='-sm border border-slate-200 bg-white p-6'>
+                    <div class='rounded-sm border border-slate-200 bg-white p-6'>
                         <h3 class='mb-4 border-b border-slate-100 pb-3 text-[14px] font-bold text-slate-800'>Current Status</h3>
 
                         <div class='flex flex-col gap-4'>
                             <div class='flex items-start gap-3'>
-                                <div class='mt-0.5'><Clock class='h-4 w-4 text-[#0A77FF]' /></div>
+                                <div class='mt-0.5'><Clock class='h-4 w-4 text-[#2069C1]' /></div>
                                 <div>
                                     <p class='mb-0.5 text-[11px] font-bold uppercase tracking-widest text-slate-400'>Stage</p>
-                                    <p class='text-[13px] font-bold text-slate-800'>{application.stage}</p>
+                                    <p class='text-sm font-bold text-slate-800'>{application.stage}</p>
                                 </div>
                             </div>
 
@@ -271,7 +271,7 @@
                                 <div class='mt-0.5'><Check class='h-4 w-4 text-emerald-500' /></div>
                                 <div>
                                     <p class='mb-0.5 text-[11px] font-bold uppercase tracking-widest text-slate-400'>Application ID</p>
-                                    <p class='text-[13px] font-bold text-slate-800'>APP-2026-04-{application.id.padStart(3, '0')}</p>
+                                    <p class='text-sm font-bold text-slate-800'>APP-2026-04-{application.id.padStart(3, '0')}</p>
                                 </div>
                             </div>
 
@@ -279,21 +279,21 @@
                                 <div class='mt-0.5'><FileText class='h-4 w-4 text-slate-400' /></div>
                                 <div>
                                     <p class='mb-0.5 text-[11px] font-bold uppercase tracking-widest text-slate-400'>Submitted On</p>
-                                    <p class='text-[13px] font-bold text-slate-800'>{application.submittedOn}</p>
+                                    <p class='text-sm font-bold text-slate-800'>{application.submittedOn}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class='-sm border border-[#0A77FF]/10 bg-[#0A77FF]/5 p-6'>
-                        <div class='mb-2 flex items-center gap-2 text-[#0A77FF]'>
+                    <div class='rounded-sm border border-[#2069C1]/10 bg-[#2069C1]/5 p-6'>
+                        <div class='mb-2 flex items-center gap-2 text-[#2069C1]'>
                             <HelpCircle class='h-5 w-5' />
                             <h3 class='text-[14px] font-bold'>Need Help?</h3>
                         </div>
                         <p class='mb-4 text-[12px] font-medium leading-relaxed text-slate-600'>
                             If you have any questions regarding the evaluation process or need to appeal a decision, please contact our support team.
                         </p>
-                        <button class='cursor-pointer text-[12px] font-bold text-[#0A77FF] hover:underline'>Contact Support &rarr;</button>
+                        <button class='cursor-pointer text-[12px] font-bold text-[#2069C1] hover:underline'>Contact Support &rarr;</button>
                     </div>
                 </div>
             </div>
@@ -301,10 +301,10 @@
             {#if expiredCerts.length > 0 || expiringCerts.length > 0}
                 <div class='mt-6 space-y-2'>
                     {#if expiredCerts.length > 0}
-                        <div class='flex items-start gap-3 -sm border border-red-200 bg-red-50 px-5 py-4'>
+                        <div class='flex items-start gap-3 rounded-sm border border-red-200 bg-red-50 px-5 py-4'>
                             <XCircle class='mt-0.5 h-5 w-5 shrink-0 text-red-600' />
                             <div>
-                                <p class='text-[13px] font-bold text-red-800'>Certificate Expired — Access Auto-Revoked</p>
+                                <p class='text-sm font-bold text-red-800'>Certificate Expired — Access Auto-Revoked</p>
                                 <ul class='mt-1 space-y-0.5'>
                                     {#each expiredCerts as cert}
                                         <li class='text-[12px] text-red-700'>{cert.application} — {cert.certificate} (expired {cert.expiryDate})</li>
@@ -314,10 +314,10 @@
                         </div>
                     {/if}
                     {#if expiringCerts.length > 0}
-                        <div class='flex items-start gap-3 -sm border border-amber-200 bg-amber-50 px-5 py-4'>
+                        <div class='flex items-start gap-3 rounded-sm border border-amber-200 bg-amber-50 px-5 py-4'>
                             <Bell class='mt-0.5 h-5 w-5 shrink-0 text-amber-600' />
                             <div>
-                                <p class='text-[13px] font-bold text-amber-800'>Certificate Expiring Soon — Action Required</p>
+                                <p class='text-sm font-bold text-amber-800'>Certificate Expiring Soon — Action Required</p>
                                 <ul class='mt-1 space-y-0.5'>
                                     {#each expiringCerts as cert}
                                         {@const d = getCertDaysRemaining(cert.expiryDate)}
@@ -330,10 +330,10 @@
                     {/if}
                 </div>
             {/if}
-            <div class='mt-6 overflow-hidden -sm border border-slate-200 bg-white text-left'>
+            <div class='mt-6 overflow-hidden rounded-sm border border-slate-200 bg-white text-left'>
                 <div class='border-b border-slate-100 p-8'>
                     <h3 class='mb-1 text-[16px] font-bold text-slate-800'>Certificates</h3>
-                    <p class='text-[13px] text-slate-500'>View and manage certificates for your allowed applications.</p>
+                    <p class='text-sm text-slate-500'>View and manage certificates for your allowed applications.</p>
                 </div>
 
                 <div class='overflow-x-auto'>
@@ -351,23 +351,23 @@
                                 <tr class='group transition-colors hover:bg-slate-50/30'>
                                     <td class='px-8 py-5'>
                                         <div class='flex items-center gap-3'>
-                                            <div class='flex h-9 w-9 items-center justify-center -sm bg-blue-50'>
-                                                <FileText class='h-4 w-4 text-[#0A77FF]' />
+                                            <div class='flex h-9 w-9 items-center justify-center rounded-sm bg-blue-50'>
+                                                <FileText class='h-4 w-4 text-[#2069C1]' />
                                             </div>
                                             <span class='text-[14px] font-bold text-slate-800'>{cert.application}</span>
                                         </div>
                                     </td>
                                     <td class='px-8 py-5'>
-                                        <span class='text-[13px] font-medium text-slate-600'>{cert.certificate}</span>
+                                        <span class='text-sm font-medium text-slate-600'>{cert.certificate}</span>
                                     </td>
                                     <td class='px-8 py-5'>
                                         <div class='flex items-center gap-2'>
                                             <Clock class='h-3.5 w-3.5 text-slate-400' />
-                                            <span class='text-[13px] font-medium text-slate-600'>{cert.expiryDate}</span>
+                                            <span class='text-sm font-medium text-slate-600'>{cert.expiryDate}</span>
                                         </div>
                                     </td>
                                     <td class='px-8 py-5 text-right'>
-                                        <button class='cursor-pointer text-[13px] font-bold text-[#0A77FF] hover:underline'>Download</button>
+                                        <button class='cursor-pointer text-sm font-bold text-[#2069C1] hover:underline'>Download</button>
                                     </td>
                                 </tr>
                             {/each}

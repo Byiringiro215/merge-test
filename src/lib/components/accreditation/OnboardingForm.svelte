@@ -11,6 +11,7 @@
 <script lang='ts'>
     import type { OnboardingStepKey } from './constants';
     import { goto } from '$app/navigation';
+    import { untrack } from 'svelte';
     import { onboardingSteps } from './constants';
     import { institutionLookupStore } from './lookupStore.svelte';
     import AboutInstitutionStep from './steps/AboutInstitutionStep.svelte';
@@ -35,10 +36,12 @@
     // Default values for combined lookup as requested
     $effect(() => {
         if (providerType && providerType !== 'School') {
-            if (!formData.representativeId)
-                formData.representativeId = '22222222222222222';
-            if (!formData.lookupEmail)
-                formData.lookupEmail = 'owner@example.com';
+            untrack(() => {
+                if (!formData.representativeId)
+                    formData.representativeId = '22222222222222222';
+                if (!formData.lookupEmail)
+                    formData.lookupEmail = 'owner@example.com';
+            });
         }
     });
 
@@ -117,7 +120,7 @@
     <div class='space-y-8'>
         <!-- Step header -->
         <div class='space-y-3 text-center'>
-            <div class='mx-auto flex h-14 w-14 items-center justify-center rounded-sm border border-slate-200 text-[#336cb2] font-semibold text-lg'>
+            <div class='mx-auto flex h-14 w-14 items-center justify-center rounded-sm border border-slate-200 text-[#2069C1] font-semibold text-lg'>
                 {currentStepIndex + 1}
             </div>
             <div>
@@ -181,7 +184,7 @@
                 type='button'
                 onclick={handlePrimaryAction}
                 disabled={!isStepComplete}
-                class={`flex ${showSecondaryBtn ? 'w-full sm:w-2/3' : 'w-full'} items-center justify-center rounded-sm bg-[#336cb2] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2a5a96] focus:ring-4 focus:ring-[#336cb2]/20 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#336cb2]`}
+                class={`flex ${showSecondaryBtn ? 'w-full sm:w-2/3' : 'w-full'} items-center justify-center rounded-sm bg-[#2069C1] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1a56a0] focus:ring-4 focus:ring-[#2069C1]/20 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#2069C1]`}
             >
                 {primaryBtnLabel}
             </button>

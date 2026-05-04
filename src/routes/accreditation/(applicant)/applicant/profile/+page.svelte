@@ -22,7 +22,7 @@
                 onclick={() => activeTab = 'personal'}
                 class={cn(
                     'w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-sm transition-colors',
-                    activeTab === 'personal' ? 'bg-[#F9FAFB] text-[#0A77FF]' : 'text-[#353E49] hover:bg-slate-50',
+                    activeTab === 'personal' ? 'bg-[#F9FAFB] text-[#2069C1]' : 'text-[#353E49] hover:bg-slate-50',
                 )}
             >
                 <User class='h-4 w-4' />
@@ -32,7 +32,7 @@
                 onclick={() => activeTab = 'security'}
                 class={cn(
                     'w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-sm transition-colors',
-                    activeTab === 'security' ? 'bg-[#F9FAFB] text-[#0A77FF]' : 'text-[#353E49] hover:bg-slate-50',
+                    activeTab === 'security' ? 'bg-[#F9FAFB] text-[#2069C1]' : 'text-[#353E49] hover:bg-slate-50',
                 )}
             >
                 <Shield class='h-4 w-4' />
@@ -42,7 +42,7 @@
                 onclick={() => activeTab = 'notifications'}
                 class={cn(
                     'w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-sm transition-colors',
-                    activeTab === 'notifications' ? 'bg-[#F9FAFB] text-[#0A77FF]' : 'text-[#353E49] hover:bg-slate-50',
+                    activeTab === 'notifications' ? 'bg-[#F9FAFB] text-[#2069C1]' : 'text-[#353E49] hover:bg-slate-50',
                 )}
             >
                 <Bell class='h-4 w-4' />
@@ -77,7 +77,7 @@
                                 id='profile-name'
                                 type='text'
                                 value={defaultUserName}
-                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#0A77FF] focus:border-[#0A77FF] transition-all bg-white'
+                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#2069C1] focus:border-[#2069C1] transition-all bg-white'
                             />
                         </div>
                         <div class='space-y-1.5'>
@@ -86,7 +86,7 @@
                                 id='profile-email'
                                 type='email'
                                 value={defaultUserEmail}
-                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#0A77FF] focus:border-[#0A77FF] transition-all bg-slate-50'
+                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#2069C1] focus:border-[#2069C1] transition-all bg-slate-50'
                                 readonly
                             />
                         </div>
@@ -96,7 +96,7 @@
                                 id='profile-role'
                                 type='text'
                                 value='Applicant'
-                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#0A77FF] focus:border-[#0A77FF] transition-all bg-slate-50'
+                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#2069C1] focus:border-[#2069C1] transition-all bg-slate-50'
                                 readonly
                             />
                         </div>
@@ -106,13 +106,13 @@
                                 id='profile-phone'
                                 type='tel'
                                 placeholder='+250 123 456 789'
-                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#0A77FF] focus:border-[#0A77FF] transition-all bg-white'
+                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#2069C1] focus:border-[#2069C1] transition-all bg-white'
                             />
                         </div>
                     </div>
 
                     <div class='pt-6 flex justify-end'>
-                        <button class='flex items-center gap-2 bg-[#0A77FF] hover:bg-blue-600 active:bg-blue-700 text-white px-5 py-2.5 rounded-sm text-sm font-medium transition-colors shadow-sm'>
+                        <button class='flex items-center gap-2 bg-[#2069C1] hover:bg-blue-600 active:bg-blue-700 text-white px-5 py-2.5 rounded-sm text-sm font-medium transition-colors shadow-sm'>
                             <Save class='h-4 w-4' />
                             Save Changes
                         </button>
@@ -126,7 +126,7 @@
                             <input
                                 id='current-password'
                                 type='password'
-                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#0A77FF] focus:border-[#0A77FF] transition-all bg-white'
+                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#2069C1] focus:border-[#2069C1] transition-all bg-white'
                             />
                         </div>
                         <div class='space-y-1.5'>
@@ -134,7 +134,7 @@
                             <input
                                 id='new-password'
                                 type='password'
-                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#0A77FF] focus:border-[#0A77FF] transition-all bg-white'
+                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#2069C1] focus:border-[#2069C1] transition-all bg-white'
                             />
                         </div>
                         <div class='space-y-1.5'>
@@ -142,7 +142,7 @@
                             <input
                                 id='confirm-password'
                                 type='password'
-                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#0A77FF] focus:border-[#0A77FF] transition-all bg-white'
+                                class='w-full h-10 px-3 text-sm text-[#101828] border border-[#D0D5DD] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#2069C1] focus:border-[#2069C1] transition-all bg-white'
                             />
                         </div>
                     </div>
@@ -157,7 +157,7 @@
                     <h3 class='text-sm font-medium text-slate-900 border-b border-slate-100 pb-4'>Email Preferences</h3>
                     <div class='space-y-4 max-w-xl'>
                         <label class='flex items-start gap-3 cursor-pointer'>
-                            <input type='checkbox' class='mt-0.5 rounded-sm border-slate-300 text-[#0A77FF] focus:ring-[#0A77FF] bg-white h-4 w-4' checked />
+                            <input type='checkbox' class='mt-0.5 rounded-sm border-slate-300 text-[#2069C1] focus:ring-[#2069C1] bg-white h-4 w-4' checked />
                             <div>
                                 <h4 class='text-sm font-medium text-slate-900'>Application Updates</h4>
                                 <p class='text-xs text-slate-500 mt-0.5'>Receive an email whenever an institution submits or updates an application.</p>
@@ -165,7 +165,7 @@
                         </label>
 
                         <label class='flex items-start gap-3 cursor-pointer'>
-                            <input type='checkbox' class='mt-0.5 rounded-sm border-slate-300 text-[#0A77FF] focus:ring-[#0A77FF] bg-white h-4 w-4' checked />
+                            <input type='checkbox' class='mt-0.5 rounded-sm border-slate-300 text-[#2069C1] focus:ring-[#2069C1] bg-white h-4 w-4' checked />
                             <div>
                                 <h4 class='text-sm font-medium text-slate-900'>System Alerts</h4>
                                 <p class='text-xs text-slate-500 mt-0.5'>Receive immediate notifications regarding maintenance and security events.</p>
@@ -173,7 +173,7 @@
                         </label>
 
                         <label class='flex items-start gap-3 cursor-pointer'>
-                            <input type='checkbox' class='mt-0.5 rounded-sm border-slate-300 text-[#0A77FF] focus:ring-[#0A77FF] bg-white h-4 w-4' />
+                            <input type='checkbox' class='mt-0.5 rounded-sm border-slate-300 text-[#2069C1] focus:ring-[#2069C1] bg-white h-4 w-4' />
                             <div>
                                 <h4 class='text-sm font-medium text-slate-900'>Weekly Summaries</h4>
                                 <p class='text-xs text-slate-500 mt-0.5'>Receive a consolidated weekly digest of system activity and pending tasks.</p>

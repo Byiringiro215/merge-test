@@ -35,7 +35,7 @@
             {value}
             {placeholder}
             oninput={e => onChange(e.currentTarget.value)}
-            class='w-full rounded-sm border border-slate-200 px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-[#336cb2] focus:ring-1 focus:ring-[#336cb2]/20 placeholder:text-slate-400'
+            class='w-full rounded-sm border border-slate-200 px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-[#2069C1] focus:ring-1 focus:ring-[#2069C1]/20 placeholder:text-slate-400'
         />
         {#if Icon}
             <Icon class='absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none' />
