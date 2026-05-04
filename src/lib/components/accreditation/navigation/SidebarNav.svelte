@@ -3,7 +3,7 @@
     import { portalNavigationConfig } from '$lib/accreditation/config/navigation';
     import { cn } from '$lib/accreditation/utils/cn';
     import { getPortalNavigation } from '$lib/accreditation/utils/navigation';
-    import { LifeBuoy, LogOut, Settings } from '@lucide/svelte';
+    import { LogOut } from '@lucide/svelte';
 
     const { role, onCloseMobile }: { role: string; onCloseMobile?: () => void } = $props();
 
@@ -55,23 +55,6 @@
     </nav>
 
     <div class='mt-auto space-y-1 pt-4'>
-        <button
-            type='button'
-            onclick={onCloseMobile}
-            class='flex w-full cursor-pointer items-center gap-3 -sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
-        >
-            <LifeBuoy class='text-[#667085]' strokeWidth={1.5} size={20} />
-            <span class='text-[#344054]'>Support</span>
-        </button>
-        <button
-            type='button'
-            onclick={onCloseMobile}
-            class='flex w-full cursor-pointer items-center gap-3 -sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
-        >
-            <Settings class='text-[#667085]' strokeWidth={1.5} size={20} />
-            <span class='text-[#344054]'>Settings</span>
-        </button>
-
         <div class='sticky bottom-0 mt-4 flex items-center gap-3 border-t border-[#EAECF0] bg-white px-1 py-4'>
             <div class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100'>
                 <span class='text-xs font-semibold text-slate-600'>OR</span>
