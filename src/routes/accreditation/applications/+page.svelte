@@ -1,10 +1,10 @@
 <script lang='ts'>
     import { page } from '$app/state';
+    import { getSimulationState } from '$lib/accreditation/context/simulation.svelte';
     import SharedApplicationsContainer from '$lib/components/accreditation/applications/SharedApplicationsContainer.svelte';
 
-    // In a real app, this would come from a session/auth store
-    // For now, we allow overriding via query param for testing, or default based on the path
-    const role = $derived(page.url.searchParams.get('role') || 'super-admin');
+    const simulation = getSimulationState();
+    const role = $derived(simulation?.role || 'merged');
 </script>
 
 <SharedApplicationsContainer {role} />
