@@ -1,9 +1,12 @@
 <script lang='ts'>
+    import { goto } from '$app/navigation';
     import type { Application } from '$lib/accreditation/utils/application-utils';
     import { mockApplications } from '$lib/accreditation/utils/application-utils';
     import DataTable from '$lib/components/accreditation/ui/DataTable.svelte';
     import StatusBadge from '$lib/components/accreditation/ui/StatusBadge.svelte';
     import { Eye, ListFilter, Trash2, X } from '@lucide/svelte';
+
+    const { role } = $props<{ role: string }>();
 
     let search = $state('');
     let activeFilters = $state<string[]>(['All time', 'US, AU, +4']);
@@ -115,6 +118,7 @@
         showPagination={true}
         currentPage={1}
         totalPages={10}
+        onRowClick={item => goto(`/accreditation/applications/${item.id}?role=${role}`)}
         filters={filtersSnippet}
     />
 </div>

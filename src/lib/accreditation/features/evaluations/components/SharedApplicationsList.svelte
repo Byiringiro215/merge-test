@@ -15,7 +15,7 @@
         Trash2,
     } from '@lucide/svelte';
 
-    const { role, basePath } = $props<{ role: string; basePath: string }>();
+    const { role } = $props<{ role: string }>();
 
     interface Application {
         id: string;
@@ -56,6 +56,20 @@
                     || item.institution.name.toLowerCase().includes(search.toLowerCase()),
         ) as Application[]),
     );
+
+    const columns = $derived([
+        ...(role !== 'applicant'
+            ? [
+                { header: 'Applicant', accessor: applicantCell, sortable: true },
+                { header: 'Institution', accessor: institutionCell, sortable: true },
+            ]
+            : []),
+        { header: 'Trade', accessor: tradeCell },
+        { header: 'Status', accessor: statusCell },
+        { header: 'Evaluation Stage', accessor: stageCell },
+        { header: 'Submitted On', accessor: submittedOnCell },
+        { header: 'Actions', accessor: actionsCell },
+    ]);
 </script>
 
 {#snippet applicantCell(item: Application)}
@@ -117,22 +131,26 @@
     <StatsGrid items={stats} />
     <DataTable
         data={filteredData}
-        columns={[
-            { header: 'Applicant', accessor: applicantCell, sortable: true },
-            { header: 'Institution', accessor: institutionCell, sortable: true },
-            { header: 'Trade', accessor: tradeCell },
-            { header: 'Status', accessor: statusCell },
-            { header: 'Evaluation Stage', accessor: stageCell },
-            { header: 'Submitted On', accessor: submittedOnCell },
-            { header: 'Actions', accessor: actionsCell },
-        ]}
-        title='All Applications'
-        description={isReadOnly ? 'View applications from different institutions' : 'Manage applications by different institutions right here'}
+        {columns}
+        title={role === 'supervisor'
+            ? 'Evaluation Oversight'
+            : role === 'evaluator'
+            ? 'My Assigned Evaluations'
+            : role === 'applicant'
+            ? 'My Applications'
+            : 'All Applications'}
+        description={role === 'supervisor'
+            ? 'Monitor and oversee the progress of all active evaluations.'
+            : role === 'evaluator'
+            ? 'Review and complete your assigned accreditation evaluations.'
+            : role === 'applicant'
+            ? 'Track and manage your submitted accreditation applications.'
+            : 'Manage applications by different institutions right here'}
         searchValue={search}
         onSearchChange={val => (search = val)}
         showPagination={true}
         currentPage={1}
         totalPages={10}
-        onRowClick={isReadOnly ? undefined : item => goto(`${basePath}/${item.id}`)}
+        onRowClick={isReadOnly ? undefined : item => goto(`/accreditation/applications/${item.id}?role=${role}`)}
     />
 </div>
