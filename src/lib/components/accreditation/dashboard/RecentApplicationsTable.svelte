@@ -9,7 +9,7 @@
     const { role } = $props<{ role: string }>();
 
     let search = $state('');
-    let activeFilters = $state<string[]>(['All time', 'US, AU, +4']);
+    let activeFilters = $state<string[]>(['All time']);
 
     const removeFilter = (filter: string) => {
         activeFilters = activeFilters.filter(f => f !== filter);
@@ -21,10 +21,7 @@
                 || item.applicant.email.toLowerCase().includes(search.toLowerCase())
                 || item.institution.name.toLowerCase().includes(search.toLowerCase());
 
-        const hasLocationFilter = activeFilters.includes('US, AU, +4');
-        const matchesLocation = !hasLocationFilter || (item.location && ['US', 'AU'].includes(item.location));
-
-        return matchesSearch && matchesLocation;
+        return matchesSearch;
     }));
 </script>
 
