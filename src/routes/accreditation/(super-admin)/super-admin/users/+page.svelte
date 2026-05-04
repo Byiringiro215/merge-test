@@ -201,7 +201,7 @@
         </div>
 
         <!-- Stat Cards -->
-        <div class='xl:grid-cols-5 relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] md:grid-cols-2'>
+        <div class='lg:grid-cols-5 xl:grid-cols-5 relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] md:grid-cols-2'>
             {#each stats as stat (stat.label)}
                 <div class='animate-slide-up overflow-hidden rounded-sm border border-slate-200 bg-white shadow-none'>
                     <div class='flex flex-col gap-4 p-5'>

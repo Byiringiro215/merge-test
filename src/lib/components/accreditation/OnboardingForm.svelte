@@ -9,9 +9,9 @@
 </script>
 
 <script lang='ts'>
-    import { untrack } from 'svelte';
     import type { OnboardingStepKey } from './constants';
     import { goto } from '$app/navigation';
+    import { untrack } from 'svelte';
     import { onboardingSteps } from './constants';
     import { institutionLookupStore } from './lookupStore.svelte';
     import AboutInstitutionStep from './steps/AboutInstitutionStep.svelte';
