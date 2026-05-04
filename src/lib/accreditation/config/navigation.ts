@@ -1,5 +1,4 @@
-import type { PortalNavigation } from '../types/navigation';
-
+import type { UserRole } from '$lib/accreditation/types/auth';
 import {
     BadgeCheck,
     Bell,
@@ -11,68 +10,71 @@ import {
     Users,
 } from '@lucide/svelte';
 
-export const portalNavigation: Record<PortalNavigation['role'], PortalNavigation> = {
-    'applicant': {
-        role: 'applicant',
-        label: 'Applicant Portal',
-        shortLabel: 'Applicant',
-        basePath: '/accreditation/applicant',
-        items: [
-            { title: 'Dashboard', href: '/accreditation/applicant/dashboard', description: '', icon: House, match: 'exact' },
-            { title: 'Applications', href: '/accreditation/applicant/applications', description: '', icon: FileSpreadsheet },
-            { title: 'Evaluations', href: '/accreditation/applicant/evaluations', description: '', icon: CalendarCheck },
-            { title: 'Profile', href: '/accreditation/applicant/profile', description: '', icon: User },
-            { title: 'Notifications', href: '/accreditation/applicant/notifications', description: '', icon: Bell },
-        ],
+export interface AccreditationNavItem {
+    title: string;
+    href: string;
+    icon: any;
+    match?: 'exact';
+    roles: UserRole[];
+}
+
+export const allAccreditationNavItems: AccreditationNavItem[] = [
+    {
+        title: 'Dashboard',
+        href: '/accreditation/dashboard',
+        icon: House,
+        match: 'exact',
+        roles: ['applicant', 'evaluator', 'curriculum-evaluator', 'super-admin', 'supervisor', 'merged'],
     },
-    'evaluator': {
-        role: 'evaluator',
-        label: 'Evaluator Portal',
-        shortLabel: 'Evaluator',
-        basePath: '/accreditation/evaluator',
-        items: [
-            { title: 'Dashboard', href: '/accreditation/evaluator/dashboard', description: '', icon: House, match: 'exact' },
-            { title: 'Evaluations', href: '/accreditation/evaluator/applications', description: '', icon: BadgeCheck },
-            { title: 'Profile', href: '/accreditation/evaluator/profile', description: '', icon: User },
-            { title: 'Notifications', href: '/accreditation/evaluator/notifications', description: '', icon: Bell },
-        ],
+    {
+        title: 'Applications',
+        href: '/accreditation/applications',
+        icon: FileSpreadsheet,
+        roles: ['applicant', 'curriculum-evaluator', 'super-admin', 'merged'],
     },
-    'super-admin': {
-        role: 'super-admin',
-        label: 'Super Admin Portal',
-        shortLabel: 'Super Admin',
-        basePath: '/accreditation/super-admin',
-        items: [
-            { title: 'Dashboard', href: '/accreditation/super-admin/dashboard', description: '', icon: House, match: 'exact' },
-            { title: 'Evaluations', href: '/accreditation/super-admin/evaluations/applications', description: '', icon: BadgeCheck },
-            { title: 'Users', href: '/accreditation/super-admin/users', description: '', icon: Users },
-            { title: 'Profile', href: '/accreditation/super-admin/profile', description: '', icon: User },
-            { title: 'Notifications', href: '/accreditation/super-admin/notifications', description: '', icon: Bell },
-        ],
+    {
+        title: 'Evaluations',
+        href: '/accreditation/my-evaluations',
+        icon: BadgeCheck,
+        roles: ['evaluator', 'super-admin', 'supervisor', 'merged'],
     },
-    'curriculum-evaluator': {
-        role: 'curriculum-evaluator',
-        label: 'Curriculum Evaluator Portal',
-        shortLabel: 'Curriculum',
-        basePath: '/accreditation/curriculum-evaluator',
-        items: [
-            { title: 'Dashboard', href: '/accreditation/curriculum-evaluator/dashboard', description: '', icon: House, match: 'exact' },
-            { title: 'Applications', href: '/accreditation/curriculum-evaluator/applications', description: '', icon: FileSpreadsheet },
-            { title: 'Profile', href: '/accreditation/curriculum-evaluator/profile', description: '', icon: User },
-            { title: 'Notifications', href: '/accreditation/curriculum-evaluator/notifications', description: '', icon: Bell },
-        ],
+    {
+        title: 'My Applications',
+        href: '/accreditation/my-applications',
+        icon: CalendarCheck,
+        roles: ['applicant', 'merged'],
     },
-    'supervisor': {
-        role: 'supervisor',
-        label: 'Supervisor Portal',
-        shortLabel: 'Supervisor',
-        basePath: '/accreditation/supervisor',
-        items: [
-            { title: 'Dashboard', href: '/accreditation/supervisor/dashboard', description: '', icon: House, match: 'exact' },
-            { title: 'Evaluations', href: '/accreditation/supervisor/evaluations/applications', description: '', icon: BadgeCheck },
-            { title: 'Certificates', href: '/accreditation/supervisor/certificates', description: '', icon: ClipboardCheck },
-            { title: 'Profile', href: '/accreditation/supervisor/profile', description: '', icon: User },
-            { title: 'Notifications', href: '/accreditation/supervisor/notifications', description: '', icon: Bell },
-        ],
+    {
+        title: 'Certificates',
+        href: '/accreditation/certificates',
+        icon: ClipboardCheck,
+        roles: ['supervisor', 'super-admin', 'merged'],
     },
+    {
+        title: 'Users',
+        href: '/accreditation/users',
+        icon: Users,
+        roles: ['super-admin', 'merged'],
+    },
+    {
+        title: 'Profile',
+        href: '/accreditation/profile',
+        icon: User,
+        roles: ['applicant', 'evaluator', 'curriculum-evaluator', 'super-admin', 'supervisor', 'merged'],
+    },
+    {
+        title: 'Notifications',
+        href: '/accreditation/notifications',
+        icon: Bell,
+        roles: ['applicant', 'evaluator', 'curriculum-evaluator', 'super-admin', 'supervisor', 'merged'],
+    },
+];
+
+export const portalNavigationConfig: Record<UserRole, { label: string; shortLabel: string }> = {
+    'applicant': { label: 'Applicant Portal', shortLabel: 'Applicant' },
+    'evaluator': { label: 'Evaluator Portal', shortLabel: 'Evaluator' },
+    'super-admin': { label: 'Super Admin Portal', shortLabel: 'Super Admin' },
+    'curriculum-evaluator': { label: 'Curriculum Evaluator Portal', shortLabel: 'Curriculum' },
+    'supervisor': { label: 'Supervisor Portal', shortLabel: 'Supervisor' },
+    'merged': { label: 'Accreditation Portal', shortLabel: 'Accreditation' },
 };

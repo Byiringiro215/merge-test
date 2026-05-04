@@ -1,12 +1,15 @@
 <script lang='ts'>
     import type { Application } from '$lib/accreditation/utils/application-utils';
+    import { goto } from '$app/navigation';
     import { mockApplications } from '$lib/accreditation/utils/application-utils';
     import DataTable from '$lib/components/accreditation/ui/DataTable.svelte';
     import StatusBadge from '$lib/components/accreditation/ui/StatusBadge.svelte';
     import { Eye, ListFilter, Trash2, X } from '@lucide/svelte';
 
+    const { role } = $props<{ role: string }>();
+
     let search = $state('');
-    let activeFilters = $state<string[]>(['All time', 'US, AU, +4']);
+    let activeFilters = $state<string[]>(['All time']);
 
     const removeFilter = (filter: string) => {
         activeFilters = activeFilters.filter(f => f !== filter);
@@ -18,10 +21,7 @@
                 || item.applicant.email.toLowerCase().includes(search.toLowerCase())
                 || item.institution.name.toLowerCase().includes(search.toLowerCase());
 
-        const hasLocationFilter = activeFilters.includes('US, AU, +4');
-        const matchesLocation = !hasLocationFilter || (item.location && ['US', 'AU'].includes(item.location));
-
-        return matchesSearch && matchesLocation;
+        return matchesSearch;
     }));
 </script>
 
@@ -115,6 +115,7 @@
         showPagination={true}
         currentPage={1}
         totalPages={10}
+        onRowClick={item => goto(`/accreditation/applications/${item.id}?role=${role}`)}
         filters={filtersSnippet}
     />
 </div>

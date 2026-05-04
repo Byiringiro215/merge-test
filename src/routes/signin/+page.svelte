@@ -3,7 +3,7 @@
     import type { StandardSchemaV1 } from '@bajustone/fetcher';
     import type { Component } from 'svelte';
     import { goto, invalidateAll } from '$app/navigation';
-    import { resolve } from '$app/paths';
+
     import { page } from '$app/state';
     import { Button } from '$lib/components/ui/button';
     import { Card } from '$lib/components/ui/card';
@@ -308,7 +308,7 @@
                                     if ((loginForm.fields.allIssues()?.length ?? 0) > 0)
                                         return;
                                     await invalidateAll();
-                                    await goto(resolve(redirect as any));
+                                    await goto(redirect);
                                 }
                                 finally {
                                     isSubmitting = false;
@@ -448,7 +448,7 @@
 
                     <!-- Register Now Button -->
                     <a
-                        href='/accreditation/register'
+                        href='/register'
                         class='w-full h-12 bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold rounded-lg flex items-center justify-center transition-all active:scale-[0.98]'
                     >
                         Register Now

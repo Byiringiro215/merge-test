@@ -19,7 +19,7 @@
             title: 'Identity Verification',
             description: 'Verify your identity.',
             icon: User,
-            path: '/accreditation/register/user',
+            path: '/register/user',
         },
     ];
 

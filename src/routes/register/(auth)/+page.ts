@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
 
 export function load() {
-    throw redirect(302, '/accreditation/register/user');
+    throw redirect(302, '/register/user');
 }
