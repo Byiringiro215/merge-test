@@ -171,6 +171,6 @@
         showPagination={true}
         currentPage={1}
         totalPages={10}
-        onRowClick={isReadOnly ? undefined : item => goto(`${basePath}/${item.id}?role=${activeRole}`)}
+        onRowClick={isReadOnly ? undefined : item => goto(`${basePath}/${item.id}`)}
     />
 </div>
