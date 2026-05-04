@@ -55,7 +55,7 @@
 
     <!-- Main Content Area -->
     <div class='flex h-full flex-col overflow-hidden'>
-        <Topbar role={activeRole} onOpenMobile={toggleMobileMenu} />
+        <Topbar role={activeRole} authRole={role} onOpenMobile={toggleMobileMenu} />
         <main class={cn(
             'no-scrollbar flex-1',
             pageHeader.noScroll ? 'overflow-hidden' : 'overflow-y-auto',

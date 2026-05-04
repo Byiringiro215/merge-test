@@ -263,7 +263,7 @@
     description={showWizard ? 'Follow the steps to submit your accreditation application.' : (descriptions[role] || 'Manage accreditation applications')}
 >
     {#if !showWizard}
-        {#if role === 'super-admin' || role === 'supervisor'}
+        {#if role === 'super-admin' || role === 'supervisor' || role === 'evaluator' || role === 'merged'}
             <EvaluationsSubNav {role} />
         {/if}
 
