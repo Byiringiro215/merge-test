@@ -103,6 +103,9 @@
         { id: 'Applications', label: 'Applications', icon: FileText },
         { id: 'Certificates', label: 'Certificates', icon: Folder },
     ];
+
+    const progressWidth = $derived(`${(currentStep / (steps.length - 1)) * 100}%`);
+    const lineGap = 32;
 </script>
 
 <PageContainer
@@ -117,7 +120,7 @@
                 <button
                     onclick={() => activeTab = tab.id}
                     class={cn(
-                        'flex-1 flex items-center justify-center gap-3 px-8 py-5 text-[15px] font-medium transition-all rounded-2xl cursor-pointer',
+                        'flex-1 flex items-center justify-center gap-3 px-8 py-5 text-[15px] font-medium transition-all -sm cursor-pointer',
                         isActive
                             ? 'text-[#0A77FF] bg-[#F4F7FF]'
                             : 'text-slate-500 hover:text-[#0A77FF] hover:bg-[#F4F7FF]',
@@ -131,18 +134,18 @@
 
         {#if activeTab === 'Applications'}
             <!-- Application Selector -->
-            <div class='flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm text-left sm:flex-row sm:items-center'>
+            <div class='flex flex-col justify-between gap-4 -sm border border-slate-200 bg-white p-6 text-left sm:flex-row sm:items-center'>
                 <div>
                     <h2 class='mb-1 text-sm font-bold uppercase tracking-widest text-slate-800'>Selected Application</h2>
                     <div class='flex items-center gap-3'>
                         <span class='text-[16px] font-medium text-slate-900'>{application.trade.name}</span>
-                        <span class='rounded bg-slate-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-slate-600'>{application.trade.category}</span>
+                        <span class='-sm bg-slate-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-slate-600'>{application.trade.category}</span>
                     </div>
                 </div>
                 <div class='relative min-w-[200px]'>
                     <select
                         bind:value={selectedAppId}
-                        class='w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-10 text-[13px] font-medium text-slate-700 transition-all focus:border-[#0A77FF] focus:outline-none'
+                        class='w-full appearance-none -sm border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-10 text-[13px] font-medium text-slate-700 transition-all focus:border-[#0A77FF] focus:outline-none'
                     >
                         {#each mockApplications as app}
                             <option value={app.id}>{app.trade.name} - {app.trade.category}</option>
@@ -156,56 +159,66 @@
                 <!-- Left Column: Timeline & Progress -->
                 <div class='flex flex-col gap-6 lg:col-span-2'>
                     <!-- Progress Card -->
-                    <div class='rounded-2xl border border-slate-200 bg-white p-8 shadow-sm'>
+                    <div class='-sm border border-slate-200 bg-white p-8'>
                         <h3 class='mb-2 text-[16px] font-bold text-slate-800'>Evaluation Progress</h3>
                         <p class='mb-8 text-[13px] text-slate-500'>Track the status of your accreditation application through the evaluation stages.</p>
 
                         <!-- Horizontal Stepper -->
                         <div class='no-scrollbar w-full overflow-x-auto pb-4'>
-                            <div class='relative my-6 flex min-w-[750px] items-start justify-between overflow-visible px-1 pt-2'>
-                                {#each steps as step, idx}
-                                    {@const isActive = idx === currentStep}
-                                    {@const isCompleted = idx < currentStep}
-                                    <div class='relative flex flex-1 min-w-[130px] flex-col items-start text-start'>
-                                        <!-- Connector Line Segments -->
-                                        {#if idx > 0}
-                                            <div
-                                                class={cn(
-                                                    'absolute top-[12px] -left-full right-[calc(100%-12px)] ml-[12px] h-px z-0',
-                                                    idx <= currentStep ? 'bg-[#0A77FF] h-[1.5px]' : 'bg-slate-200',
-                                                )}
-                                            ></div>
-                                        {/if}
+                            <div class='relative my-6 min-w-[750px] px-1 pt-2 overflow-visible'>
+                                <!-- Background Line -->
+                                <div class='absolute top-[13px] left-[16px] right-[16px] h-px bg-slate-200 z-0'></div>
+                                <!-- Progress Line -->
+                                <div
+                                    class='absolute top-[13px] left-[16px] h-[1.5px] bg-[#0A77FF] z-0 transition-all duration-300'
+                                    style='width: calc({progressWidth} - {(currentStep / (steps.length - 1)) * lineGap}px)'
+                                ></div>
 
+                                <div class='flex items-start justify-between w-full relative z-10'>
+                                    {#each steps as step, idx}
+                                        {@const isActive = idx === currentStep}
+                                        {@const isCompleted = idx < currentStep}
                                         <div class={cn(
-                                            'h-6 w-6 rounded-full border flex items-center justify-center mb-3 transition-all duration-300 shrink-0 relative z-10',
-                                            isActive
-                                                ? 'border-[#0A77FF] bg-[#0A77FF]'
-                                                : isCompleted ? 'border-[#0A77FF] bg-[#0A77FF]' : 'border-slate-200 bg-white',
+                                            'flex flex-col relative',
+                                            idx === 0 ? 'items-start' : idx === steps.length - 1 ? 'items-end' : 'items-center flex-1',
                                         )}>
-                                            {#if isCompleted}
-                                                <Check class='h-3.5 w-3.5 text-white' strokeWidth={3} />
-                                            {:else if isActive}
-                                                <div class='h-1.5 w-1.5 rounded-full bg-white'></div>
-                                            {:else}
-                                                <div class='h-1.5 w-1.5 rounded-full bg-slate-200'></div>
-                                            {/if}
+                                            <div class={cn(
+                                                'h-6 w-6 rounded-full border flex items-center justify-center mb-3 transition-all duration-300 shrink-0 relative z-10',
+                                                isActive
+                                                    ? 'border-[#0A77FF] bg-[#0A77FF]'
+                                                    : isCompleted ? 'border-[#0A77FF] bg-[#0A77FF]' : 'border-slate-200 bg-white',
+                                            )}>
+                                                {#if isCompleted}
+                                                    <Check class='h-3.5 w-3.5 text-white' strokeWidth={3} />
+                                                {:else if isActive}
+                                                    <div class='h-1.5 w-1.5 rounded-full bg-white'></div>
+                                                {:else}
+                                                    <div class='h-1.5 w-1.5 rounded-full bg-slate-200'></div>
+                                                {/if}
+                                            </div>
+
+                                            <div class={cn(
+                                                'flex flex-row items-baseline justify-between w-full gap-1.5 md:flex-col md:items-start md:gap-0',
+                                                !isActive && 'hidden md:flex',
+                                                idx === steps.length - 1 ? 'items-end text-right' : 'items-start text-left',
+                                            )}>
+                                                <span class={cn(
+                                                    'text-[12px] font-bold mb-0.5 whitespace-nowrap',
+                                                    idx <= currentStep ? 'text-slate-900' : 'text-slate-400',
+                                                )}>
+                                                    {step.label}
+                                                </span>
+                                                <span class='whitespace-nowrap text-[10px] font-medium text-slate-400'>{step.sub}</span>
+                                            </div>
                                         </div>
-                                        <span class={cn(
-                                            'text-[12px] font-bold block mb-0.5 whitespace-nowrap',
-                                            idx <= currentStep ? 'text-slate-900' : 'text-slate-400',
-                                        )}>
-                                            {step.label}
-                                        </span>
-                                        <span class='whitespace-nowrap text-[10px] font-medium text-slate-400'>{step.sub}</span>
-                                    </div>
-                                {/each}
+                                    {/each}
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Feedback Timeline -->
-                    <div class='rounded-2xl border border-slate-200 bg-white p-8 shadow-sm'>
+                    <div class='-sm border border-slate-200 bg-white p-8'>
                         <h3 class='mb-6 border-b border-slate-100 pb-4 text-[16px] font-bold text-slate-800'>Recent Feedback & Activity</h3>
 
                         <div class='relative'>
@@ -223,7 +236,7 @@
                                                 <span class='text-[13px] font-bold text-slate-800'>{feedback.author}</span>
                                                 <span class='text-[11px] font-medium text-slate-400'>• {feedback.date}</span>
                                             </div>
-                                            <p class='mt-2 rounded-xl border border-slate-100 bg-slate-50/50 p-4 text-[13px] font-medium leading-relaxed text-slate-600'>
+                                            <p class='mt-2 -sm border border-slate-100 bg-slate-50/50 p-4 text-[13px] font-medium leading-relaxed text-slate-600'>
                                                 {feedback.message}
                                             </p>
 
@@ -242,7 +255,7 @@
 
                 <!-- Right Column: Status Summary -->
                 <div class='flex flex-col gap-6'>
-                    <div class='rounded-2xl border border-slate-200 bg-white p-6 shadow-sm'>
+                    <div class='-sm border border-slate-200 bg-white p-6'>
                         <h3 class='mb-4 border-b border-slate-100 pb-3 text-[14px] font-bold text-slate-800'>Current Status</h3>
 
                         <div class='flex flex-col gap-4'>
@@ -272,7 +285,7 @@
                         </div>
                     </div>
 
-                    <div class='rounded-2xl border border-[#0A77FF]/10 bg-[#0A77FF]/5 p-6'>
+                    <div class='-sm border border-[#0A77FF]/10 bg-[#0A77FF]/5 p-6'>
                         <div class='mb-2 flex items-center gap-2 text-[#0A77FF]'>
                             <HelpCircle class='h-5 w-5' />
                             <h3 class='text-[14px] font-bold'>Need Help?</h3>
@@ -288,7 +301,7 @@
             {#if expiredCerts.length > 0 || expiringCerts.length > 0}
                 <div class='mt-6 space-y-2'>
                     {#if expiredCerts.length > 0}
-                        <div class='flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4'>
+                        <div class='flex items-start gap-3 -sm border border-red-200 bg-red-50 px-5 py-4'>
                             <XCircle class='mt-0.5 h-5 w-5 shrink-0 text-red-600' />
                             <div>
                                 <p class='text-[13px] font-bold text-red-800'>Certificate Expired — Access Auto-Revoked</p>
@@ -301,7 +314,7 @@
                         </div>
                     {/if}
                     {#if expiringCerts.length > 0}
-                        <div class='flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4'>
+                        <div class='flex items-start gap-3 -sm border border-amber-200 bg-amber-50 px-5 py-4'>
                             <Bell class='mt-0.5 h-5 w-5 shrink-0 text-amber-600' />
                             <div>
                                 <p class='text-[13px] font-bold text-amber-800'>Certificate Expiring Soon — Action Required</p>
@@ -317,7 +330,7 @@
                     {/if}
                 </div>
             {/if}
-            <div class='mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm text-left'>
+            <div class='mt-6 overflow-hidden -sm border border-slate-200 bg-white text-left'>
                 <div class='border-b border-slate-100 p-8'>
                     <h3 class='mb-1 text-[16px] font-bold text-slate-800'>Certificates</h3>
                     <p class='text-[13px] text-slate-500'>View and manage certificates for your allowed applications.</p>
@@ -338,7 +351,7 @@
                                 <tr class='group transition-colors hover:bg-slate-50/30'>
                                     <td class='px-8 py-5'>
                                         <div class='flex items-center gap-3'>
-                                            <div class='flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50'>
+                                            <div class='flex h-9 w-9 items-center justify-center -sm bg-blue-50'>
                                                 <FileText class='h-4 w-4 text-[#0A77FF]' />
                                             </div>
                                             <span class='text-[14px] font-bold text-slate-800'>{cert.application}</span>

@@ -13,11 +13,12 @@
         Activity,
         AlertTriangle,
         Award,
-        Bell,
         CheckCircle2,
         Clock,
         FileCheck,
+        X,
         XCircle,
+        Zap,
     } from '@lucide/svelte';
     import GrantAccessModal from './GrantAccessModal.svelte';
     import RevokeAccessModal from './RevokeAccessModal.svelte';
@@ -76,6 +77,8 @@
     let grantModalOpen = $state(false);
     let revokeModalOpen = $state(false);
     let selectedApplication = $state<Application | null>(null);
+    let dismissedExpired = $state(false);
+    let dismissedExpiring = $state(false);
 
     const handleGrantAccess = (item: Application) => {
         selectedApplication = item;
@@ -351,40 +354,93 @@
 {:else if activeTab === 'tracking'}
     <div class='space-y-6'>
         {#if expiredCertificates.length > 0 || expiringCertificates.length > 0}
-            <div class='space-y-2'>
-                {#if expiredCertificates.length > 0}
-                    <div class='flex items-start gap-3 rounded-sm border border-red-200 bg-red-50 px-4 py-3'>
-                        <XCircle class='mt-0.5 h-4 w-4 shrink-0 text-red-600' />
-                        <div class='flex-1 min-w-0'>
-                            <p class='text-[13px] font-semibold text-red-800'>
-                                {expiredCertificates.length} certificate{expiredCertificates.length > 1 ? 's' : ''} expired — automatically revoked
-                            </p>
-                            <ul class='mt-1 space-y-0.5'>
-                                {#each expiredCertificates as cert}
-                                    {@const info = getDaysInfo(cert.grantedOn)}
-                                    <li class='text-[12px] text-red-600'>
-                                        {cert.applicant.name} — {cert.trade.name} (expired {Math.abs(info.remainingDays)} days ago)
-                                    </li>
-                                {/each}
-                            </ul>
+            <div class='space-y-3'>
+                {#if expiredCertificates.length > 0 && !dismissedExpired}
+                    <div class='relative overflow-hidden rounded-lg border border-red-200 bg-gradient-to-r from-red-50 to-red-50/50 px-5 py-4 shadow-sm'>
+                        <div class='absolute inset-y-0 left-0 w-1 bg-red-500'></div>
+                        <div class='flex items-start gap-4 pl-2'>
+                            <div class='mt-0.5 flex h-10 w-10 items-center justify-center rounded-lg bg-red-100'>
+                                <XCircle class='h-5 w-5 text-red-600' />
+                            </div>
+                            <div class='flex-1 min-w-0'>
+                                <div class='flex items-center justify-between gap-2'>
+                                    <p class='text-[14px] font-bold text-red-900'>
+                                        {expiredCertificates.length} Certificate{expiredCertificates.length > 1 ? 's' : ''} Expired
+                                    </p>
+                                    <span class='inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-[11px] font-semibold text-red-700'>
+                                        Auto-revoked
+                                    </span>
+                                </div>
+                                <p class='mt-1 text-[12px] text-red-700'>
+                                    Access has been automatically revoked for these certificates.
+                                </p>
+                                <ul class='mt-2.5 space-y-1.5'>
+                                    {#each expiredCertificates as cert}
+                                        {@const info = getDaysInfo(cert.grantedOn)}
+                                        <li class='flex items-center gap-2 text-[12px] text-red-600'>
+                                            <div class='h-1.5 w-1.5 rounded-full bg-red-400'></div>
+                                            <span class='font-medium'>{cert.applicant.name}</span>
+                                            <span class='text-red-500'>—</span>
+                                            <span>{cert.trade.name}</span>
+                                            <span class='ml-auto text-[11px] font-semibold text-red-700'>
+                                                {Math.abs(info.remainingDays)}d ago
+                                            </span>
+                                        </li>
+                                    {/each}
+                                </ul>
+                            </div>
+                            <button
+                                onclick={() => dismissedExpired = true}
+                                class='mt-0.5 flex h-8 w-8 items-center justify-center rounded-md text-red-600 transition-colors hover:bg-red-100'
+                                aria-label='Dismiss expired certificates notification'
+                            >
+                                <X class='h-4 w-4' />
+                            </button>
                         </div>
                     </div>
                 {/if}
-                {#if expiringCertificates.length > 0}
-                    <div class='flex items-start gap-3 rounded-sm border border-amber-200 bg-amber-50 px-4 py-3'>
-                        <Bell class='mt-0.5 h-4 w-4 shrink-0 text-amber-600' />
-                        <div class='flex-1 min-w-0'>
-                            <p class='text-[13px] font-semibold text-amber-800'>
-                                {expiringCertificates.length} certificate{expiringCertificates.length > 1 ? 's' : ''} expire within 30 days — notification sent to applicants
-                            </p>
-                            <ul class='mt-1 space-y-0.5'>
-                                {#each expiringCertificates as cert}
-                                    {@const info = getDaysInfo(cert.grantedOn)}
-                                    <li class='text-[12px] text-amber-700'>
-                                        {cert.applicant.name} — {cert.trade.name} ({info.remainingDays} day{info.remainingDays !== 1 ? 's' : ''} remaining)
-                                    </li>
-                                {/each}
-                            </ul>
+                {#if expiringCertificates.length > 0 && !dismissedExpiring}
+                    <div class='relative overflow-hidden rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50/50 px-5 py-4 shadow-sm'>
+                        <div class='absolute inset-y-0 left-0 w-1 bg-amber-500'></div>
+                        <div class='flex items-start gap-4 pl-2'>
+                            <div class='mt-0.5 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100'>
+                                <AlertTriangle class='h-5 w-5 text-amber-600' />
+                            </div>
+                            <div class='flex-1 min-w-0'>
+                                <div class='flex items-center justify-between gap-2'>
+                                    <p class='text-[14px] font-bold text-amber-900'>
+                                        {expiringCertificates.length} Certificate{expiringCertificates.length > 1 ? 's' : ''} Expiring Soon
+                                    </p>
+                                    <span class='inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold text-amber-700'>
+                                        Action needed
+                                    </span>
+                                </div>
+                                <p class='mt-1 text-[12px] text-amber-700'>
+                                    Applicants have been notified. Renew or revoke before expiration.
+                                </p>
+                                <ul class='mt-2.5 space-y-1.5'>
+                                    {#each expiringCertificates as cert}
+                                        {@const info = getDaysInfo(cert.grantedOn)}
+                                        <li class='flex items-center gap-2 text-[12px] text-amber-600'>
+                                            <div class='h-1.5 w-1.5 rounded-full bg-amber-400'></div>
+                                            <span class='font-medium'>{cert.applicant.name}</span>
+                                            <span class='text-amber-500'>—</span>
+                                            <span>{cert.trade.name}</span>
+                                            <span class='ml-auto flex items-center gap-1 text-[11px] font-semibold text-amber-700'>
+                                                <Zap class='h-3 w-3' />
+                                                {info.remainingDays}d left
+                                            </span>
+                                        </li>
+                                    {/each}
+                                </ul>
+                            </div>
+                            <button
+                                onclick={() => dismissedExpiring = true}
+                                class='mt-0.5 flex h-8 w-8 items-center justify-center rounded-md text-amber-600 transition-colors hover:bg-amber-100'
+                                aria-label='Dismiss expiring certificates notification'
+                            >
+                                <X class='h-4 w-4' />
+                            </button>
                         </div>
                     </div>
                 {/if}
