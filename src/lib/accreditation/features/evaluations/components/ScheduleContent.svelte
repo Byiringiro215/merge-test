@@ -117,7 +117,7 @@
 {/snippet}
 
 <div class='space-y-6'>
-    <StatsGrid items={stats} />
+    <StatsGrid items={stats} gridCols={5} />
     <DataTable
         data={filteredData}
         columns={[

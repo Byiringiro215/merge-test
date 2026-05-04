@@ -78,5 +78,5 @@
         </div>
     {/if}
 
-    <RecentApplicationsTable />
+    <RecentApplicationsTable {role} />
 </div>

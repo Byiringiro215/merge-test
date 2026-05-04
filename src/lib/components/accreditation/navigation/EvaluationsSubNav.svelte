@@ -15,7 +15,7 @@
     const allNavItems = $derived([
         {
             title: 'Applications',
-            href: `${basePath}/applications`,
+            href: `/accreditation/applications?role=${role}`,
             icon: NotepadText,
         },
         {
@@ -59,10 +59,10 @@
     });
 </script>
 
-<div class='mb-6 flex w-full flex-col items-center justify-between'>
+<div class='mb-6 flex w-full flex-col gap-4'>
     <div
         bind:this={scrollContainer}
-        class='no-scrollbar flex w-full items-center justify-start gap-2 overflow-x-auto pb-1'
+        class='no-scrollbar flex w-full items-center justify-between gap-2 overflow-x-auto pb-1'
         style='mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);'
     >
         {#each navItems as item}
@@ -96,7 +96,7 @@
         {/each}
     </div>
     {#if children}
-        <div class='mt-6 flex w-full justify-end'>
+        <div class='mt-2 flex w-full items-center justify-end'>
             {@render children()}
         </div>
     {/if}
