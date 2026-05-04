@@ -63,32 +63,26 @@
 
         <div class='flex items-center gap-3'>
             <!-- Simulation Toggle -->
-            <div class='relative'>
+            <div class='relative flex items-center'>
                 <button
                     type='button'
                     onclick={() => simulationOpen = !simulationOpen}
                     class='flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 border border-slate-200 transition-colors hover:bg-slate-100 cursor-pointer'
                 >
                     <ShieldCheck class='h-3.5 w-3.5 text-primary' />
-                    <span>Mode: <span class='text-slate-900 capitalize'>{simulation?.role || role}</span></span>
+                    <span>Mode: <span class='text-slate-900 capitalize'>{role}</span></span>
                     <ChevronDown class='h-3 w-3 transition-transform {simulationOpen ? 'rotate-180' : ''}' />
                 </button>
 
                 {#if simulationOpen}
-                    <div class='absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-md bg-white p-1 shadow-lg ring-1 ring-slate-200'>
-                        <div class='px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400'>
-                            Simulate Permissions
-                        </div>
+                    <div class='absolute right-0 top-full z-50 mt-1 w-40 rounded-sm border border-slate-100 bg-white p-1 shadow-lg'>
                         {#each roles as r}
                             <button
                                 type='button'
                                 onclick={() => selectRole(r.id)}
-                                class='flex w-full items-center justify-between rounded-sm px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 {simulation?.role === r.id ? 'bg-slate-50 font-medium text-primary' : ''}'
+                                class='flex w-full items-center px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-slate-50 rounded-sm {role === r.id ? 'text-primary bg-blue-50/50' : 'text-slate-600'}'
                             >
-                                <span>{r.label}</span>
-                                {#if simulation?.role === r.id}
-                                    <div class='h-1.5 w-1.5 rounded-full bg-primary'></div>
-                                {/if}
+                                {r.label.replace(' (All)', '')}
                             </button>
                         {/each}
                     </div>

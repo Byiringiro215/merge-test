@@ -113,7 +113,7 @@
 </script>
 
 <div
-    class='fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/80 transition-all'
+    class='fixed inset-0 z-1000 flex items-center justify-center bg-slate-900/80 transition-all'
     transition:fade={{ duration: 200 }}
 >
     <!-- svelte-ignore a11y_click_events_have_key_events -->

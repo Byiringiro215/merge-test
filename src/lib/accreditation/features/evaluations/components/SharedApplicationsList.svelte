@@ -2,7 +2,8 @@
     import type { StatusType } from '$lib/components/accreditation/ui/StatusBadge.svelte';
 
     import { goto } from '$app/navigation';
-    import { mockApplications } from '$lib/accreditation/utils/application-utils';
+    import { getSimulationState } from '$lib/accreditation/context/simulation.svelte';
+    import { getMockApplicationsByRole, getMockStatsByRole } from '$lib/accreditation/utils/application-utils';
     import StatsGrid from '$lib/components/accreditation/dashboard/StatsGrid.svelte';
     import DataTable from '$lib/components/accreditation/ui/DataTable.svelte';
     import StatusBadge from '$lib/components/accreditation/ui/StatusBadge.svelte';
@@ -11,11 +12,26 @@
         CheckCheck,
         ClipboardClock,
         Eye,
+        FileSearch,
         NotepadText,
+        ShieldAlert,
         Trash2,
     } from '@lucide/svelte';
 
-    const { role } = $props<{ role: string }>();
+    const { role: propRole, basePath = '/accreditation/applications' } = $props<{ role: string; basePath?: string }>();
+
+    const simulation = getSimulationState();
+    const activeRole = $derived(simulation?.role || propRole);
+
+    // Icon mapping for mock stats
+    const iconMap: Record<string, any> = {
+        NotepadText,
+        ClipboardClock,
+        CheckCheck,
+        AlertTriangle,
+        FileSearch,
+        ShieldAlert,
+    };
 
     interface Application {
         id: string;
@@ -39,17 +55,17 @@
     }
 
     let search = $state('');
-    const isReadOnly = $derived(role === 'supervisor');
+    const isReadOnly = $derived(activeRole === 'supervisor');
 
-    const stats = [
-        { label: 'Applications', value: 24, icon: NotepadText, iconColor: '#0A77FF' },
-        { label: 'Pending', value: 8, icon: ClipboardClock, iconColor: '#FF8D28' },
-        { label: 'Evaluated', value: 5, icon: CheckCheck, iconColor: '#34C759' },
-        { label: 'Rejected', value: 11, icon: AlertTriangle, iconColor: '#FF383C' },
-    ];
+    const stats = $derived(
+        getMockStatsByRole(activeRole).map(s => ({
+            ...s,
+            icon: iconMap[s.icon] || NotepadText,
+        })),
+    );
 
     const filteredData = $derived(
-        (mockApplications.filter(
+        (getMockApplicationsByRole(activeRole).filter(
             item =>
                 item.applicant.name.toLowerCase().includes(search.toLowerCase())
                     || item.applicant.email.toLowerCase().includes(search.toLowerCase())
@@ -58,7 +74,7 @@
     );
 
     const columns = $derived([
-        ...(role !== 'applicant'
+        ...(activeRole !== 'applicant'
             ? [
                 { header: 'Applicant', accessor: applicantCell, sortable: true },
                 { header: 'Institution', accessor: institutionCell, sortable: true },
@@ -132,18 +148,22 @@
     <DataTable
         data={filteredData}
         {columns}
-        title={role === 'supervisor'
+        title={activeRole === 'supervisor'
             ? 'Evaluation Oversight'
-            : role === 'evaluator'
+            : activeRole === 'evaluator'
             ? 'My Assigned Evaluations'
-            : role === 'applicant'
+            : activeRole === 'curriculum-evaluator'
+            ? 'Curriculum Review Dashboard'
+            : activeRole === 'applicant'
             ? 'My Applications'
             : 'All Applications'}
-        description={role === 'supervisor'
+        description={activeRole === 'supervisor'
             ? 'Monitor and oversee the progress of all active evaluations.'
-            : role === 'evaluator'
+            : activeRole === 'evaluator'
             ? 'Review and complete your assigned accreditation evaluations.'
-            : role === 'applicant'
+            : activeRole === 'curriculum-evaluator'
+            ? 'Review and evaluate submitted curricula for compliance and standards.'
+            : activeRole === 'applicant'
             ? 'Track and manage your submitted accreditation applications.'
             : 'Manage applications by different institutions right here'}
         searchValue={search}
@@ -151,6 +171,6 @@
         showPagination={true}
         currentPage={1}
         totalPages={10}
-        onRowClick={isReadOnly ? undefined : item => goto(`/accreditation/applications/${item.id}?role=${role}`)}
+        onRowClick={isReadOnly ? undefined : item => goto(`${basePath}/${item.id}?role=${activeRole}`)}
     />
 </div>

@@ -1,6 +1,6 @@
 <script lang='ts'>
-    import { goto } from '$app/navigation';
     import type { Application } from '$lib/accreditation/utils/application-utils';
+    import { goto } from '$app/navigation';
     import { mockApplications } from '$lib/accreditation/utils/application-utils';
     import DataTable from '$lib/components/accreditation/ui/DataTable.svelte';
     import StatusBadge from '$lib/components/accreditation/ui/StatusBadge.svelte';
