@@ -37,7 +37,7 @@
 
                 <a
                     href='/signin'
-                    class='inline-flex items-center gap-1.5 text-xs font-medium text-[#336cb2] transition-colors hover:text-[#2a5a96]'
+                    class='inline-flex items-center gap-1.5 text-xs font-medium text-[#2069C1] transition-colors hover:text-[#1a56a0]'
                 >
                     <ArrowLeft class='h-3.5 w-3.5' /> Go back
                 </a>

@@ -5,7 +5,7 @@
 
     const simulation = getSimulationState();
     const id = $derived(page.params.id || '');
-    const role = $derived(simulation?.role || 'merged');
+    const role = $derived(page.url.searchParams.get('role') || simulation?.role || 'merged');
 </script>
 
 <SharedApplicationDetailsContainer {id} {role} />
