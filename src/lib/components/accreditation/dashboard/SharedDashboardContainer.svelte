@@ -1,6 +1,6 @@
 <script lang='ts'>
-    import { AlertTriangle, CheckCheck, ClipboardClock, NotepadText } from '@lucide/svelte';
     import { getMockStatsByRole } from '$lib/accreditation/utils/application-utils';
+    import { AlertTriangle, CheckCheck, ClipboardClock, NotepadText } from '@lucide/svelte';
     import ApplicationsByTradeChart from './ApplicationsByTradeChart.svelte';
     import DashboardEmptyState from './DashboardEmptyState.svelte';
     import MostRequestedModules from './MostRequestedModules.svelte';
@@ -21,7 +21,7 @@
     // Dynamic stats based on role
     const stats = $derived(getMockStatsByRole(role).map(s => ({
         ...s,
-        icon: iconMap[s.icon] || NotepadText
+        icon: iconMap[s.icon] || NotepadText,
     })));
 
     const chartData = {
