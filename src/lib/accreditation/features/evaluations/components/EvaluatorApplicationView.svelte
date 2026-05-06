@@ -82,7 +82,7 @@
         <div class='mb-6 flex items-center justify-between'>
             <button
                 onclick={() => goto('/accreditation/evaluator/applications')}
-                class='group flex items-center gap-2 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-800'
+                class='group flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800'
             >
                 <ArrowLeft class='h-4 w-4 transition-transform group-hover:-translate-x-1' />
                 Back to Applications
@@ -98,24 +98,24 @@
                 onclick={() => (activeTab = 'initial-review')}
                 class={cn(
                     'relative pb-3 text-sm font-medium transition-all cursor-pointer',
-                    activeTab === 'initial-review' ? 'text-[#0A77FF]' : 'text-slate-400 hover:text-slate-600',
+                    activeTab === 'initial-review' ? 'text-[#2069C1]' : 'text-slate-400 hover:text-slate-600',
                 )}
             >
                 1. Initial Review
                 {#if activeTab === 'initial-review'}
-                    <div class='absolute bottom-0 left-0 right-0 h-0.5 bg-[#0A77FF]'></div>
+                    <div class='absolute bottom-0 left-0 right-0 h-0.5 bg-[#2069C1]'></div>
                 {/if}
             </button>
             <button
                 onclick={() => (activeTab = 'due-diligence')}
                 class={cn(
                     'relative pb-3 text-sm font-medium transition-all cursor-pointer',
-                    activeTab === 'due-diligence' ? 'text-[#0A77FF]' : 'text-slate-400 hover:text-slate-600',
+                    activeTab === 'due-diligence' ? 'text-[#2069C1]' : 'text-slate-400 hover:text-slate-600',
                 )}
             >
                 2. Perform Due Diligence
                 {#if activeTab === 'due-diligence'}
-                    <div class='absolute bottom-0 left-0 right-0 h-0.5 bg-[#0A77FF]'></div>
+                    <div class='absolute bottom-0 left-0 right-0 h-0.5 bg-[#2069C1]'></div>
                 {/if}
             </button>
         </div>
@@ -127,7 +127,7 @@
             <!-- Main Content (Left) -->
             <div class='flex-1 overflow-y-auto space-y-6 no-scrollbar pr-2'>
                 <!-- Application Details Card (Moved from Sidebar) -->
-                <div class='rounded-md border border-slate-200 bg-white p-6'>
+                <div class='rounded-sm border border-slate-200 bg-white p-6'>
                     <div class='flex flex-wrap items-center justify-between gap-6'>
                         <div class='flex items-start gap-3'>
                             <div class='mt-0.5 rounded-full bg-blue-50 p-1.5'>
@@ -161,8 +161,8 @@
 
                 {#if activeTab === 'initial-review'}
                     <!-- 1. Institution Profile -->
-                    <div class='rounded-md border border-slate-200 bg-white p-6'>
-                        <h3 class='text-md font-semibold text-[#101828] mb-6'>1. Institution Profile</h3>
+                    <div class='rounded-sm border border-slate-200 bg-white p-6'>
+                        <h3 class='text-sm font-semibold font-semibold text-[#101828] mb-6'>1. Institution Profile</h3>
 
                         <div class='grid grid-cols-1 gap-8'>
                             <!-- General -->
@@ -171,28 +171,28 @@
                                 <div class='grid grid-cols-2 gap-4'>
                                     <div class='space-y-1'>
                                         <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Name of Institution</span>
-                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                             <Building2 class='h-3.5 w-3.5 text-slate-400' />
                                             {application.institution.name}
                                         </div>
                                     </div>
                                     <div class='space-y-1'>
                                         <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Institution Type</span>
-                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                             <ChevronDown class='h-3.5 w-3.5 text-slate-400' />
                                             Private Vocational Center
                                         </div>
                                     </div>
                                     <div class='space-y-1'>
                                         <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Email Address</span>
-                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                             <Mail class='h-3.5 w-3.5 text-slate-400' />
                                             janesmith@example.com
                                         </div>
                                     </div>
                                     <div class='space-y-1'>
                                         <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Phone Number</span>
-                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                             <Phone class='h-3.5 w-3.5 text-slate-400' />
                                             +250 791-234-567
                                         </div>
@@ -206,28 +206,28 @@
                                 <div class='grid grid-cols-2 gap-4'>
                                     <div class='space-y-1'>
                                         <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Province</span>
-                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                             <MapPin class='h-3.5 w-3.5 text-slate-400' />
                                             Western
                                         </div>
                                     </div>
                                     <div class='space-y-1'>
                                         <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>District</span>
-                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                             <Map class='h-3.5 w-3.5 text-slate-400' />
                                             Nyabihu
                                         </div>
                                     </div>
                                     <div class='space-y-1'>
                                         <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Sector</span>
-                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                             <Globe class='h-3.5 w-3.5 text-slate-400' />
                                             Mukamira
                                         </div>
                                     </div>
                                     <div class='space-y-1'>
                                         <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Address Line</span>
-                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                        <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                             <Navigation class='h-3.5 w-3.5 text-slate-400' />
                                             Mukamira Road, Plot 12
                                         </div>
@@ -238,8 +238,8 @@
                     </div>
 
                     <!-- 2. Trade & Module -->
-                    <div class='rounded-md border border-slate-200 bg-white p-6'>
-                        <h3 class='text-md font-semibold text-[#101828] mb-6'>2. Trade & Module</h3>
+                    <div class='rounded-sm border border-slate-200 bg-white p-6'>
+                        <h3 class='text-sm font-semibold font-semibold text-[#101828] mb-6'>2. Trade & Module</h3>
                         <div class='space-y-4'>
                             <div class='flex items-center justify-between rounded-sm border border-slate-100 bg-slate-50/50 p-4'>
                                 <div class='flex items-center gap-3'>
@@ -247,7 +247,7 @@
                                         <Database class='h-5 w-5 text-blue-600' />
                                     </div>
                                     <div>
-                                        <p class='text-[13px] font-medium text-slate-900'>{application.trade.name}</p>
+                                        <p class='text-sm font-medium text-slate-900'>{application.trade.name}</p>
                                         <p class='text-[11px] text-slate-500'>Level 3-5 Competency Based</p>
                                     </div>
                                 </div>
@@ -258,7 +258,7 @@
                                 <h4 class='text-[12px] font-semibold text-slate-700 uppercase tracking-wider'>Associated Modules</h4>
                                 <div class='grid grid-cols-1 gap-2'>
                                     {#each ['Introduction to Programming', 'Database Systems', 'Web Development', 'System Analysis'] as module}
-                                        <div class='flex items-center justify-between rounded-sm border border-slate-100 px-4 py-3 text-[13px] text-slate-600'>
+                                        <div class='flex items-center justify-between rounded-sm border border-slate-100 px-4 py-3 text-sm text-slate-600'>
                                             <span>{module}</span>
                                             <CheckCircle class='h-4 w-4 text-emerald-500' />
                                         </div>
@@ -269,10 +269,10 @@
                     </div>
 
                     <!-- 3. Equipment & Facilities -->
-                    <div class='rounded-md border border-slate-200 bg-white p-6'>
+                    <div class='rounded-sm border border-slate-200 bg-white p-6'>
                         <div class='mb-6'>
-                            <h3 class='text-md font-semibold text-[#101828]'>3. Equipment & Facilities</h3>
-                            <p class='text-[13px] text-[#64748B]'>Equipment available at the institution site.</p>
+                            <h3 class='text-sm font-semibold font-semibold text-[#101828]'>3. Equipment & Facilities</h3>
+                            <p class='text-sm text-[#64748B]'>Equipment available at the institution site.</p>
                         </div>
                         <div class='space-y-3'>
                             {#each (showAllEquipment ? dueDiligenceEquipment : dueDiligenceEquipment.slice(0, 3)) as item}
@@ -281,10 +281,10 @@
                                         <img src={item.image} alt={item.name} class='h-full w-full object-cover' />
                                     </div>
                                     <div class='flex-1 min-w-0'>
-                                        <h4 class='truncate text-[13px] font-medium text-slate-900'>{item.name}</h4>
+                                        <h4 class='truncate text-sm font-medium text-slate-900'>{item.name}</h4>
                                         <p class='text-[11px] text-slate-500'>Quantity: {item.quantity}</p>
                                     </div>
-                                    <button class='flex h-7 w-7 items-center justify-center rounded-sm border border-slate-100 text-slate-400 hover:text-[#0A77FF] hover:bg-white cursor-pointer transition-colors'>
+                                    <button class='flex h-7 w-7 items-center justify-center rounded-sm border border-slate-100 text-slate-400 hover:text-[#2069C1] hover:bg-white cursor-pointer transition-colors'>
                                         <Eye class='h-3.5 w-3.5' />
                                     </button>
                                 </div>
@@ -293,7 +293,7 @@
                         {#if dueDiligenceEquipment.length > 3}
                             <button
                                 onclick={() => (showAllEquipment = !showAllEquipment)}
-                                class='mt-4 w-full py-2 text-[12px] font-medium text-[#0A77FF] hover:bg-blue-50/50 rounded-sm transition-colors cursor-pointer'
+                                class='mt-4 w-full py-2 text-[12px] font-medium text-[#2069C1] hover:bg-blue-50/50 rounded-sm transition-colors cursor-pointer'
                             >
                                 {showAllEquipment ? 'See Less' : `See More (${dueDiligenceEquipment.length - 3} more)`}
                             </button>
@@ -301,27 +301,27 @@
                     </div>
 
                     <!-- 4. Curriculum Documents -->
-                    <div class='rounded-md border border-slate-200 bg-white p-6'>
+                    <div class='rounded-sm border border-slate-200 bg-white p-6'>
                         <div class='mb-6'>
-                            <h3 class='text-md font-semibold text-[#101828]'>4. Curriculum Documents</h3>
-                            <p class='text-[13px] text-[#64748B]'>Submitted accreditation documents.</p>
+                            <h3 class='text-sm font-semibold font-semibold text-[#101828]'>4. Curriculum Documents</h3>
+                            <p class='text-sm text-[#64748B]'>Submitted accreditation documents.</p>
                         </div>
 
                         <div class='space-y-4'>
                             {#each (showAllDocuments ? documents : documents.slice(0, 3)) as doc}
-                                <div class='group relative flex items-center gap-4 rounded-sm border border-slate-200 bg-white p-4 transition-all hover:border-[#0A77FF]/30'>
-                                    <div class='relative flex h-10 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-50'>
+                                <div class='group relative flex items-center gap-4 rounded-sm border border-slate-200 bg-white p-4 transition-all hover:border-[#2069C1]/30'>
+                                    <div class='relative flex h-10 w-8 shrink-0 items-center justify-center rounded-sm border border-slate-200 bg-slate-50'>
                                         <div class='absolute bottom-1 left-1 right-1 flex items-center justify-center rounded-[3px] bg-red-500 px-1 py-0.5'>
                                             <span class='text-[8px] font-bold tracking-widest text-white'>PDF</span>
                                         </div>
                                     </div>
                                     <div class='flex-1'>
-                                        <p class='text-[13px] font-medium text-slate-800'>{doc.name}</p>
+                                        <p class='text-sm font-medium text-slate-800'>{doc.name}</p>
                                         <p class='text-[11px] text-slate-500'>{doc.size} · {doc.note}</p>
                                     </div>
                                     <button
                                         onclick={() => (selectedDocument = doc)}
-                                        class='cursor-pointer text-[12px] font-medium text-[#0A77FF] hover:underline'
+                                        class='cursor-pointer text-[12px] font-medium text-[#2069C1] hover:underline'
                                     >
                                         View
                                     </button>
@@ -331,7 +331,7 @@
                         {#if documents.length > 3}
                             <button
                                 onclick={() => (showAllDocuments = !showAllDocuments)}
-                                class='mt-4 w-full py-2 text-[12px] font-medium text-[#0A77FF] hover:bg-blue-50/50 rounded-sm transition-colors cursor-pointer'
+                                class='mt-4 w-full py-2 text-[12px] font-medium text-[#2069C1] hover:bg-blue-50/50 rounded-sm transition-colors cursor-pointer'
                             >
                                 {showAllDocuments ? 'See Less' : `See More (${documents.length - 3} more)`}
                             </button>
@@ -339,8 +339,8 @@
                     </div>
 
                     <!-- 5. Staff Allocation -->
-                    <div class='rounded-md border border-slate-200 bg-white p-6'>
-                        <h3 class='text-md font-semibold text-[#101828] mb-6'>5. Staff Allocation</h3>
+                    <div class='rounded-sm border border-slate-200 bg-white p-6'>
+                        <h3 class='text-sm font-semibold font-semibold text-[#101828] mb-6'>5. Staff Allocation</h3>
                         <div class='overflow-hidden rounded-sm border border-slate-100 bg-white'>
                             <table class='w-full text-left'>
                                 <thead>
@@ -369,10 +369,10 @@
                                                     <div class='flex h-8 w-8 items-center justify-center rounded-full bg-slate-100'>
                                                         <Users class='h-4 w-4 text-slate-400' />
                                                     </div>
-                                                    <span class='text-[13px] font-medium text-slate-900'>{person.name}</span>
+                                                    <span class='text-sm font-medium text-slate-900'>{person.name}</span>
                                                 </div>
                                             </td>
-                                            <td class='py-4'><span class='text-[13px] text-slate-500'>{person.position}</span></td>
+                                            <td class='py-4'><span class='text-sm text-slate-500'>{person.position}</span></td>
                                             <td class='py-4 pr-6 text-right'>
                                                 <div class='flex flex-col text-[12px] text-slate-500'>
                                                     <span>{person.email}</span>
@@ -386,44 +386,44 @@
                         </div>
                         <button
                             onclick={() => (showAllStaff = !showAllStaff)}
-                            class='mt-4 w-full py-2 text-[12px] font-medium text-[#0A77FF] hover:bg-blue-50/50 rounded-sm transition-colors cursor-pointer'
+                            class='mt-4 w-full py-2 text-[12px] font-medium text-[#2069C1] hover:bg-blue-50/50 rounded-sm transition-colors cursor-pointer'
                         >
                             {showAllStaff ? 'See Less' : 'See More (1 more)'}
                         </button>
                     </div>
                 {:else}
                     <!-- Perform Due Diligence Content -->
-                    <div class='rounded-md border border-slate-200 bg-white p-6'>
+                    <div class='rounded-sm border border-slate-200 bg-white p-6'>
                         <div class='mb-6'>
-                            <h3 class='text-md font-semibold text-[#101828]'>Institution Location</h3>
-                            <p class='text-[13px] text-[#64748B]'>Physical address details for site visit coordination.</p>
+                            <h3 class='text-sm font-semibold font-semibold text-[#101828]'>Institution Location</h3>
+                            <p class='text-sm text-[#64748B]'>Physical address details for site visit coordination.</p>
                         </div>
 
                         <div class='grid grid-cols-2 gap-4'>
                             <div class='space-y-1'>
                                 <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Province</span>
-                                <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                     <MapPin class='h-3.5 w-3.5 text-slate-400' />
                                     Western
                                 </div>
                             </div>
                             <div class='space-y-1'>
                                 <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>District</span>
-                                <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                     <Map class='h-3.5 w-3.5 text-slate-400' />
                                     Nyabihu
                                 </div>
                             </div>
                             <div class='space-y-1'>
                                 <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Sector</span>
-                                <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                     <Globe class='h-3.5 w-3.5 text-slate-400' />
                                     Mukamira
                                 </div>
                             </div>
                             <div class='space-y-1'>
                                 <span class='text-[11px] text-slate-500 uppercase tracking-wide block mb-1'>Address Line</span>
-                                <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-[13px] text-slate-700'>
+                                <div class='flex items-center gap-2 rounded-sm border border-slate-100 bg-slate-50/50 px-3 py-2 text-sm text-slate-700'>
                                     <Navigation class='h-3.5 w-3.5 text-slate-400' />
                                     Mukamira Road, Plot 12
                                 </div>
@@ -431,15 +431,15 @@
                         </div>
                     </div>
 
-                    <div class='rounded-md border border-slate-200 bg-white p-6'>
+                    <div class='rounded-sm border border-slate-200 bg-white p-6'>
                         <div class='mb-6 flex items-center justify-between'>
                             <div>
-                                <h3 class='text-md font-semibold text-[#101828]'>Equipment Verification</h3>
-                                <p class='text-[13px] text-[#64748B]'>Verify availability of equipment at the institution site.</p>
+                                <h3 class='text-sm font-semibold font-semibold text-[#101828]'>Equipment Verification</h3>
+                                <p class='text-sm text-[#64748B]'>Verify availability of equipment at the institution site.</p>
                             </div>
                             <div class='relative'>
                                 <Search class='absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400' />
-                                <input placeholder='Search equipment...' class='h-9 w-48 rounded-sm border border-slate-200 pl-9 pr-3 text-[12px] focus:outline-none focus:border-[#0A77FF]' />
+                                <input placeholder='Search equipment...' class='h-9 w-48 rounded-sm border border-slate-200 pl-9 pr-3 text-[12px] focus:outline-none focus:border-[#2069C1]' />
                             </div>
                         </div>
 
@@ -450,7 +450,7 @@
                                         <img src={item.image} alt={item.name} class='h-full w-full object-cover' />
                                     </div>
                                     <div class='flex-1 min-w-0'>
-                                        <h4 class='truncate text-[13px] font-medium text-slate-900'>{item.name}</h4>
+                                        <h4 class='truncate text-sm font-medium text-slate-900'>{item.name}</h4>
                                         <p class='text-[11px] text-slate-500'>Quantity: {item.quantity}</p>
                                     </div>
                                     <div class='flex items-center gap-3 shrink-0'>
@@ -462,7 +462,7 @@
                                                 {/if}
                                             </div>
                                         </div>
-                                        <button class='flex h-7 w-7 items-center justify-center rounded-sm border border-slate-100 text-slate-400 hover:text-[#0A77FF] hover:bg-white cursor-pointer transition-colors'>
+                                        <button class='flex h-7 w-7 items-center justify-center rounded-sm border border-slate-100 text-slate-400 hover:text-[#2069C1] hover:bg-white cursor-pointer transition-colors'>
                                             <Eye class='h-3.5 w-3.5' />
                                         </button>
                                     </div>
@@ -475,9 +475,9 @@
 
             <!-- Right: Decision Sidebar -->
             <div class='w-full lg:w-[400px] shrink-0 overflow-y-auto space-y-6 no-scrollbar pl-2'>
-                <div class='rounded-md border border-slate-200 bg-white p-6'>
-                    <h3 class='text-md font-semibold text-[#101828]'>Evaluation Decision</h3>
-                    <p class='mb-6 text-[13px] text-[#64748B]'>Make a decision for the {activeTab === 'initial-review' ? 'Initial Review' : 'Due Diligence'} stage.</p>
+                <div class='rounded-sm border border-slate-200 bg-white p-6'>
+                    <h3 class='text-sm font-semibold font-semibold text-[#101828]'>Evaluation Decision</h3>
+                    <p class='mb-6 text-sm text-[#64748B]'>Make a decision for the {activeTab === 'initial-review' ? 'Initial Review' : 'Due Diligence'} stage.</p>
 
                     <div class='mb-6 space-y-3'>
 
@@ -491,7 +491,7 @@
                             )}
                         >
                             <CheckCircle class={cn('h-5 w-5', currentDecision === 'approve' ? 'text-emerald-500' : 'text-slate-400')} />
-                            <span class='text-[13px]'>Approve Stage</span>
+                            <span class='text-sm'>Approve Stage</span>
                         </button>
 
                         <button
@@ -504,7 +504,7 @@
                             )}
                         >
                             <RotateCcw class={cn('h-5 w-5', currentDecision === 'revert' ? 'text-orange-500' : 'text-slate-400')} />
-                            <span class='text-[13px]'>Revert for Correction</span>
+                            <span class='text-sm'>Revert for Correction</span>
                         </button>
 
                         <button
@@ -517,7 +517,7 @@
                             )}
                         >
                             <Clock class={cn('h-5 w-5', currentDecision === 'defer' ? 'text-amber-500' : 'text-slate-400')} />
-                            <span class='text-[13px]'>Defer Application</span>
+                            <span class='text-sm'>Defer Application</span>
                         </button>
                     </div>
 
@@ -531,14 +531,14 @@
                                         id='remarks'
                                         bind:value={initialReviewComment}
                                         placeholder='Explain your decision...'
-                                        class='min-h-[120px] w-full resize-none rounded-sm border border-slate-200 bg-slate-50/50 p-3 pl-10 text-[13px] focus:outline-none focus:border-[#0A77FF] transition-all'
+                                        class='min-h-[120px] w-full resize-none rounded-sm border border-slate-200 bg-slate-50/50 p-3 pl-10 text-sm focus:outline-none focus:border-[#2069C1] transition-all'
                                     ></textarea>
                                 {:else}
                                     <textarea
                                         id='remarks'
                                         bind:value={dueDiligenceComment}
                                         placeholder='Explain your decision...'
-                                        class='min-h-[120px] w-full resize-none rounded-sm border border-slate-200 bg-slate-50/50 p-3 pl-10 text-[13px] focus:outline-none focus:border-[#0A77FF] transition-all'
+                                        class='min-h-[120px] w-full resize-none rounded-sm border border-slate-200 bg-slate-50/50 p-3 pl-10 text-sm focus:outline-none focus:border-[#2069C1] transition-all'
                                     ></textarea>
                                 {/if}
                             </div>
@@ -549,10 +549,10 @@
                         onclick={handleDecision}
                         disabled={!currentDecision || (currentDecision === 'revert' && !currentComment)}
                         class={cn(
-                            'w-full rounded-sm py-3 text-[13px] font-medium transition-all',
+                            'w-full rounded-sm py-3 text-sm font-medium transition-all',
                             (!currentDecision || (currentDecision === 'revert' && !currentComment))
                                 ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                : 'bg-[#0A77FF] text-white hover:bg-[#0864d6] cursor-pointer',
+                                : 'bg-[#2069C1] text-white hover:bg-[#0864d6] cursor-pointer',
                         )}
                     >
                         Confirm Decision

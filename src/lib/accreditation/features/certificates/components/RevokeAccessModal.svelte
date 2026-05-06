@@ -27,7 +27,7 @@
 
 {#if isOpen}
     <div class='fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/50'>
-        <div class='w-full max-w-md rounded-lg bg-white shadow-xl'>
+        <div class='w-full max-w-md rounded-sm bg-white shadow-xl'>
             <div class='space-y-4 p-6'>
                 <div class='mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50'>
                     <AlertTriangle class='h-6 w-6 text-red-600' />
@@ -42,14 +42,14 @@
                 </div>
 
                 <div class='space-y-1.5'>
-                    <label for='revocation-reason' class='text-[13px] font-medium text-slate-700'>
+                    <label for='revocation-reason' class='text-sm font-medium text-slate-700'>
                         Reason for Revocation <span class='text-red-500'>*</span>
                     </label>
                     <textarea
                         id='revocation-reason'
                         bind:value={reason}
                         placeholder='Explain the reason for revoking certificate access...'
-                        class='min-h-[100px] w-full resize-none rounded-sm border border-slate-200 p-3 text-[13px] transition-all focus:border-red-400 focus:outline-none focus:ring-2 focus:ring-red-500/20'
+                        class='min-h-[100px] w-full resize-none rounded-sm border border-slate-200 p-3 text-sm transition-all focus:border-red-400 focus:outline-none focus:ring-2 focus:ring-red-500/20'
                     ></textarea>
                     <p class='text-[11px] text-slate-400'>This reason will be recorded and shared with the applicant.</p>
                 </div>

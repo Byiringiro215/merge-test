@@ -53,21 +53,21 @@
     const stats = $derived([
         { label: 'Assigned reviews', value: filteredApplications.length, icon: ClipboardClock, iconColor: '#FF8D28' },
         { label: 'Ready for approval', value: 2, icon: CheckCheck, iconColor: '#34C759' },
-        { label: 'Evidence gaps', value: 3, icon: FileSearch, iconColor: '#0A77FF' },
+        { label: 'Evidence gaps', value: 3, icon: FileSearch, iconColor: '#2069C1' },
         { label: 'Standards issues', value: 1, icon: ShieldAlert, iconColor: '#FF383C' },
     ]);
 </script>
 
 {#snippet institutionCell(item: CurriculumApplication)}
     <div class='flex flex-col text-left'>
-        <span class='text-[13px] font-medium text-slate-900'>{item.institution.name}</span>
+        <span class='text-sm font-medium text-slate-900'>{item.institution.name}</span>
         <span class='text-[11px] text-slate-500'>{item.trade.name}</span>
     </div>
 {/snippet}
 
 {#snippet programAreaCell(item: CurriculumApplication)}
     <div class='flex flex-col text-left'>
-        <span class='text-[13px] font-medium text-slate-900'>{item.trade.category}</span>
+        <span class='text-sm font-medium text-slate-900'>{item.trade.category}</span>
         <span class='text-[11px] text-slate-500'>{item.stage}</span>
     </div>
 {/snippet}
@@ -87,11 +87,11 @@
 {/snippet}
 
 {#snippet reviewFocusCell(item: CurriculumApplication)}
-    <span class='text-left text-[13px] font-medium text-slate-600'>{item.standardsArea}</span>
+    <span class='text-left text-sm font-medium text-slate-600'>{item.standardsArea}</span>
 {/snippet}
 
 {#snippet submittedCell(item: CurriculumApplication)}
-    <span class='text-left text-[13px] font-medium text-slate-600'>{item.submittedOn}</span>
+    <span class='text-left text-sm font-medium text-slate-600'>{item.submittedOn}</span>
 {/snippet}
 
 {#snippet actionCell(item: CurriculumApplication)}
@@ -100,7 +100,7 @@
             e.stopPropagation();
             goto(`/accreditation/curriculum-evaluator/applications/${item.id}`);
         }}
-        class='cursor-pointer whitespace-nowrap rounded-sm bg-[#0A77FF] px-3 py-2 text-[13px] font-medium text-white transition-all hover:opacity-90'
+        class='cursor-pointer whitespace-nowrap rounded-sm bg-[#2069C1] px-3 py-2 text-sm font-medium text-white transition-all hover:opacity-90'
     >
         Review Curriculum
     </button>

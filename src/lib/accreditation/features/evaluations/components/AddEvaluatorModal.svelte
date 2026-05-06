@@ -23,7 +23,7 @@
         <div class='flex items-start justify-between p-6 border-b border-slate-100'>
             <div class='flex items-start gap-4'>
                 <div class='h-10 w-10 mt-2 rounded-sm border border-slate-100 flex items-center justify-center shrink-0'>
-                    <UserPlus class='h-5 w-5 text-[#0A77FF]' strokeWidth={1.5} />
+                    <UserPlus class='h-5 w-5 text-[#2069C1]' strokeWidth={1.5} />
                 </div>
                 <div>
                     <h3 class='text-lg text-[#323539]'>{title}</h3>
@@ -50,7 +50,7 @@
                         placeholder='Enter your email'
                         required
                         bind:value={email}
-                        class='w-full pl-4 pr-12 py-3 bg-white border mt-2 border-slate-200 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-[#0A77FF]/10 focus:border-[#0A77FF] transition-all'
+                        class='w-full pl-4 pr-12 py-3 bg-white border mt-2 border-slate-200 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-[#2069C1]/10 focus:border-[#2069C1] transition-all'
                     />
                     <Mail class='absolute right-4 top-1/2 mt-1 -translate-y-1/2 h-4 w-4 text-slate-400' />
                 </div>
@@ -67,7 +67,7 @@
                 </button>
                 <button
                     type='submit'
-                    class='flex-1 py-2.5 text-sm cursor-pointer text-white bg-[#0A77FF] rounded-sm hover:bg-[#0966ff] transition-colors shadow-sm'
+                    class='flex-1 py-2.5 text-sm cursor-pointer text-white bg-[#2069C1] rounded-sm hover:bg-[#0966ff] transition-colors shadow-sm'
                 >
                     Invite
                 </button>

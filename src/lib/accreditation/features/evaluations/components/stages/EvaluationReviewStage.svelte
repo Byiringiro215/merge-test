@@ -78,7 +78,7 @@
             </button>
             <button
                 onclick={handleNext}
-                class='bg-primary flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'
+                class='bg-[#2069C1] flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'
             >
                 {isEvaluating ? 'Next' : 'Start Evaluation'}
             </button>
@@ -90,7 +90,7 @@
                     onclick={() => setActiveTab(tab)}
                     class={cn(
                         'relative py-3 text-sm cursor-pointer transition-all',
-                        activeTab === tab ? 'text-[#0A77FF]' : 'text-slate-400 hover:text-slate-600',
+                        activeTab === tab ? 'text-[#2069C1]' : 'text-slate-400 hover:text-slate-600',
                     )}
                 >
                     {tab}
@@ -102,7 +102,7 @@
             {#if activeTab === 'General'}
                 <div class='grid grid-cols-1 gap-8'>
                     <div class='space-y-2'>
-                        <label for='institution-name' class='text-[13px] text-slate-700'>Name of Institution</label>
+                        <label for='institution-name' class='text-sm text-slate-700'>Name of Institution</label>
                         <div class='relative mt-2'>
                             <input id='institution-name' readonly class='w-full cursor-default rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 focus:outline-none' value='ETrainer Academy' />
                             <Building2 class='absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300' />
@@ -110,7 +110,7 @@
                     </div>
                     <div class='grid grid-cols-2 gap-4'>
                         <div class='space-y-2 text-left'>
-                            <label for='institution-type' class='text-[13px] text-slate-700'>Institution Type</label>
+                            <label for='institution-type' class='text-sm text-slate-700'>Institution Type</label>
                             <div class='relative mt-2'>
                                 <select id='institution-type' disabled class='w-full cursor-default appearance-none rounded-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500'>
                                     <option>Private Vocational Center</option>
@@ -119,7 +119,7 @@
                             </div>
                         </div>
                         <div class='space-y-2'>
-                            <label for='po-box' class='text-[13px] text-slate-700'>P.O Box</label>
+                            <label for='po-box' class='text-sm text-slate-700'>P.O Box</label>
                             <div class='relative mt-2'>
                                 <input id='po-box' readonly class='w-full cursor-default rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 focus:outline-none' value='P.O. Box 1234, Kigali' />
                                 <Package class='absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300' />
@@ -127,14 +127,14 @@
                         </div>
                     </div>
                     <div class='space-y-2'>
-                        <label for='email-address' class='text-[13px] text-slate-700'>Email Address</label>
+                        <label for='email-address' class='text-sm text-slate-700'>Email Address</label>
                         <div class='relative mt-2'>
                             <input id='email-address' readonly class='w-full cursor-default rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 focus:outline-none' value='janesmith@example.com' />
                             <Mail class='absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300' />
                         </div>
                     </div>
                     <div class='space-y-2'>
-                        <label for='phone-number' class='text-[13px] text-slate-700'>Phone Number</label>
+                        <label for='phone-number' class='text-sm text-slate-700'>Phone Number</label>
                         <div class='mt-2 flex'>
                             <div class='relative'>
                                 <select id='phone-prefix' disabled class='cursor-default appearance-none rounded-l-sm border border-r-0 border-slate-200 bg-slate-50 py-3 pl-4 pr-10 text-sm text-slate-500'>
@@ -155,14 +155,14 @@
                 <div class='grid grid-cols-1 gap-8'>
                     <div class='grid grid-cols-2 gap-4'>
                         <div class='space-y-2'>
-                            <label for='province' class='text-[13px] text-slate-700'>Province</label>
+                            <label for='province' class='text-sm text-slate-700'>Province</label>
                             <div class='relative mt-2'>
                                 <input id='province' readonly class='w-full cursor-default rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 focus:outline-none' value='Western' />
                                 <MapPin class='absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300' />
                             </div>
                         </div>
                         <div class='space-y-2'>
-                            <label for='district' class='text-[13px] text-slate-700'>District</label>
+                            <label for='district' class='text-sm text-slate-700'>District</label>
                             <div class='relative mt-2'>
                                 <input id='district' readonly class='w-full cursor-default rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 focus:outline-none' value='Nyabihu' />
                                 <Map class='absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300' />
@@ -171,14 +171,14 @@
                     </div>
                     <div class='grid grid-cols-2 gap-4'>
                         <div class='space-y-2'>
-                            <label for='sector' class='text-[13px] text-slate-700'>Sector</label>
+                            <label for='sector' class='text-sm text-slate-700'>Sector</label>
                             <div class='relative mt-2'>
                                 <input id='sector' readonly class='w-full cursor-default rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 focus:outline-none' value='Mukamira' />
                                 <Globe class='absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300' />
                             </div>
                         </div>
                         <div class='space-y-2'>
-                            <label for='cell' class='text-[13px] text-slate-700'>Cell</label>
+                            <label for='cell' class='text-sm text-slate-700'>Cell</label>
                             <div class='relative mt-2'>
                                 <input id='cell' readonly class='w-full cursor-default rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 focus:outline-none' value='Mukamira' />
                                 <Flag class='absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300' />
@@ -186,14 +186,14 @@
                         </div>
                     </div>
                     <div class='space-y-2'>
-                        <label for='village' class='text-[13px] text-slate-700'>Village/City</label>
+                        <label for='village' class='text-sm text-slate-700'>Village/City</label>
                         <div class='relative mt-2'>
                             <input id='village' readonly class='w-full cursor-default rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 focus:outline-none' value='Mukamira Urban' />
                             <MapPin class='absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300' />
                         </div>
                     </div>
                     <div class='space-y-2'>
-                        <label for='address-line' class='text-[13px] text-slate-700'>Address Line</label>
+                        <label for='address-line' class='text-sm text-slate-700'>Address Line</label>
                         <div class='relative mt-2'>
                             <input id='address-line' readonly class='w-full cursor-default rounded-sm border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 focus:outline-none' value='Mukamira Road, Avenue 4, Plot 12' />
                             <Navigation class='absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300' />
@@ -209,9 +209,9 @@
                             <thead>
                                 <tr class='border-b border-slate-100'>
                                     <th class='w-10 py-4 pl-6 pr-2'><div class='h-5 w-5 rounded-sm border border-slate-200 bg-white'></div></th>
-                                    <th class='py-4 text-[13px] font-normal text-slate-500'>Name</th>
-                                    <th class='py-4 text-[13px] font-normal text-slate-500'>Position</th>
-                                    <th class='py-4 pr-6 text-[13px] font-normal text-slate-500'>Contact</th>
+                                    <th class='py-4 text-sm font-normal text-slate-500'>Name</th>
+                                    <th class='py-4 text-sm font-normal text-slate-500'>Position</th>
+                                    <th class='py-4 pr-6 text-sm font-normal text-slate-500'>Contact</th>
                                 </tr>
                             </thead>
                             <tbody class='divide-y divide-slate-100'>
@@ -236,9 +236,9 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class='py-5'><span class='text-[13px] text-slate-500'>{person.position}</span></td>
+                                        <td class='py-5'><span class='text-sm text-slate-500'>{person.position}</span></td>
                                         <td class='py-5 pr-6'>
-                                            <div class='flex flex-col text-[13px] text-slate-500'>
+                                            <div class='flex flex-col text-sm text-slate-500'>
                                                 <span>{person.email}</span>
                                                 <span>{person.phone}</span>
                                             </div>
@@ -255,15 +255,15 @@
                 <div class='grid w-full grid-cols-1 gap-8'>
                     <div class='space-y-4'>
                         <div class='space-y-2'>
-                            <label for='institution-mission' class='text-[13px] font-medium text-slate-700'>Institution Mission</label>
+                            <label for='institution-mission' class='text-sm font-medium text-slate-700'>Institution Mission</label>
                             <textarea id='institution-mission' readonly class='min-h-[100px] w-full cursor-default resize-none rounded-sm border border-slate-200 bg-white px-4 py-4 text-sm leading-relaxed text-slate-600 focus:outline-none'>To provide high-quality technical education and vocational training that meets domestic and international standards, empowering students with the skills needed for the global workforce.</textarea>
                         </div>
                         <div class='space-y-2'>
-                            <label for='institution-vision' class='text-[13px] font-medium text-slate-700'>Institution Vision</label>
+                            <label for='institution-vision' class='text-sm font-medium text-slate-700'>Institution Vision</label>
                             <textarea id='institution-vision' readonly class='min-h-[100px] w-full cursor-default resize-none rounded-sm border border-slate-200 bg-white px-4 py-4 text-sm leading-relaxed text-slate-600 focus:outline-none'>To be a center of excellence in technical innovation and vocational training, recognized for producing highly skilled professionals who drive economic growth and sustainability.</textarea>
                         </div>
                         <div class='space-y-2'>
-                            <label for='key-objectives' class='text-[13px] font-medium text-slate-700'>Key Objectives</label>
+                            <label for='key-objectives' class='text-sm font-medium text-slate-700'>Key Objectives</label>
                             <textarea id='key-objectives' readonly class='min-h-[120px] w-full cursor-default resize-none rounded-sm border border-slate-200 bg-white px-4 py-4 text-sm leading-relaxed text-slate-600 focus:outline-none'>1. Maintain 95% student placement rate within 6 months of graduation. 2. Establish 5+ international industry partnerships annually. 3. Continuously upgrade laboratory and workshop facilities to match current industry technologies.</textarea>
                         </div>
                     </div>
@@ -283,7 +283,7 @@
                     <p class='mb-8 text-sm text-slate-500'>Select the trade you are applying for accreditation in.</p>
 
                     <div class='mb-8 flex w-full items-center justify-start gap-4'>
-                        <div class='flex items-center gap-2 rounded-sm border border-[#0A77FF] bg-white px-4 py-3 text-[13px] text-[#0A77FF]'>
+                        <div class='flex items-center gap-2 rounded-sm border border-[#2069C1] bg-white px-4 py-3 text-sm text-[#2069C1]'>
                             <Ungroup class='h-4 w-4' />
                             Masonry
                             <div class='flex h-4 w-4 items-center justify-center rounded-full bg-green-500'>
@@ -291,7 +291,7 @@
                             </div>
                         </div>
                         <ChevronRight class='h-4 w-4 text-slate-300' />
-                        <div class='flex items-center gap-2 rounded-sm border border-[#0A77FF] bg-white px-4 py-3 text-[13px] text-[#0A77FF]'>
+                        <div class='flex items-center gap-2 rounded-sm border border-[#2069C1] bg-white px-4 py-3 text-sm text-[#2069C1]'>
                             <Database class='h-4 w-4' />
                             Data Structures & Algorithms
                             <div class='flex h-4 w-4 items-center justify-center rounded-full bg-green-500 text-[10px] text-white'>✓</div>
@@ -300,7 +300,7 @@
 
                     <div class='mb-12 flex w-full items-center gap-4'>
                         <button onclick={() => setActiveInternalStep(0)} class='flex-1 cursor-pointer rounded-sm border border-slate-200 py-3 text-sm text-slate-600 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={handleNext} class='bg-[#0A77FF] flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'>Next</button>
+                        <button onclick={handleNext} class='bg-[#2069C1] flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'>Next</button>
                     </div>
 
                     <div class='w-full space-y-4'>
@@ -308,11 +308,11 @@
                         <div class='space-y-1'>
                             <label for='comment-input' class='text-[12px] text-slate-500'>Comment Input</label>
                             <div class='relative'>
-                                <textarea id='comment-input' placeholder='Text...' class='min-h-[140px] w-full resize-none rounded-sm border border-slate-200 p-4 text-sm transition-all focus:ring-1 focus:ring-[#0A77FF] focus:outline-none'></textarea>
+                                <textarea id='comment-input' placeholder='Text...' class='min-h-[140px] w-full resize-none rounded-sm border border-slate-200 p-4 text-sm transition-all focus:ring-1 focus:ring-[#2069C1] focus:outline-none'></textarea>
                                 <div class='absolute bottom-4 right-4 text-[11px] text-slate-400'>275 characters left</div>
                             </div>
                         </div>
-                        <button class='flex cursor-pointer items-center gap-2 rounded-sm bg-[#0A77FF] px-6 py-3 text-sm text-white transition-all hover:opacity-90'>
+                        <button class='flex cursor-pointer items-center gap-2 rounded-sm bg-[#2069C1] px-6 py-3 text-sm text-white transition-all hover:opacity-90'>
                             Add Comment
                             <span class='flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm border border-white/50 text-[10px]'>+</span>
                         </button>
@@ -329,7 +329,7 @@
                     <p class='mb-8 px-4 text-center text-sm text-slate-500'>Specify the competencies offered under the selected trade.</p>
 
                     <div class='mb-8 flex w-full items-center justify-start gap-4'>
-                        <div class='flex items-center gap-2 rounded-sm border border-[#0A77FF] bg-white px-4 py-3 text-[13px] text-[#0A77FF]'>
+                        <div class='flex items-center gap-2 rounded-sm border border-[#2069C1] bg-white px-4 py-3 text-sm text-[#2069C1]'>
                             <Ungroup class='h-4 w-4' />
                             Masonry
                             <div class='ml-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-500'>
@@ -340,14 +340,14 @@
 
                     <div class='mb-10 flex w-full items-center gap-4'>
                         <button onclick={() => setActiveInternalStep(1)} class='flex-1 cursor-pointer rounded-sm border border-slate-200 py-3 text-sm text-slate-600 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={handleNext} class='bg-[#0A77FF] flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'>Continue</button>
+                        <button onclick={handleNext} class='bg-[#2069C1] flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'>Continue</button>
                     </div>
 
                     <div class='w-full space-y-6'>
                         <div class='flex flex-col gap-4'>
                             <span class='text-sm text-slate-600'>{equipmentList.length} equipment</span>
                             <div class='relative'>
-                                <input placeholder='Search' class='w-full rounded-sm border border-slate-200 py-3 pl-10 pr-4 text-sm transition-all focus:ring-1 focus:ring-[#0A77FF] focus:outline-none' type='text' />
+                                <input placeholder='Search' class='w-full rounded-sm border border-slate-200 py-3 pl-10 pr-4 text-sm transition-all focus:ring-1 focus:ring-[#2069C1] focus:outline-none' type='text' />
                                 <Search class='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
                             </div>
                         </div>
@@ -384,7 +384,7 @@
 
                     <div class='mb-10 flex w-full items-center gap-4'>
                         <button onclick={() => setActiveInternalStep(2)} class='flex-1 cursor-pointer rounded-sm border border-slate-200 py-3 text-sm text-slate-600 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={handleNext} class='bg-[#0A77FF] flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'>Continue</button>
+                        <button onclick={handleNext} class='bg-[#2069C1] flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'>Continue</button>
                     </div>
 
                     <div class='w-full overflow-hidden rounded-sm border border-slate-100 bg-white'>
@@ -429,7 +429,7 @@
                                                 <button class='text-[12px] text-slate-600 transition-colors hover:text-slate-900'>Download</button>
                                                 <button
                                                     onclick={() => selectedDocument = file}
-                                                    class='cursor-pointer text-[12px] text-[#0A77FF] transition-opacity hover:opacity-80'
+                                                    class='cursor-pointer text-[12px] text-[#2069C1] transition-opacity hover:opacity-80'
                                                 >
                                                     Open
                                                 </button>
@@ -453,7 +453,7 @@
 
                     <div class='mb-10 flex w-full items-center gap-4'>
                         <button onclick={() => setActiveInternalStep(3)} class='flex-1 cursor-pointer rounded-sm border border-slate-200 py-3 text-sm text-slate-600 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={handleNext} class='bg-[#0A77FF] flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'>Finish Evaluation</button>
+                        <button onclick={handleNext} class='bg-[#2069C1] flex-1 cursor-pointer rounded-sm py-3 text-sm text-white transition-opacity hover:opacity-90'>Finish Evaluation</button>
                     </div>
 
                     <div class='w-full overflow-hidden rounded-sm border border-slate-100 bg-white'>

@@ -51,7 +51,7 @@
         <div class='mb-6'>
             <div class='mb-6 flex items-center justify-between gap-4'>
                 <div>
-                    <h2 class='text-md font-semibold text-[#101828]'>{title}</h2>
+                    <h2 class='text-sm font-semibold font-semibold text-[#101828]'>{title}</h2>
                     <p class='text-xs text-[#64748B]'>{description}</p>
                 </div>
                 {#if headerAction}
@@ -68,7 +68,7 @@
                         placeholder={searchPlaceholder}
                         value={searchValue}
                         oninput={e => onSearchChange?.(e.currentTarget.value)}
-                        class='w-full rounded-sm border border-slate-100 bg-white py-3 pl-10 pr-4 text-sm transition-all focus:outline-none focus:ring-1 focus:ring-primary'
+                        class='w-full rounded-sm border border-slate-100 bg-white py-3 pl-10 pr-4 text-sm transition-all focus:outline-none focus:ring-1 focus:ring-[#2069C1]'
                         type='text'
                     />
                 </div>
@@ -95,7 +95,7 @@
         </div>
     {/if}
 
-    <div class='overflow-hidden -sm border border-slate-200 bg-white shadow-none'>
+    <div class='overflow-hidden rounded-sm border border-slate-200 bg-white shadow-none'>
         <div class='no-scrollbar overflow-x-auto'>
             <table class='w-full min-w-[1000px] border-collapse text-left'>
                 <thead>
@@ -103,11 +103,11 @@
                         <th class='w-10 py-4 pl-6 pr-2 text-right'>
                             <input
                                 type='checkbox'
-                                class='h-4 w-4 cursor-pointer rounded-sm border-[#D0D5DD] text-primary focus:ring-primary'
+                                class='h-4 w-4 cursor-pointer rounded-sm border-[#D0D5DD] text-[#2069C1] focus:ring-[#2069C1]'
                             />
                         </th>
                         {#each columns as col}
-                            <th class={cn('px-2 py-4 text-[13px] font-normal text-[#475467]', col.headerClassName)}>
+                            <th class={cn('px-2 py-4 text-sm font-normal text-[#475467]', col.headerClassName)}>
                                 <div class={cn('group flex items-start gap-1 select-none', col.sortable && 'cursor-pointer')}>
                                     <span>{col.header}</span>
                                     {#if col.sortable}
@@ -131,7 +131,7 @@
                             <td class='py-4 pl-6 pr-2 text-right'>
                                 <input
                                     type='checkbox'
-                                    class='h-4 w-4 cursor-pointer rounded-sm border-[#D0D5DD] text-primary focus:ring-primary'
+                                    class='h-4 w-4 cursor-pointer rounded-sm border-[#D0D5DD] text-[#2069C1] focus:ring-[#2069C1]'
                                 />
                             </td>
                             {#each columns as col}
