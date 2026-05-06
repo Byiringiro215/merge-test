@@ -66,9 +66,9 @@
                     <ChevronRight class='h-4 w-4 text-[#D0D5DD]' />
                 {/if}
                 {#if isLast}
-                    <span class='font-medium text-[#0A77FF]'>{crumb.label}</span>
+                    <span class='font-medium text-[#2069C1]'>{crumb.label}</span>
                 {:else}
-                    <a href={crumb.href} class='text-primary transition-colors hover:text-primary'>
+                    <a href={crumb.href} class='text-[#475467] transition-colors hover:text-[#2069C1]'>
                         {crumb.label}
                     </a>
                 {/if}

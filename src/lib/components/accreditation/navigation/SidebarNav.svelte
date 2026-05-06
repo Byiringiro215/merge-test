@@ -18,13 +18,13 @@
             alt='RTB Logo'
             width='36'
             height='36'
-            class='-sm'
+            class='rounded-sm'
         />
         <div>
             <p class='text-sm font-bold text-[#353E49]'>
                 RTB Accreditation
             </p>
-            <p class='text-xs text-primary'>
+            <p class='text-xs text-[#2069C1]'>
                 {config.shortLabel} Portal
             </p>
         </div>
@@ -38,16 +38,16 @@
                 class={cn(
                     'flex items-center gap-3 rounded-sm px-3 py-3 text-sm transition-colors',
                     item.isActive
-                        ? 'bg-[#F9FAFB] text-primary font-medium'
+                        ? 'bg-[#F9FAFB] text-[#2069C1] font-medium'
                         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800',
                 )}
             >
                 <item.icon
-                    class={cn(item.isActive ? 'text-primary' : 'text-[#84888C]')}
+                    class={cn(item.isActive ? 'text-[#2069C1]' : 'text-[#84888C]')}
                     strokeWidth={1.5}
                     size={20}
                 />
-                <span class={cn(item.isActive ? 'text-primary' : 'text-[#353E49]')}>
+                <span class={cn(item.isActive ? 'text-[#2069C1]' : 'text-[#353E49]')}>
                     {item.title}
                 </span>
             </a>
@@ -58,7 +58,7 @@
         <button
             type='button'
             onclick={onCloseMobile}
-            class='flex w-full cursor-pointer items-center gap-3 -sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+            class='flex w-full cursor-pointer items-center gap-3 rounded-sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
         >
             <LifeBuoy class='text-[#667085]' strokeWidth={1.5} size={20} />
             <span class='text-[#344054]'>Support</span>
@@ -66,7 +66,7 @@
         <button
             type='button'
             onclick={onCloseMobile}
-            class='flex w-full cursor-pointer items-center gap-3 -sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+            class='flex w-full cursor-pointer items-center gap-3 rounded-sm px-3 py-3 text-left text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-800'
         >
             <Settings class='text-[#667085]' strokeWidth={1.5} size={20} />
             <span class='text-[#344054]'>Settings</span>

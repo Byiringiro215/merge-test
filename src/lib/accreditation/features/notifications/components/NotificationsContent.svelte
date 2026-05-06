@@ -136,7 +136,7 @@
             onclick={() => activeTab = 'all'}
             class={cn(
                 'w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium rounded-sm transition-colors cursor-pointer',
-                activeTab === 'all' ? 'bg-[#F9FAFB] text-[#0A77FF]' : 'text-[#353E49] hover:bg-slate-50',
+                activeTab === 'all' ? 'bg-[#F9FAFB] text-[#2069C1]' : 'text-[#353E49] hover:bg-slate-50',
             )}
         >
             <span>All Notifications</span>
@@ -146,7 +146,7 @@
             onclick={() => activeTab = 'unread'}
             class={cn(
                 'w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium rounded-sm transition-colors cursor-pointer',
-                activeTab === 'unread' ? 'bg-[#F9FAFB] text-[#0A77FF]' : 'text-[#353E49] hover:bg-slate-50',
+                activeTab === 'unread' ? 'bg-[#F9FAFB] text-[#2069C1]' : 'text-[#353E49] hover:bg-slate-50',
             )}
         >
             <span>Unread</span>

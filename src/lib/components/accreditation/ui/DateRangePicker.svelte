@@ -135,8 +135,8 @@
                         selectedPreset = preset.label;
                     }}
                     class={cn(
-                        'w-full cursor-pointer rounded-lg px-4 py-3 text-left text-[13px] transition-colors hover:bg-slate-50',
-                        selectedPreset === preset.label ? 'bg-slate-50 font-medium text-primary' : 'text-slate-600',
+                        'w-full cursor-pointer rounded-sm px-4 py-3 text-left text-sm transition-colors hover:bg-slate-50',
+                        selectedPreset === preset.label ? 'bg-slate-50 font-medium text-[#2069C1]' : 'text-slate-600',
                     )}
                 >
                     {preset.label}
@@ -153,7 +153,7 @@
                         <div class='flex items-center gap-2'>
                             <button
                                 type='button'
-                                class='cursor-pointer rounded-md p-1 hover:bg-slate-100'
+                                class='cursor-pointer rounded-sm p-1 hover:bg-slate-100'
                                 onclick={() => viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1)}
                             >
                                 <ChevronLeft class='h-4 w-4 text-slate-500' />
@@ -179,8 +179,8 @@
                                     onclick={() => handleDateClick(day)}
                                     class={cn(
                                         'group relative flex h-9 w-9 cursor-pointer items-center justify-center text-xs transition-all',
-                                        isSelected ? 'bg-primary text-white rounded-full z-10' : 'hover:bg-slate-100 hover:rounded-full',
-                                        isInRange && 'bg-primary/10 text-primary rounded-none',
+                                        isSelected ? 'bg-[#2069C1] text-white rounded-full z-10' : 'hover:bg-slate-100 hover:rounded-full',
+                                        isInRange && 'bg-[#2069C1]/10 text-[#2069C1] rounded-none',
                                         isInRange && isSameDay(day, new Date(day.getFullYear(), day.getMonth(), day.getDate())) && 'first-of-range:rounded-l-full last-of-range:rounded-r-full',
                                     )}
                                 >
@@ -199,7 +199,7 @@
                         <div class='flex items-center gap-2'>
                             <button
                                 type='button'
-                                class='cursor-pointer rounded-md p-1 hover:bg-slate-100'
+                                class='cursor-pointer rounded-sm p-1 hover:bg-slate-100'
                                 onclick={() => viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1)}
                             >
                                 <ChevronRight class='h-4 w-4 text-slate-500' />
@@ -223,8 +223,8 @@
                                     onclick={() => handleDateClick(day)}
                                     class={cn(
                                         'group relative flex h-9 w-9 cursor-pointer items-center justify-center text-xs transition-all',
-                                        isSelected ? 'bg-primary text-white rounded-full z-10' : 'hover:bg-slate-100 hover:rounded-full',
-                                        isInRange && 'bg-primary/10 text-primary rounded-none',
+                                        isSelected ? 'bg-[#2069C1] text-white rounded-full z-10' : 'hover:bg-slate-100 hover:rounded-full',
+                                        isInRange && 'bg-[#2069C1]/10 text-[#2069C1] rounded-none',
                                     )}
                                 >
                                     {day.getDate()}
@@ -258,7 +258,7 @@
                         type='button'
                         disabled={!startDate || !endDate}
                         onclick={() => startDate && endDate && onApply?.({ start: startDate, end: endDate })}
-                        class='cursor-pointer rounded-sm bg-primary px-8 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed'
+                        class='cursor-pointer rounded-sm bg-[#2069C1] px-8 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed'
                     >
                         Apply
                     </button>

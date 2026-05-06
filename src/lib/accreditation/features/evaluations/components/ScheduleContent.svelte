@@ -41,7 +41,7 @@
     const isReadOnly = $derived(role === 'supervisor');
 
     const stats = [
-        { label: 'Total scheduled visits', value: '24', icon: NotepadText, iconColor: '#0A77FF' },
+        { label: 'Total scheduled visits', value: '24', icon: NotepadText, iconColor: '#2069C1' },
         { label: 'Today\'s visit', value: '3', icon: ClipboardClock, iconColor: '#FF8D28' },
         { label: 'Completed visits', value: '18', icon: CheckCheck, iconColor: '#34C759' },
         { label: 'Overdue visits', value: '2', icon: AlertCircle, iconColor: '#6155F5' },
@@ -110,8 +110,8 @@
 
 {#snippet actionsCell()}
     <div class='flex items-center justify-start gap-3'>
-        <CalendarRange class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#0A77FF]' />
-        <Eye class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#0A77FF]' />
+        <CalendarRange class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#2069C1]' />
+        <Eye class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-[#2069C1]' />
         <Trash2 class='h-4 w-4 cursor-pointer text-[#475467] transition-colors hover:text-red-500' />
     </div>
 {/snippet}

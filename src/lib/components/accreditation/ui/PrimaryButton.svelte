@@ -40,7 +40,7 @@
     {disabled}
     class={cn(
         'rounded-sm cursor-pointer',
-        variant === 'primary' && 'bg-[#0A77FF] text-white!',
+        variant === 'primary' && 'bg-[#2069C1] text-white!',
         className,
     )}
 >
