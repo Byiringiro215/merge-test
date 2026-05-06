@@ -16,11 +16,24 @@
 
     const currentStepIndex = $derived(onboardingSteps.findIndex(s => s.key === currentStep));
     const stepsUnlocked = $derived(institutionLookupStore.value === 'new');
+
+    $effect(() => {
+        if (currentStep) {
+            const activeStepElement = document.getElementById(`onboarding-step-${currentStep}`);
+            const asideElement = document.querySelector('aside');
+            if (activeStepElement && asideElement) {
+                activeStepElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
 </script>
 
 <main class='flex min-h-screen bg-white'>
     <!-- Sidebar -->
-    <aside class='fixed top-0 left-0 bottom-0 w-[340px] flex-col justify-between border-r border-slate-200 bg-[#f8fafc] px-8 pt-8 pb-4 z-10 overflow-y-auto no-scrollbar hidden lg:flex'>
+    <aside
+        class='fixed top-0 left-0 bottom-0 w-[340px] flex-col justify-between border-r border-slate-200 bg-[#f8fafc] px-8 pt-8 pb-4 z-10 overflow-hidden no-scrollbar hidden lg:flex'
+        onwheel={e => e.preventDefault()}
+    >
         <div class='space-y-10'>
             <div class='space-y-6'>
                 <div class='flex items-center gap-3'>
@@ -50,7 +63,7 @@
                     {@const isLocked = index >= ALWAYS_VISIBLE && !stepsUnlocked}
                     {@const Icon = stepIcons[index] ?? Building}
                     {#if !isLocked}
-                        <div class='flex gap-3'>
+                        <div id='onboarding-step-{step.key}' class='flex gap-3'>
                             <div class='flex flex-col items-center'>
                                 <span
                                     class={`flex h-9 w-9 items-center justify-center rounded-sm border transition-colors ${

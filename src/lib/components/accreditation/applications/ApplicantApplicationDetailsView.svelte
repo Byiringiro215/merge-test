@@ -6,9 +6,7 @@
         Briefcase,
         Check,
         CheckCheck,
-        CheckCircle2,
         ChevronDown,
-        ChevronUp,
         FileCheck,
         FileText,
         Hexagon,
@@ -73,7 +71,24 @@
         return ext === 'PDF' ? 'bg-red-500' : ext === 'DOCX' || ext === 'DOC' ? 'bg-blue-400' : 'bg-slate-500';
     }
 
-    let expandedSection = $state<number | null>(null);
+    const sidebarId = 'view-sidebar';
+
+    // Auto-scroll sidebar to active step
+    $effect(() => {
+        if (currentStep) {
+            const stepElement = document.getElementById(`view-step-${currentStep}`);
+            const sidebarElement = document.getElementById(sidebarId);
+            if (stepElement && sidebarElement) {
+                const sidebarRect = sidebarElement.getBoundingClientRect();
+                const stepRect = stepElement.getBoundingClientRect();
+
+                // If step is not fully visible in sidebar, scroll to it
+                if (stepRect.top < sidebarRect.top || stepRect.bottom > sidebarRect.bottom) {
+                    stepElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+    });
 </script>
 
 <div class='flex flex-col gap-6'>
@@ -102,9 +117,13 @@
     </div>
 
     <!-- Wizard shell (same layout as the application form) -->
-    <div class='flex min-h-[680px] flex-1 overflow-hidden rounded-sm border border-slate-100 bg-white'>
+    <div class='flex h-[calc(100vh-280px)] flex-1 overflow-hidden rounded-sm border border-slate-100 bg-white'>
         <!-- Sidebar -->
-        <div class='w-[300px] shrink-0 border-r border-slate-100 bg-[#FAFAFA] p-8'>
+        <div
+            id={sidebarId}
+            class='w-[300px] shrink-0 overflow-hidden border-r border-slate-100 bg-[#FAFAFA] p-8'
+            onwheel={e => e.preventDefault()}
+        >
             <h2 class='mb-10 text-[15px] font-semibold text-slate-700'>Short Course Application</h2>
             <p class='mb-12 text-sm font-medium text-slate-400 italic'>Read-only view</p>
 
@@ -114,7 +133,7 @@
                     {#each stepsList as step}
                         {@const isActive = currentStep === step.id}
                         {@const isCompleted = currentStep > step.id}
-                        <div class='relative z-10 flex gap-4'>
+                        <div id='view-step-{step.id}' class='relative z-10 flex gap-4'>
                             <div class={`flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-sm transition-colors ${
                                 isActive
                                     ? 'bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200 text-[#2069C1]'
@@ -306,67 +325,77 @@
                 {:else if currentStep === (curriculumRequired ? 6 : 5)}
                     <div class='flex flex-col items-center text-center'>
                         <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
-                            <Users size={24} class='text-slate-500' strokeWidth={1.5} />
+                            <Users size={24} class='text-slate-400' strokeWidth={1.5} />
                         </div>
-                        <h2 class='text-[17px] font-semibold text-slate-900'>Staff Allocation</h2>
-                        <p class='mt-1.5 text-sm text-slate-500'>Staff allocated for this application.</p>
+                        <h2 class='text-[20px] font-semibold text-slate-900'>Staff Allocation</h2>
+                        <p class='mt-2 text-sm text-slate-500 font-medium opacity-80'>Staff allocated for this accreditation application.</p>
                     </div>
 
-                    <div class='mt-8 mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2'>
-                        {#each mockApp.staff as s (s.position)}
-                            <div class='flex flex-col rounded-sm border border-slate-200 bg-white p-4'>
-                                <p class='text-sm font-semibold text-slate-800'>{s.position}</p>
-                                <p class='mt-0.5 text-[12px] text-slate-500'>{s.qualification} · {s.status}</p>
-                                <p class='mt-2 w-fit rounded-sm bg-slate-50 px-1.5 py-0.5 text-[11px] uppercase tracking-wider text-slate-400'>
-                                    Count: {s.quantity}
-                                </p>
+                    <div class='mt-10 mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                        {#each mockApp.staff as s}
+                            <div class='flex items-center justify-between rounded-sm border border-slate-100 bg-white p-5 shadow-sm'>
+                                <div class='flex items-center gap-4'>
+                                    <div class='flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-[#2069C1]'>
+                                        <Users size={18} />
+                                    </div>
+                                    <div>
+                                        <p class='text-[14px] font-bold text-slate-800'>{s.position} - {s.qualification}</p>
+                                        <p class='text-[12px] text-slate-500'>{s.quantity} member{s.quantity !== 1 ? 's' : ''} · {s.status}</p>
+                                    </div>
+                                </div>
                             </div>
                         {/each}
                     </div>
 
-                    <div class='flex w-full gap-3'>
-                        <button onclick={back} class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50'>Back</button>
-                        <button onclick={next} class='flex flex-1 items-center justify-center rounded-sm bg-[#2069C1] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
+                    <div class='flex w-full gap-4 mt-8'>
+                        <button onclick={back} class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3.5 text-[15px] font-bold text-slate-600 transition-colors hover:bg-slate-50'>Back</button>
+                        <button onclick={next} class='flex flex-1 items-center justify-center rounded-sm bg-[#2069C1] py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-[#0864d6]'>Continue</button>
                     </div>
 
                     <!-- ── STEP: SUMMARY ──────────────────────────────────────────────── -->
                 {:else if currentStep === totalSteps}
                     <div class='flex flex-col items-center text-center'>
                         <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
-                            <CheckCheck size={24} class='text-slate-500' strokeWidth={1.5} />
+                            <CheckCheck size={24} class='text-slate-400' strokeWidth={1.5} />
                         </div>
-                        <h2 class='text-[17px] font-semibold text-slate-900'>Application Summary</h2>
-                        <p class='mt-1.5 text-sm text-slate-500'>Full overview of your submitted application.</p>
+                        <h2 class='text-[20px] font-semibold text-slate-900'>Application Review</h2>
+                        <p class='mt-2 text-sm text-slate-500 font-medium opacity-80 max-w-[450px]'>
+                            Review all information provided before submitting your application for evaluation.
+                        </p>
                     </div>
 
-                    <div class='mt-6 mb-8 flex flex-col gap-3'>
+                    <div class='mt-10 mb-10 flex w-full gap-4'>
+                        <button
+                            onclick={back}
+                            class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3.5 text-[15px] font-bold text-slate-600 transition-colors hover:bg-slate-50'
+                        >Back</button>
+                        <button
+                            onclick={() => history.back()}
+                            class='flex flex-1 items-center justify-center rounded-sm bg-[#0A77FF] py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-[#0066EE]'
+                        >Submit Application</button>
+                    </div>
+
+                    <div class='space-y-4'>
                         {#each [
-                            { id: 1, title: 'Trade Selection', desc: mockApp.trade },
-                            { id: 2, title: 'Competencies Selected', desc: `${mockApp.competencies.length} competenc${mockApp.competencies.length === 1 ? 'y' : 'ies'} selected` },
-                            { id: 3, title: 'Equipment & Facilities', desc: `${mockApp.equipments.length} item${mockApp.equipments.length !== 1 ? 's' : ''} listed` },
-                            { id: 4, title: 'MOU Documents', desc: `${mockApp.mouDocs.length} document${mockApp.mouDocs.length !== 1 ? 's' : ''} uploaded` },
-                            ...(curriculumRequired ? [{ id: 5, title: 'Curriculum Documents', desc: `${mockApp.curriculumDocs.length} document${mockApp.curriculumDocs.length !== 1 ? 's' : ''} uploaded` }] : []),
-                            { id: 9, title: 'Staff Allocation', desc: `${mockApp.staff.length} staff member${mockApp.staff.length !== 1 ? 's' : ''} allocated` },
+                            { id: 1, title: 'Trade Selection Completed', desc: mockApp.trade },
+                            { id: 2, title: 'Competencies Selected', desc: `${mockApp.competencies.length} competencies selected` },
+                            { id: 3, title: 'Equipment and Facilities Added with Proofs', desc: `${mockApp.equipments.length} items listed` },
+                            { id: 4, title: 'MOU Documents', desc: `${mockApp.mouDocs.length} documents uploaded` },
+                            ...(curriculumRequired ? [{ id: 5, title: 'Curriculum Documents', desc: `${mockApp.curriculumDocs.length} documents uploaded` }] : []),
+                            { id: 6, title: 'Staff Allocation', desc: `${mockApp.staff.length} staff members allocated` },
                         ] as section (section.id)}
-                            {@const isExpanded = expandedSection === section.id}
-                            <div class='overflow-hidden rounded-sm border border-slate-200 bg-white shadow-sm'>
-                                <button
-                                    onclick={() => expandedSection = isExpanded ? null : section.id}
-                                    class='flex w-full items-center justify-between p-4'
-                                >
-                                    <div class='flex gap-4'>
-                                        <div class='flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-100'>
-                                            <CheckCircle2 size={20} class='text-emerald-500' strokeWidth={1.5} />
+                            <div class='overflow-hidden rounded-sm border border-slate-200 bg-white shadow-sm transition-all hover:border-slate-300'>
+                                <button class='flex w-full items-center justify-between p-5 text-left'>
+                                    <div class='flex items-center gap-4'>
+                                        <div class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-emerald-100 bg-emerald-50 text-emerald-500'>
+                                            <Check size={20} strokeWidth={3} />
                                         </div>
-                                        <div class='flex flex-col items-start px-2'>
-                                            <p class='text-[14px] font-semibold text-slate-700'>{section.title}</p>
-                                            <p class='mt-0.5 line-clamp-1 text-left text-[12px] text-slate-400'>{section.desc}</p>
+                                        <div>
+                                            <h4 class='text-[15px] font-semibold text-slate-700'>{section.title}</h4>
+                                            <p class='mt-0.5 text-[12px] text-slate-400'>{section.desc}</p>
                                         </div>
                                     </div>
-                                    <div class='pl-4'>
-                                        {#if isExpanded}<ChevronUp size={20} class='text-slate-400' strokeWidth={1.5} />
-                                        {:else}<ChevronDown size={20} class='text-slate-400' strokeWidth={1.5} />{/if}
-                                    </div>
+                                    <ChevronDown size={18} class='text-slate-400' />
                                 </button>
                             </div>
                         {/each}
