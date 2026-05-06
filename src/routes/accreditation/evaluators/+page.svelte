@@ -1,6 +1,6 @@
 <script lang='ts'>
-    import EvaluatorsContent from '$lib/accreditation/features/evaluations/components/EvaluatorsContent.svelte';
     import { getSimulationState } from '$lib/accreditation/context/simulation.svelte';
+    import EvaluatorsContent from '$lib/accreditation/features/evaluations/components/EvaluatorsContent.svelte';
     import PageContainer from '$lib/components/accreditation/layout/PageContainer.svelte';
     import EvaluationsSubNav from '$lib/components/accreditation/navigation/EvaluationsSubNav.svelte';
 
