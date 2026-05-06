@@ -94,7 +94,7 @@
             {item.applicant.avatar}
         </div>
         <div class='flex flex-col'>
-            <span class='text-[13px] text-[#101828]'>{item.applicant.name}</span>
+            <span class='text-sm text-[#101828]'>{item.applicant.name}</span>
             <span class='text-[11px] text-[#475467]'>{item.applicant.email}</span>
         </div>
     </div>
@@ -106,7 +106,7 @@
             {item.institution.logo}
         </div>
         <div class='flex flex-col'>
-            <span class='text-[13px] text-[#101828]'>{item.institution.name}</span>
+            <span class='text-sm text-[#101828]'>{item.institution.name}</span>
             <span class='text-[11px] text-[#475467]'>{item.institution.website}</span>
         </div>
     </div>
@@ -114,7 +114,7 @@
 
 {#snippet tradeCell(item: Application)}
     <div class='flex flex-col text-left'>
-        <span class='text-[13px] font-medium text-slate-600'>{item.trade.name}</span>
+        <span class='text-sm font-medium text-slate-600'>{item.trade.name}</span>
         <span class='text-[11px] uppercase tracking-wider text-[#475467]'>{item.trade.category}</span>
     </div>
 {/snippet}
@@ -126,19 +126,19 @@
 {/snippet}
 
 {#snippet stageCell(item: Application)}
-    <span class='text-left text-[13px] font-medium text-slate-500'>{item.stage}</span>
+    <span class='text-left text-sm font-medium text-slate-500'>{item.stage}</span>
 {/snippet}
 
 {#snippet submittedOnCell(item: Application)}
     <div class='flex flex-col text-left'>
-        <span class='text-[13px] font-medium text-slate-600'>{item.submittedOn.split(' ')[0]}</span>
+        <span class='text-sm font-medium text-slate-600'>{item.submittedOn.split(' ')[0]}</span>
         <span class='text-[11px] text-[#475467]'>{item.submittedOn.split(' ').slice(1).join(' ')}</span>
     </div>
 {/snippet}
 
 {#snippet actionsCell()}
     <div class='flex items-start gap-4'>
-        <Eye class='h-4 w-4 cursor-pointer text-slate-400 transition-colors hover:text-[#0A77FF]' />
+        <Eye class='h-4 w-4 cursor-pointer text-slate-400 transition-colors hover:text-[#2069C1]' />
         <Trash2 class='h-4 w-4 cursor-pointer text-slate-400 transition-colors hover:text-red-500' />
     </div>
 {/snippet}

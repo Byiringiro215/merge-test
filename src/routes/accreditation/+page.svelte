@@ -14,7 +14,7 @@
 {#snippet action()}
     <PrimaryButton
         label='New Application'
-        href='/accreditation/applicant/applications?new=true'
+        href='/accreditation/applications?new=true'
         iconPosition='right'
     />
 {/snippet}

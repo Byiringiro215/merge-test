@@ -24,12 +24,12 @@
 
     <div class='relative z-10 ml-4 -mt-6 flex items-start gap-3'>
         {#if isCompleted}
-            <div class='flex h-5 w-5 items-center justify-center bg-[#0A77FF] text-white rounded-sm'>
+            <div class='flex h-5 w-5 items-center justify-center bg-[#2069C1] text-white rounded-sm'>
                 <Check class='h-3 w-3 stroke-3' />
             </div>
         {:else}
             <div class='flex h-5 w-5 items-center justify-center'>
-                <Loader2 class='h-4 w-4 animate-spin text-[#0A77FF]' />
+                <Loader2 class='h-4 w-4 animate-spin text-[#2069C1]' />
             </div>
         {/if}
     </div>

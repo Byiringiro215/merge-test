@@ -36,7 +36,7 @@ export const allAccreditationNavItems: AccreditationNavItem[] = [
         title: 'Evaluations',
         href: '/accreditation/my-evaluations',
         icon: BadgeCheck,
-        roles: ['evaluator', 'super-admin', 'supervisor', 'merged'],
+        roles: ['evaluator', 'supervisor', 'merged'],
     },
     {
         title: 'My Applications',
@@ -48,7 +48,7 @@ export const allAccreditationNavItems: AccreditationNavItem[] = [
         title: 'Certificates',
         href: '/accreditation/certificates',
         icon: ClipboardCheck,
-        roles: ['supervisor', 'super-admin', 'merged'],
+        roles: ['supervisor', 'merged'],
     },
     {
         title: 'Users',

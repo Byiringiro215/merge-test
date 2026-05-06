@@ -42,14 +42,14 @@
 </script>
 
 {#if !mounted}
-    <Card class='flex h-[400px] items-center justify-center -sm border border-slate-200 bg-white shadow-none'>
+    <Card class='flex h-[400px] items-center justify-center rounded-sm border border-slate-200 bg-white shadow-none'>
         <div class='flex animate-pulse flex-col items-center gap-2'>
-            <div class='h-4 w-32 -sm bg-slate-100'></div>
-            <div class='h-48 w-full -sm bg-slate-50'></div>
+            <div class='h-4 w-32 rounded-sm bg-slate-100'></div>
+            <div class='h-48 w-full rounded-sm bg-slate-50'></div>
         </div>
     </Card>
 {:else}
-    <Card class='animate-slide-up overflow-hidden -sm border border-slate-200 bg-white text-[#101828] shadow-none'>
+    <Card class='animate-slide-up overflow-hidden rounded-sm border border-slate-200 bg-white text-[#101828] shadow-none'>
         <div class='flex items-center justify-between px-6 py-4'>
             <h3 class='text-base '>Applications Trend</h3>
             <MoreHorizontal class='h-5 w-5 cursor-pointer text-slate-400' />
@@ -57,7 +57,7 @@
 
         <!-- Header with Filters and Legend -->
         <div class='flex flex-col gap-4 p-6 pb-2 pt-0 sm:flex-row sm:items-center sm:justify-between'>
-            <div class='flex w-fit items-center gap-1 -sm p-1'>
+            <div class='flex w-fit items-center gap-1 rounded-sm p-1'>
                 {#each ['12 Months', '30 Days', '7 Days', '24 Hours'] as tab}
                     <button
                         onclick={() => {
@@ -65,7 +65,7 @@
                             hoveredIndex = null;
                         }}
                         class={cn(
-                            'cursor-pointer -sm px-3 py-1.5 text-xs font-medium transition-all',
+                            'cursor-pointer rounded-sm px-3 py-1.5 text-xs font-medium transition-all',
                             activeTab === tab
                                 ? 'border border-[#E5E5E7] bg-[#F8F9FB] text-[#323539]'
                                 : 'text-slate-500 hover:text-slate-800',
@@ -86,7 +86,7 @@
                     <span>Approved</span>
                 </div>
                 <div class='flex items-center gap-1.5'>
-                    <div class='h-2 w-2 rounded-full bg-[#0A77FF]'></div>
+                    <div class='h-2 w-2 rounded-full bg-[#2069C1]'></div>
                     <span>Rejected</span>
                 </div>
             </div>
@@ -125,7 +125,7 @@
                             <!-- Tooltip -->
                             {#if hoveredIndex === index}
                                 <div
-                                    class='fade-in zoom-in absolute z-50 min-w-[120px] animate-in -sm bg-[#101828] p-3 text-[10px] text-white shadow-xl duration-200 pointer-events-none'
+                                    class='fade-in zoom-in absolute z-50 min-w-[120px] animate-in rounded-sm bg-[#101828] p-3 text-[10px] text-white shadow-xl duration-200 pointer-events-none'
                                     style='bottom: {rejectedHeightPct}%; transform: translateY(-12px); margin-bottom: 8px;'
                                 >
                                     <p class='mb-2 flex justify-between border-b border-white/10 pb-1.5 font-bold'>
@@ -135,7 +135,7 @@
                                     <div class='space-y-1.5'>
                                         <div class='flex items-center justify-between gap-4'>
                                             <div class='flex items-center gap-1.5'>
-                                                <div class='h-1.5 w-1.5 rounded-full bg-[#0A77FF]'></div>
+                                                <div class='h-1.5 w-1.5 rounded-full bg-[#2069C1]'></div>
                                                 <span class='text-slate-400'>Rejected</span>
                                             </div>
                                             <span class=' text-white'>{d.rejected}</span>
@@ -162,22 +162,22 @@
 
                             <!-- Stacked Bar Container -->
                             <div class={cn(
-                                'relative h-36 w-8 overflow-hidden -sm bg-transparent transition-all duration-300',
+                                'relative h-36 w-8 overflow-hidden rounded-t-sm bg-transparent transition-all duration-300',
                                 hoveredIndex === index ? 'scale-x-105 opacity-100' : hoveredIndex !== null ? 'opacity-40' : 'opacity-100',
                             )}>
                                 <!-- Pending (Lightest) -->
                                 <div
-                                    class='absolute inset-x-0 bottom-0 -sm bg-[#E0EFFF] transition-all duration-500'
+                                    class='absolute inset-x-0 bottom-0 rounded-t-sm bg-[#E0EFFF] transition-all duration-500'
                                     style='height: {(totalVal / maxValue) * 100}%'
                                 ></div>
                                 <!-- Approved (Medium) -->
                                 <div
-                                    class='absolute inset-x-0 bottom-0 -sm bg-[#59A8FF] transition-all duration-500'
+                                    class='absolute inset-x-0 bottom-0 rounded-t-sm bg-[#59A8FF] transition-all duration-500'
                                     style='height: {((d.rejected + d.approved) / maxValue) * 100}%'
                                 ></div>
                                 <!-- Rejected (Darkest) -->
                                 <div
-                                    class='absolute inset-x-0 bottom-0 -sm bg-[#0A77FF] transition-all duration-500'
+                                    class='absolute inset-x-0 bottom-0 rounded-t-sm bg-[#2069C1] transition-all duration-500'
                                     style='height: {(d.rejected / maxValue) * 100}%'
                                 ></div>
                             </div>
@@ -194,7 +194,7 @@
         <!-- Footer -->
         <div class='mt-8 flex items-center justify-between border-t border-slate-100 bg-slate-50/30 px-6 py-4'>
             <span class='text-xs font-medium text-slate-400'>Data graph</span>
-            <button class='flex cursor-pointer items-center gap-1.5 text-xs font-medium text-primary hover:underline'>
+            <button class='flex cursor-pointer items-center gap-1.5 text-xs font-medium text-[#2069C1] hover:underline'>
                 Open
                 <ExternalLink class='h-3.5 w-3.5' strokeWidth={2} />
             </button>

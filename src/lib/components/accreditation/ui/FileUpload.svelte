@@ -33,9 +33,9 @@
     onclick={() => fileInput?.click()}
     onkeydown={e => e.key === 'Enter' && fileInput?.click()}
     class={cn(
-        'group relative flex w-full cursor-pointer flex-col items-center justify-center border-2 border-[#0A77FF] p-8 transition-all duration-200 rounded-sm',
+        'group relative flex w-full cursor-pointer flex-col items-center justify-center border-2 border-[#2069C1] p-8 transition-all duration-200 rounded-sm',
         isDragging
-            ? 'border-dashed bg-[#0A77FF]/5'
+            ? 'border-dashed bg-[#2069C1]/5'
             : 'border-solid hover:bg-slate-50',
         className,
     )}
@@ -56,7 +56,7 @@
 
     <div class='text-center'>
         <p class='text-sm font-medium text-slate-700'>
-            <span class='text-[#0A77FF]'>Click to upload</span> or drag and drop
+            <span class='text-[#2069C1]'>Click to upload</span> or drag and drop
         </p>
         <p class='mt-1 text-xs text-slate-500'>
             SVG, PNG, JPG or GIF (max. 800x400px)
