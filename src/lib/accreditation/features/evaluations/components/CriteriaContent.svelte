@@ -39,22 +39,22 @@
     <div class='flex items-center gap-3 text-left'>
         <FileIcon type={item.type} class='h-10 w-8 shrink-0' />
         <div class='flex flex-col'>
-            <span class='text-[13px] font-medium text-[#101828]'>{item.name}</span>
+            <span class='text-sm font-medium text-[#101828]'>{item.name}</span>
             <span class='text-[11px] text-[#475467]'>{item.size}</span>
         </div>
     </div>
 {/snippet}
 
 {#snippet fileSizeCell(item: CriteriaAttachment)}
-    <span class='text-left text-[13px] text-[#475467]'>{item.size}</span>
+    <span class='text-left text-sm text-[#475467]'>{item.size}</span>
 {/snippet}
 
 {#snippet dateUploadedCell(item: CriteriaAttachment)}
-    <span class='text-left text-[13px] text-[#475467]'>{item.dateUploaded}</span>
+    <span class='text-left text-sm text-[#475467]'>{item.dateUploaded}</span>
 {/snippet}
 
 {#snippet lastUpdatedCell(item: CriteriaAttachment)}
-    <span class='text-left text-[13px] text-[#475467]'>{item.lastUpdated}</span>
+    <span class='text-left text-sm text-[#475467]'>{item.lastUpdated}</span>
 {/snippet}
 
 {#snippet uploadedByCell(item: CriteriaAttachment)}
@@ -63,7 +63,7 @@
             <img src={item.uploadedBy.avatar} alt='avatar' class='h-full w-full object-cover' />
         </div>
         <div class='flex flex-col'>
-            <span class='text-[13px] font-medium text-[#101828]'>{item.uploadedBy.name}</span>
+            <span class='text-sm font-medium text-[#101828]'>{item.uploadedBy.name}</span>
             <span class='text-[11px] text-[#475467]'>{item.uploadedBy.email}</span>
         </div>
     </div>
@@ -71,8 +71,8 @@
 
 {#snippet actionCell()}
     <div class='flex items-center gap-4 text-left'>
-        <button class='cursor-pointer text-[13px] font-medium text-[#475467] transition-colors hover:text-[#101828]'>Delete</button>
-        <button class='cursor-pointer text-[13px] font-medium text-[#0A77FF] transition-colors hover:text-[#0966ff]'>Edit</button>
+        <button class='cursor-pointer text-sm font-medium text-[#475467] transition-colors hover:text-[#101828]'>Delete</button>
+        <button class='cursor-pointer text-sm font-medium text-[#2069C1] transition-colors hover:text-[#0966ff]'>Edit</button>
     </div>
 {/snippet}
 

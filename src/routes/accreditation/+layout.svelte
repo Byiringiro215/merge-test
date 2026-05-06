@@ -3,11 +3,9 @@
     import PortalShell from '$lib/components/accreditation/layout/PortalShell.svelte';
 
     const { children } = $props();
-    setSimulationState();
+    const simulation = setSimulationState();
 
-    // For now, we'll default to 'merged' to show all features
-    // since the user wants a merged dashboard regardless of role.
-    const role = 'merged' as any;
+    const role = $derived(simulation.role || 'merged');
 </script>
 
 <PortalShell {role}>

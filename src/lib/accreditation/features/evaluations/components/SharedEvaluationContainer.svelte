@@ -180,7 +180,7 @@
                     <div class='absolute top-[13px] left-[16px] right-[16px] h-px bg-slate-100 z-0'></div>
                     <!-- Progress Line -->
                     <div
-                        class='absolute top-[13px] left-[16px] h-[1.5px] bg-primary z-0 transition-all duration-300'
+                        class='absolute top-[13px] left-[16px] h-[1.5px] bg-[#2069C1] z-0 transition-all duration-300'
                         style='width: calc({progressPercentage}% - {(activeMajorStep / (steps.length - 1)) * 32}px)'
                     ></div>
 
@@ -195,9 +195,9 @@
                                 <div class={cn(
                                     'h-6 w-6 rounded-full border flex items-center justify-center mb-3 transition-all duration-300 shrink-0 relative z-10',
                                     isActive
-                                        ? 'border-primary bg-primary shadow-[0_0_0_4px_rgba(9,119,255,0.15)]'
+                                        ? 'border-[#2069C1] bg-[#2069C1] shadow-[0_0_0_4px_rgba(9,119,255,0.15)]'
                                         : isCompleted
-                                        ? 'border-primary bg-primary'
+                                        ? 'border-[#2069C1] bg-[#2069C1]'
                                         : 'border-slate-200 bg-white',
                                 )}>
                                     {#if isCompleted}
@@ -245,7 +245,7 @@
                                         window.history.back();
                                     }
                                 }}
-                                class='text-primary flex cursor-pointer items-center gap-2 text-[12px] transition-opacity hover:opacity-80'
+                                class='text-[#2069C1] flex cursor-pointer items-center gap-2 text-[12px] transition-opacity hover:opacity-80'
                             >
                                 ← Exit
                             </button>

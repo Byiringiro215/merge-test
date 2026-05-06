@@ -12,7 +12,7 @@
 
 {#if isOpen}
     <div class='fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/50'>
-        <div class='fade-in zoom-in w-full max-w-md animate-in rounded-lg bg-white shadow-xl duration-200'>
+        <div class='fade-in zoom-in w-full max-w-md animate-in rounded-sm bg-white shadow-xl duration-200'>
             <div class='space-y-4 p-6'>
                 <div class='mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50'>
                     <CheckCircle2 class='h-6 w-6 text-blue-600' />

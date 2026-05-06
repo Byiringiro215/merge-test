@@ -4,15 +4,15 @@
     import { MoreVertical } from '@lucide/svelte';
 
     const modules = [
-        { id: '#1', name: 'JavaScript', percentage: 10.3, color: '#0A77FF' },
-        { id: '#2', name: 'Fundamentals Of Programming', percentage: 8.30, color: '#0A77FF' },
-        { id: '#3', name: 'Embedded Systems', percentage: 8.00, color: '#0A77FF' },
-        { id: '#4', name: 'Cyber Security', percentage: 4.02, color: '#0A77FF' },
-        { id: '#5', name: 'Machine Learing', percentage: 3.40, color: '#0A77FF' },
+        { id: '#1', name: 'JavaScript', percentage: 10.3, color: '#2069C1' },
+        { id: '#2', name: 'Fundamentals Of Programming', percentage: 8.30, color: '#2069C1' },
+        { id: '#3', name: 'Embedded Systems', percentage: 8.00, color: '#2069C1' },
+        { id: '#4', name: 'Cyber Security', percentage: 4.02, color: '#2069C1' },
+        { id: '#5', name: 'Machine Learing', percentage: 3.40, color: '#2069C1' },
     ];
 </script>
 
-<Card class='h-full animate-slide-up overflow-hidden -sm border border-slate-200 bg-white shadow-none'>
+<Card class='h-full animate-slide-up overflow-hidden rounded-sm border border-slate-200 bg-white shadow-none'>
     <CardContent class='flex h-full flex-col p-4'>
         <div class='flex items-start justify-between'>
             <div class='w-full space-y-1'>
@@ -40,7 +40,7 @@
                         </div>
                         <div class='h-2 w-full overflow-hidden rounded-full border border-slate-100 bg-slate-50'>
                             <div
-                                class='h-full rounded-full bg-[#0A77FF] transition-all duration-1000'
+                                class='h-full rounded-full bg-[#2069C1] transition-all duration-1000'
                                 style='width: {(mod.percentage / 12) * 100}%'
                             ></div>
                         </div>
@@ -50,7 +50,7 @@
         </div>
 
         <div class='mt-auto flex justify-end border-t border-slate-100 pt-6'>
-            <button class='cursor-pointer -sm border border-slate-200 px-4 py-1.5 text-xs text-slate-600 transition-colors hover:bg-slate-50'>
+            <button class='cursor-pointer rounded-sm border border-slate-200 px-4 py-1.5 text-xs text-slate-600 transition-colors hover:bg-slate-50'>
                 View full report
             </button>
         </div>
