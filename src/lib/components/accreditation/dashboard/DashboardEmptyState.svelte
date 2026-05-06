@@ -35,7 +35,7 @@
     <!-- Action Button -->
     <PrimaryButton
         label='Start Application'
-        href='/accreditation/applicant/applications?new=true'
+        href='/accreditation/applications?new=true'
         class='px-8'
     />
 </div>

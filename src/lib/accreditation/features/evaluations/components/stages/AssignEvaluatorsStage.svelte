@@ -41,7 +41,7 @@
         <div class='mb-6 flex h-12 w-12 shrink-0 items-center justify-center rounded-sm border border-slate-100 sm:mb-0 sm:mr-6'>
             <Users class='h-6 w-6 text-slate-400' strokeWidth={1.5} />
         </div>
-        <div class='flex flex-col'>
+        <div class='flex flex-col md:flex-1'>
             <h2 class='mb-1 text-xl text-slate-900'>Assign Evaluators</h2>
             <p class='mb-6 text-sm text-slate-500'>
                 Assign evaluators to the application. You can optionally review the documents before

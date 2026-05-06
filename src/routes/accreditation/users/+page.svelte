@@ -2,6 +2,7 @@
     import InviteUserModal from '$lib/accreditation/features/users/components/InviteUserModal.svelte';
     import { cn } from '$lib/accreditation/utils/cn';
     import PageContainer from '$lib/components/accreditation/layout/PageContainer.svelte';
+    import RoleGuard from '$lib/components/accreditation/layout/RoleGuard.svelte';
     import DataTable from '$lib/components/accreditation/ui/DataTable.svelte';
     import PrimaryButton from '$lib/components/accreditation/ui/PrimaryButton.svelte';
     import StatusBadge from '$lib/components/accreditation/ui/StatusBadge.svelte';
@@ -169,77 +170,79 @@
     {/if}
 {/snippet}
 
-<PageContainer
-    title='User Management'
-    description='Manage roles and access for evaluators and supervisors.'
->
-    <div class='space-y-6'>
-        <!-- Custom Tabs -->
-        <div class='no-scrollbar mb-8 flex w-full items-center justify-start gap-2 overflow-x-auto pb-2'>
-            {#each ['curriculum-evaluator', 'evaluator', 'supervisor'] as tab}
-                <button
-                    onclick={() => activeTab = tab as any}
-                    class={cn(
-                        'relative group flex cursor-pointer items-center justify-center gap-2 rounded-sm px-6 py-3 transition-all duration-200 whitespace-nowrap',
-                        activeTab === tab ? 'text-primary' : 'text-[#353E49] hover:bg-slate-50 hover:text-primary',
-                    )}
-                >
-                    {#if activeTab === tab}
-                        <div class='absolute inset-0 z-0 rounded-sm bg-[#F9FAFB]'></div>
-                    {/if}
-                    {#if tab === 'supervisor'}
-                        <Users class={cn('relative z-10 h-4 w-4 transition-colors duration-200', activeTab === tab ? 'text-primary' : 'text-[#353E49] group-hover:text-primary')} strokeWidth={1.5} />
-                    {:else}
-                        <User class={cn('relative z-10 h-4 w-4 transition-colors duration-200', activeTab === tab ? 'text-primary' : 'text-[#353E49] group-hover:text-primary')} strokeWidth={1.5} />
-                    {/if}
-                    <span class='relative z-10 text-sm font-medium transition-colors duration-200'>
-                        {tab === 'curriculum-evaluator' ? 'Curriculum Evaluator' : tab === 'evaluator' ? 'Evaluators' : 'Supervisors'}
-                    </span>
-                </button>
-            {/each}
-        </div>
+<RoleGuard allowedRoles={['super-admin']}>
+    <PageContainer
+        title='User Management'
+        description='Manage roles and access for evaluators and supervisors.'
+    >
+        <div class='space-y-6'>
+            <!-- Custom Tabs -->
+            <div class='no-scrollbar mb-8 flex w-full items-center justify-start gap-2 overflow-x-auto pb-2'>
+                {#each ['curriculum-evaluator', 'evaluator', 'supervisor'] as tab}
+                    <button
+                        onclick={() => activeTab = tab as any}
+                        class={cn(
+                            'relative group flex cursor-pointer items-center justify-center gap-2 rounded-sm px-6 py-3 transition-all duration-200 whitespace-nowrap',
+                            activeTab === tab ? 'text-primary' : 'text-[#353E49] hover:bg-slate-50 hover:text-primary',
+                        )}
+                    >
+                        {#if activeTab === tab}
+                            <div class='absolute inset-0 z-0 rounded-sm bg-[#F9FAFB]'></div>
+                        {/if}
+                        {#if tab === 'supervisor'}
+                            <Users class={cn('relative z-10 h-4 w-4 transition-colors duration-200', activeTab === tab ? 'text-primary' : 'text-[#353E49] group-hover:text-primary')} strokeWidth={1.5} />
+                        {:else}
+                            <User class={cn('relative z-10 h-4 w-4 transition-colors duration-200', activeTab === tab ? 'text-primary' : 'text-[#353E49] group-hover:text-primary')} strokeWidth={1.5} />
+                        {/if}
+                        <span class='relative z-10 text-sm font-medium transition-colors duration-200'>
+                            {tab === 'curriculum-evaluator' ? 'Curriculum Evaluator' : tab === 'evaluator' ? 'Evaluators' : 'Supervisors'}
+                        </span>
+                    </button>
+                {/each}
+            </div>
 
-        <!-- Stat Cards -->
-        <div class='xl:grid-cols-5 relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] md:grid-cols-2'>
-            {#each stats as stat (stat.label)}
-                <div class='animate-slide-up overflow-hidden rounded-md border border-slate-200 bg-white shadow-none'>
-                    <div class='flex flex-col gap-4 p-5'>
-                        <div class='w-fit rounded-sm border border-[#EAECF0] bg-white p-2.5 shadow-[0_1px_2px_0_rgba(16,24,40,0.05)]'>
-                            <stat.icon class='h-5 w-5' style='color: {stat.color}' strokeWidth={1.5} />
-                        </div>
-                        <div class='space-y-1'>
-                            <p class='text-sm font-medium text-slate-500'>{stat.label}</p>
-                            <p class='text-2xl font-bold text-slate-900'>{stat.value}</p>
+            <!-- Stat Cards -->
+            <div class='xl:grid-cols-5 relative z-10 mb-6 grid gap-4 bg-white shadow-[0_-20px_40px_white,0_20px_40px_white] md:grid-cols-2'>
+                {#each stats as stat (stat.label)}
+                    <div class='animate-slide-up overflow-hidden rounded-md border border-slate-200 bg-white shadow-none'>
+                        <div class='flex flex-col gap-4 p-5'>
+                            <div class='w-fit rounded-sm border border-[#EAECF0] bg-white p-2.5 shadow-[0_1px_2px_0_rgba(16,24,40,0.05)]'>
+                                <stat.icon class='h-5 w-5' style='color: {stat.color}' strokeWidth={1.5} />
+                            </div>
+                            <div class='space-y-1'>
+                                <p class='text-sm font-medium text-slate-500'>{stat.label}</p>
+                                <p class='text-2xl font-bold text-slate-900'>{stat.value}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {/each}
+                {/each}
+            </div>
+
+            <!-- User Table -->
+            <DataTable
+                data={filteredUsers}
+                columns={[
+                    { header: 'Name', accessor: nameCell },
+                    { header: 'Status', accessor: statusCell },
+                    { header: 'Date added', accessor: 'dateAdded', className: 'text-[#475467] text-sm' },
+                    { header: 'Last active', accessor: 'lastActive', className: 'text-[#475467] text-sm' },
+                    { header: 'Actions', accessor: actionsCell },
+                ]}
+                title={activeTab === 'curriculum-evaluator' ? 'All Curriculum Evaluators' : activeTab === 'evaluator' ? 'All Evaluators' : 'All Supervisors'}
+                description={activeTab === 'curriculum-evaluator' ? 'Manage curriculum evaluators right here' : activeTab === 'evaluator' ? 'Manage evaluators right here' : 'Manage supervisors right here'}
+                headerAction={inviteButton}
+                showPagination
+                currentPage={1}
+                totalPages={10}
+            />
         </div>
 
-        <!-- User Table -->
-        <DataTable
-            data={filteredUsers}
-            columns={[
-                { header: 'Name', accessor: nameCell },
-                { header: 'Status', accessor: statusCell },
-                { header: 'Date added', accessor: 'dateAdded', className: 'text-[#475467] text-sm' },
-                { header: 'Last active', accessor: 'lastActive', className: 'text-[#475467] text-sm' },
-                { header: 'Actions', accessor: actionsCell },
-            ]}
-            title={activeTab === 'curriculum-evaluator' ? 'All Curriculum Evaluators' : activeTab === 'evaluator' ? 'All Evaluators' : 'All Supervisors'}
-            description={activeTab === 'curriculum-evaluator' ? 'Manage curriculum evaluators right here' : activeTab === 'evaluator' ? 'Manage evaluators right here' : 'Manage supervisors right here'}
-            headerAction={inviteButton}
-            showPagination
-            currentPage={1}
-            totalPages={10}
+        <InviteUserModal
+            isOpen={isInviteModalOpen}
+            onClose={() => isInviteModalOpen = false}
+            onInvite={handleInvite}
+            variant='simple'
+            defaultRole='Curriculum evaluator'
         />
-    </div>
-
-    <InviteUserModal
-        isOpen={isInviteModalOpen}
-        onClose={() => isInviteModalOpen = false}
-        onInvite={handleInvite}
-        variant='simple'
-        defaultRole='Curriculum evaluator'
-    />
-</PageContainer>
+    </PageContainer>
+</RoleGuard>

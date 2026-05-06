@@ -52,7 +52,7 @@
         if (scrollContainer && path) {
             // Wait for DOM update
             setTimeout(() => {
-                const activeLink = scrollContainer?.querySelector('.text-[#2069C1]') as HTMLElement;
+                const activeLink = scrollContainer?.querySelector('.text-\\[\\#2069C1\\]') as HTMLElement;
                 if (activeLink) {
                     activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 }

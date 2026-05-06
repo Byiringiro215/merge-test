@@ -120,7 +120,7 @@
                         tabindex='0'
                     >
                         <a
-                            href='/accreditation/applicant/profile'
+                            href='/accreditation/profile'
                             class='flex w-full items-center gap-2 rounded-sm px-3 py-2 text-sm text-slate-700 hover:bg-slate-50'
                             onclick={() => (open = false)}
                         >
