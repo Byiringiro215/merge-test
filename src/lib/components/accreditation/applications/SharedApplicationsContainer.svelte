@@ -9,7 +9,9 @@
         Blocks,
         Briefcase,
         Check,
+        CheckCheck,
         CheckCircle2,
+        ChevronDown,
         ChevronRight,
         FileCheck,
         FileText,
@@ -20,6 +22,7 @@
         Search,
         Trash2,
         UploadCloud,
+        UserPlus,
         Users,
         X,
     } from '@lucide/svelte';
@@ -50,6 +53,7 @@
         { id: 4, title: 'MOU Documents', subtitle: 'Upload Memorandum of Understanding', icon: FileCheck },
         { id: 5, title: 'Curriculum Documents', subtitle: 'Upload curriculum and training materials', icon: FileText },
         { id: 6, title: 'Staff Allocation', subtitle: 'Indicate staff availability for the trade', icon: Users },
+        { id: 7, title: 'Application Review', subtitle: 'Review and submit your application', icon: CheckCheck },
     ];
 
     const trades = [
@@ -73,6 +77,7 @@
         { id: '5', name: 'Software Engineering & Embedded Systems' },
         { id: '6', name: 'Carpentry Basics' },
         { id: '7', name: 'Advanced Wiring' },
+        { id: '8', name: 'Advanced Welding' },
     ];
 
     let currentStep = $state(1);
@@ -102,6 +107,12 @@
 
     let mouDocs = $state<{ id: string; name: string; size: string; extension: string; progress: number }[]>([]);
     let curriculumDocs = $state<{ id: string; name: string; size: string; extension: string; progress: number }[]>([]);
+
+    let staffQualification = $state('');
+    let staffPosition = $state('');
+    let staffCount = $state(0);
+    let staffAvailability = $state('');
+    let staffList = $state<{ id: string; qualification: string; position: string; count: number; availability: string }[]>([]);
 
     const selectedTradeData = $derived(trades.find(t => t.id === selectedTrade));
     const curriculumRequired = $derived(selectedTradeData?.board === 'OTHER');
@@ -188,6 +199,42 @@
             currentStep = 6;
     }
 
+    function handleCurriculumContinue() {
+        currentStep = 6;
+    }
+
+    function handleAddStaff() {
+        if (staffQualification && staffPosition && staffCount > 0 && staffAvailability) {
+            staffList = [
+                ...staffList,
+                {
+                    id: Math.random().toString(),
+                    qualification: staffQualification,
+                    position: staffPosition,
+                    count: staffCount,
+                    availability: staffAvailability,
+                },
+            ];
+            staffQualification = '';
+            staffPosition = '';
+            staffCount = 0;
+            staffAvailability = '';
+        }
+    }
+
+    function removeStaff(id: string) {
+        staffList = staffList.filter(s => s.id !== id);
+    }
+
+    function handleStaffContinue() {
+        currentStep = 7;
+    }
+
+    function handleSubmitApplication() {
+        showWizard = false;
+    // Logic for actual submission would go here
+    }
+
     function handleProofUpload(e: Event) {
         const input = e.target as HTMLInputElement;
         if (input.files?.[0]) {
@@ -255,12 +302,30 @@
     function iconBg(ext: string) {
         return ext === 'PDF' ? 'bg-red-500' : (ext === 'DOCX' || ext === 'DOC') ? 'bg-blue-400' : 'bg-slate-500';
     }
+
+    // Auto-scroll sidebar to active step
+    $effect(() => {
+        if (showWizard && currentStep) {
+            const stepElement = document.getElementById(`step-${currentStep}`);
+            const sidebarElement = document.getElementById('wizard-sidebar');
+            if (stepElement && sidebarElement) {
+                const sidebarRect = sidebarElement.getBoundingClientRect();
+                const stepRect = stepElement.getBoundingClientRect();
+
+                // If step is not fully visible in sidebar, scroll to it
+                if (stepRect.top < sidebarRect.top || stepRect.bottom > sidebarRect.bottom) {
+                    stepElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+    });
 </script>
 
 <PageContainer
     {role}
     title={showWizard ? 'New Accreditation Application' : (titles[role] || 'Accreditation Applications')}
     description={showWizard ? 'Follow the steps to submit your accreditation application.' : (descriptions[role] || 'Manage accreditation applications')}
+    noScroll={showWizard}
 >
     {#if !showWizard}
         {#if role === 'super-admin' || role === 'supervisor' || role === 'evaluator' || role === 'merged'}
@@ -285,9 +350,13 @@
         <SharedApplicationsList {role} />
     {:else}
         <!-- Wizard implementation -->
-        <div class='flex min-h-[700px] flex-1 overflow-hidden rounded-sm border border-slate-100 bg-white'>
+        <div class='flex h-[calc(100vh-180px)] flex-1 overflow-hidden rounded-sm border border-slate-100 bg-white'>
             <!-- Sidebar -->
-            <div class='w-[300px] shrink-0 border-r border-slate-100 bg-[#FAFAFA] p-8'>
+            <div
+                id='wizard-sidebar'
+                class='w-[300px] shrink-0 overflow-hidden border-r border-slate-100 bg-[#FAFAFA] p-8'
+                onwheel={e => e.preventDefault()}
+            >
                 <h2 class='mb-10 text-[15px] font-semibold text-slate-700'>Short Course Application</h2>
                 <button class='mb-12 flex items-center gap-2 text-sm font-medium text-[#2069C1] hover:underline' onclick={() => showWizard = false}>
                     <ArrowLeft size={16} strokeWidth={2} />
@@ -301,7 +370,7 @@
                             {@const isSkipped = step.id === 5 && !curriculumRequired}
                             {@const isActive = !isSkipped && currentStep === step.id}
                             {@const isCompleted = !isSkipped && currentStep > step.id}
-                            <div class={cn('relative z-10 flex gap-4', isSkipped ? 'opacity-40' : '')}>
+                            <div id='step-{step.id}' class={cn('relative z-10 flex gap-4', isSkipped ? 'opacity-40' : '')}>
                                 <div class={cn(
                                     'flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-sm transition-colors',
                                     isActive
@@ -336,7 +405,7 @@
             </div>
 
             <!-- Content -->
-            <div class='flex flex-1 flex-col overflow-y-auto bg-white py-14 px-8 md:px-[60px] lg:px-[100px]'>
+            <div class='flex flex-1 flex-col overflow-y-auto bg-white py-14 px-8 md:px-[60px] lg:px-[100px] no-scrollbar'>
                 <div class='mx-auto flex w-full max-w-[600px] flex-col'>
                     {#if currentStep === 1}
                         <div class='flex flex-col items-center text-center'>
@@ -583,7 +652,7 @@
                         </div>
 
                         <div class='mt-2 text-left'>
-                            <div class='mb-5 rounded-sm border border-slate-200 bg-white p-6 shadow-sm'>
+                            <div class='mb-5 rounded-sm border border-slate-200 bg-white p-6'>
                                 <div class='mb-5'>
                                     <label class='mb-2 block text-sm font-medium text-slate-700' for='equipment-name'>
                                         Equipment Name <span class='text-red-500'>*</span>
@@ -594,7 +663,7 @@
 
                                 <div class='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                                     <div>
-                                        <label for='equipment-quantity' class='mb-2 block text-sm font-medium text-slate-700'>Quantity <span class='text-red-500'>*</span></label>
+                                        <span class='mb-2 block text-sm font-medium text-slate-700'>Quantity <span class='text-red-500'>*</span></span>
                                         <div class='flex items-center justify-between rounded-sm border border-slate-200 bg-white px-3 py-2'>
                                             <div class='flex items-center gap-2'>
                                                 <Briefcase size={14} class='text-slate-400' />
@@ -624,14 +693,14 @@
                             </div>
 
                             <button onclick={handleAddEquipment}
-                                    class='mb-8 flex items-center justify-center gap-2 rounded-sm bg-[#2069C1] px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-600'>
+                                    class='mb-8 flex items-center justify-center gap-2 rounded-sm bg-[#2069C1] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#0864d6] transition-colors'>
                                 Add Equipment
                                 <FolderPlus size={16} />
                             </button>
 
                             <div class='mb-8 flex w-full gap-3'>
-                                <button onclick={() => backFrom(3)} class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50'>Back</button>
-                                <button onclick={handleEquipmentContinue} class='flex flex-1 items-center justify-center rounded-sm bg-[#2069C1] py-3 text-sm font-semibold text-white hover:bg-[#0864d6]'>Continue</button>
+                                <button onclick={() => backFrom(3)} class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors'>Back</button>
+                                <button onclick={handleEquipmentContinue} class='flex flex-1 items-center justify-center rounded-sm bg-[#2069C1] py-3 text-sm font-semibold text-white hover:bg-[#0864d6] transition-colors'>Continue</button>
                             </div>
 
                             {#if equipments.length > 0}
@@ -663,7 +732,7 @@
                         </div>
 
                         <div class='mt-8 mb-6 w-full text-left'>
-                            <label class='flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-slate-300 bg-white py-10 hover:bg-slate-50'>
+                            <label class='flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-slate-300 bg-white py-10 hover:bg-slate-50 transition-colors'>
                                 <div class='mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm'>
                                     <UploadCloud size={20} class='text-slate-500' strokeWidth={1.5} />
                                 </div>
@@ -689,7 +758,7 @@
                                                 </div>
                                             </div>
                                             {#if doc.progress < 100}
-                                                <button onclick={() => removeDoc(doc.id, 'mou')}><Trash2 size={18} class='text-slate-300' /></button>
+                                                <button onclick={() => removeDoc(doc.id, 'mou')}><Trash2 size={18} class='text-slate-300 hover:text-red-500' /></button>
                                             {:else}
                                                 <CheckCircle2 size={18} class='text-emerald-500' />
                                             {/if}
@@ -700,9 +769,297 @@
                         {/if}
 
                         <div class='flex w-full gap-3'>
-                            <button onclick={() => backFrom(4)} class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50'>Back</button>
+                            <button onclick={() => backFrom(4)} class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors'>Back</button>
                             <button onclick={handleMouContinue} disabled={mouDocs.length === 0}
-                                    class={cn('flex flex-1 items-center justify-center rounded-sm py-3 text-sm font-semibold text-white', mouDocs.length > 0 ? 'bg-[#2069C1]' : 'bg-blue-300')}>Continue</button>
+                                    class={cn('flex flex-1 items-center justify-center rounded-sm py-3 text-sm font-semibold text-white transition-colors', mouDocs.length > 0 ? 'bg-[#2069C1] hover:bg-[#0864d6]' : 'bg-blue-300 cursor-not-allowed')}>Continue</button>
+                        </div>
+                    {:else if currentStep === 5}
+                        <!-- Curriculum Step -->
+                        <div class='flex flex-col items-center text-center'>
+                            <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                                <FileText size={24} class='text-slate-500' strokeWidth={1.5} />
+                            </div>
+                            <h2 class='text-[17px] font-semibold text-slate-900'>Curriculum Documents</h2>
+                            <p class='mt-1.5 text-sm text-slate-500'>Upload the curriculum and training materials.</p>
+                        </div>
+
+                        <div class='mt-8 mb-6 w-full text-left'>
+                            <label class='flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-slate-300 bg-white py-10 hover:bg-slate-50 transition-colors'>
+                                <div class='mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm'>
+                                    <UploadCloud size={20} class='text-slate-500' strokeWidth={1.5} />
+                                </div>
+                                <p class='text-sm text-slate-500'><span class='font-medium text-[#2069C1]'>Click to upload</span></p>
+                                <input type='file' multiple class='hidden' onchange={e => uploadDocs(e, 'curriculum')} />
+                            </label>
+                        </div>
+
+                        {#if curriculumDocs.length > 0}
+                            <div class='mb-8 flex w-full flex-col gap-3'>
+                                {#each curriculumDocs as doc}
+                                    <div class='relative flex flex-col justify-center rounded-sm border border-slate-200 bg-white p-4'>
+                                        <div class='flex items-start justify-between'>
+                                            <div class='flex items-center gap-4'>
+                                                <div class='relative h-10 w-8 bg-slate-50 border border-slate-200'>
+                                                    <div class={cn('absolute inset-x-1 bottom-1 flex items-center justify-center rounded-sm py-0.5', iconBg(doc.extension))}>
+                                                        <span class='text-[7px] font-bold text-white'>{doc.extension}</span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p class='text-sm font-medium'>{doc.name}</p>
+                                                    <p class='text-[11px] text-slate-500'>{doc.size}</p>
+                                                </div>
+                                            </div>
+                                            {#if doc.progress < 100}
+                                                <button onclick={() => removeDoc(doc.id, 'curriculum')}><Trash2 size={18} class='text-slate-300 hover:text-red-500' /></button>
+                                            {:else}
+                                                <CheckCircle2 size={18} class='text-emerald-500' />
+                                            {/if}
+                                        </div>
+                                    </div>
+                                {/each}
+                            </div>
+                        {/if}
+
+                        <div class='flex w-full gap-3'>
+                            <button onclick={() => backFrom(5)} class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors'>Back</button>
+                            <button onclick={handleCurriculumContinue} disabled={curriculumDocs.length === 0}
+                                    class={cn('flex flex-1 items-center justify-center rounded-sm py-3 text-sm font-semibold text-white transition-colors', curriculumDocs.length > 0 ? 'bg-[#2069C1] hover:bg-[#0864d6]' : 'bg-blue-300 cursor-not-allowed')}>Continue</button>
+                        </div>
+
+                    {:else if currentStep === 6}
+                        <!-- Staff Allocation Step -->
+                        <div class='flex flex-col items-center text-center'>
+                            <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                                <Users size={24} class='text-slate-400' strokeWidth={1.5} />
+                            </div>
+                            <h2 class='text-[20px] font-semibold text-slate-900'>Staff Allocation</h2>
+                            <p class='mt-2 text-sm text-slate-500 font-medium opacity-80'>Indicate staff availability by qualification and position.</p>
+                        </div>
+
+                        <!-- Progress indicators -->
+                        <div class='mt-10 mb-8 flex items-center justify-center gap-4'>
+                            <div class='flex items-center gap-2 rounded-sm border border-[#2069C1] bg-white px-4 py-2.5 min-w-[140px]'>
+                                <Blocks size={16} class='text-[#2069C1]' />
+                                <span class='text-[13px] font-medium text-slate-600'>{selectedTradeName}</span>
+                                <div class='ml-auto flex h-[18px] w-[18px] items-center justify-center rounded-full bg-emerald-500'>
+                                    <Check size={12} class='text-white' strokeWidth={3} />
+                                </div>
+                            </div>
+                            <ChevronRight size={18} class='text-slate-300' />
+                            <div class='flex items-center gap-2 rounded-sm border border-[#2069C1] bg-white px-4 py-2.5 min-w-[140px]'>
+                                <Hexagon size={16} class='text-[#2069C1]' />
+                                <span class='text-[13px] font-medium text-slate-600 line-clamp-1'>
+                                    {selectedCompetencyNames.length > 0 ? selectedCompetencyNames[0] : 'Competencies'}
+                                </span>
+                                <div class='ml-auto flex h-[18px] w-[18px] items-center justify-center rounded-full bg-emerald-500'>
+                                    <Check size={12} class='text-white' strokeWidth={3} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Container -->
+                        <div class='mb-8 rounded-[20px] border border-slate-100 bg-white p-8'>
+                            <div class='grid grid-cols-1 gap-6 md:grid-cols-2'>
+                                <!-- Qualification -->
+                                <div class='space-y-2'>
+                                    <label for='staff-qualification' class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
+                                        Qualification <span class='text-red-500'>*</span>
+                                    </label>
+                                    <div class='relative'>
+                                        <select
+                                            id='staff-qualification'
+                                            bind:value={staffQualification}
+                                            class='w-full appearance-none rounded-sm border border-slate-200 bg-slate-50/30 px-4 py-3 text-[14px] text-slate-500 focus:border-[#2069C1] focus:outline-none transition-colors'
+                                        >
+                                            <option value='' disabled selected>Select ...</option>
+                                            <option value='Degree'>Bachelor's Degree</option>
+                                            <option value='Masters'>Master's Degree</option>
+                                            <option value='PhD'>PhD</option>
+                                            <option value='Certification'>Professional Certification</option>
+                                        </select>
+                                        <ChevronDown size={18} class='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none' />
+                                    </div>
+                                </div>
+
+                                <!-- Position -->
+                                <div class='space-y-2'>
+                                    <label for='staff-position' class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
+                                        Position <span class='text-red-500'>*</span>
+                                    </label>
+                                    <div class='relative'>
+                                        <select
+                                            id='staff-position'
+                                            bind:value={staffPosition}
+                                            class='w-full appearance-none rounded-sm border border-slate-200 bg-slate-50/30 px-4 py-3 text-[14px] text-slate-500 focus:border-[#2069C1] focus:outline-none transition-colors'
+                                        >
+                                            <option value='' disabled selected>Select ...</option>
+                                            <option value='Instructor'>Lead Instructor</option>
+                                            <option value='Assistant'>Teaching Assistant</option>
+                                            <option value='Technician'>Lab Technician</option>
+                                            <option value='Supervisor'>Workshop Supervisor</option>
+                                        </select>
+                                        <ChevronDown size={18} class='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none' />
+                                    </div>
+                                </div>
+
+                                <!-- Number -->
+                                <div class='space-y-2'>
+                                    <span class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
+                                        Number <span class='text-red-500'>*</span>
+                                    </span>
+                                    <div class='flex items-center overflow-hidden rounded-sm border border-slate-200'>
+                                        <div class='flex-1 px-4 py-3 text-[14px] text-slate-500 bg-white'>
+                                            {staffCount}
+                                        </div>
+                                        <div class='flex border-l border-slate-200'>
+                                            <button
+                                                onclick={() => staffCount++}
+                                                class='flex h-[44px] w-[44px] items-center justify-center bg-white hover:bg-slate-50 transition-colors border-r border-slate-200'
+                                            >
+                                                <Plus size={18} class='text-slate-500' />
+                                            </button>
+                                            <button
+                                                onclick={() => staffCount = Math.max(0, staffCount - 1)}
+                                                class='flex h-[44px] w-[44px] items-center justify-center bg-white hover:bg-slate-50 transition-colors'
+                                            >
+                                                <Minus size={18} class='text-slate-500' />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Availability Status -->
+                                <div class='space-y-2'>
+                                    <label for='staff-availability' class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
+                                        Availability Status <span class='text-red-500'>*</span>
+                                    </label>
+                                    <div class='relative'>
+                                        <select
+                                            id='staff-availability'
+                                            bind:value={staffAvailability}
+                                            class='w-full appearance-none rounded-sm border border-slate-200 bg-slate-50/30 px-4 py-3 text-[14px] text-slate-500 focus:border-[#2069C1] focus:outline-none transition-colors'
+                                        >
+                                            <option value='' disabled selected>Select ...</option>
+                                            <option value='Full-Time'>Full-Time</option>
+                                            <option value='Part-Time'>Part-Time</option>
+                                            <option value='Contract'>Contract</option>
+                                        </select>
+                                        <ChevronDown size={18} class='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none' />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Staff Button -->
+                        <div class='mb-10'>
+                            <button
+                                onclick={handleAddStaff}
+                                disabled={!staffQualification || !staffPosition || staffCount === 0 || !staffAvailability}
+                                class={cn(
+                                    'flex h-[38px] items-center gap-2 rounded-sm px-4 text-sm font-medium transition-all',
+                                    staffQualification && staffPosition && staffCount > 0 && staffAvailability
+                                        ? 'bg-[#2069C1] text-white hover:bg-[#0864d6]'
+                                        : 'bg-blue-300 text-white cursor-not-allowed',
+                                )}
+                            >
+                                Add Staff
+                                <UserPlus size={16} />
+                            </button>
+                        </div>
+
+                        <!-- Staff List Summary (if any) -->
+                        {#if staffList.length > 0}
+                            <div class='mb-8 space-y-3'>
+                                {#each staffList as staff}
+                                    <div class='flex items-center justify-between rounded-sm border border-slate-100 bg-white p-4'>
+                                        <div class='flex items-center gap-4'>
+                                            <div class='flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-[#2069C1]'>
+                                                <Users size={18} />
+                                            </div>
+                                            <div>
+                                                <p class='text-[14px] font-bold text-slate-800'>{staff.position} - {staff.qualification}</p>
+                                                <p class='text-[12px] text-slate-500'>{staff.count} member{staff.count !== 1 ? 's' : ''} · {staff.availability}</p>
+                                            </div>
+                                        </div>
+                                        <button onclick={() => removeStaff(staff.id)} class='text-slate-300 hover:text-red-500 transition-colors'>
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+                                {/each}
+                            </div>
+                        {/if}
+
+                        <!-- Wizard Footer -->
+                        <div class='mt-auto flex w-full gap-3'>
+                            <button
+                                onclick={() => backFrom(6)}
+                                class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors'
+                            >
+                                Back
+                            </button>
+                            <button
+                                onclick={handleStaffContinue}
+                                disabled={staffList.length === 0}
+                                class={cn(
+                                    'flex flex-1 items-center justify-center rounded-sm py-3 text-sm font-semibold text-white transition-colors',
+                                    staffList.length > 0 ? 'bg-[#2069C1] hover:bg-[#0864d6]' : 'bg-blue-300 cursor-not-allowed',
+                                )}
+                            >
+                                Continue
+                            </button>
+                        </div>
+                    {:else if currentStep === 7}
+                        <!-- Application Review Step -->
+                        <div class='flex flex-col items-center text-center'>
+                            <div class='mb-5 flex h-14 w-14 items-center justify-center rounded-sm bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] ring-1 ring-slate-200'>
+                                <CheckCheck size={24} class='text-slate-400' strokeWidth={1.5} />
+                            </div>
+                            <h2 class='text-[20px] font-semibold text-slate-900'>Application Review</h2>
+                            <p class='mt-2 text-sm text-slate-500 font-medium opacity-80 max-w-[450px]'>
+                                Review all information provided before submitting your application for evaluation.
+                            </p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class='mt-10 mb-10 flex w-full gap-3'>
+                            <button
+                                onclick={() => backFrom(7)}
+                                class='flex flex-1 items-center justify-center rounded-sm border border-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors'
+                            >
+                                Back
+                            </button>
+                            <button
+                                onclick={handleSubmitApplication}
+                                class='flex flex-1 items-center justify-center rounded-sm bg-[#2069C1] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0864d6]'
+                            >
+                                Submit Application
+                            </button>
+                        </div>
+
+                        <!-- Review Sections -->
+                        <div class='space-y-4'>
+                            {#each [
+                                { title: 'Trade Selection Completed', subtitle: 'Select the trade you are applying for' },
+                                { title: 'Competencies Selected', subtitle: 'Select competencies for the selected trade' },
+                                { title: 'Equipment and Facilities Added with Proofs', subtitle: 'List available equipment and upload proof' },
+                                { title: 'Curriculum Documents', subtitle: 'Upload curriculum and training materials' },
+                                { title: 'Staff Allocation', subtitle: 'Indicate staff availability for the trade' },
+                            ] as section}
+                                <div class='group overflow-hidden rounded-sm border border-slate-200 bg-white transition-all hover:border-slate-300'>
+                                    <button class='flex w-full items-center justify-between p-5 text-left'>
+                                        <div class='flex items-center gap-4'>
+                                            <div class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-emerald-100 bg-emerald-50 text-emerald-500'>
+                                                <Check size={20} strokeWidth={3} />
+                                            </div>
+                                            <div>
+                                                <h4 class='text-[15px] font-semibold text-slate-700'>{section.title}</h4>
+                                                <p class='mt-0.5 text-[12px] text-slate-400'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid pariatur, ipsum dolor.</p>
+                                            </div>
+                                        </div>
+                                        <ChevronDown size={18} class='text-slate-400' />
+                                    </button>
+                                </div>
+                            {/each}
                         </div>
                     {/if}
                 </div>
@@ -710,3 +1067,8 @@
         </div>
     {/if}
 </PageContainer>
+
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
