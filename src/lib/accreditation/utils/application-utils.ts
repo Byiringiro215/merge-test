@@ -300,6 +300,15 @@ export function getMockStatsByRole(role: string) {
         ];
     }
 
+    if (role === 'applicant') {
+        return [
+            { label: 'Total Applications', value: 5, icon: 'NotepadText', iconColor: '#2069C1' },
+            { label: 'Pending', value: 2, icon: 'ClipboardClock', iconColor: '#FF8D28' },
+            { label: 'Approved', value: 1, icon: 'CheckCheck', iconColor: '#34C759' },
+            { label: 'Rejected', value: 2, icon: 'AlertTriangle', iconColor: '#FF383C' },
+        ];
+    }
+
     // Default stats for other roles
     return [
         { label: 'Applications', value: 24, icon: 'NotepadText', iconColor: '#2069C1' },

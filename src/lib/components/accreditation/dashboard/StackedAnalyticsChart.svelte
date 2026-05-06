@@ -162,22 +162,22 @@
 
                             <!-- Stacked Bar Container -->
                             <div class={cn(
-                                'relative h-36 w-8 overflow-hidden rounded-sm bg-transparent transition-all duration-300',
+                                'relative h-36 w-8 overflow-hidden rounded-t-sm bg-transparent transition-all duration-300',
                                 hoveredIndex === index ? 'scale-x-105 opacity-100' : hoveredIndex !== null ? 'opacity-40' : 'opacity-100',
                             )}>
                                 <!-- Pending (Lightest) -->
                                 <div
-                                    class='absolute inset-x-0 bottom-0 rounded-sm bg-[#E0EFFF] transition-all duration-500'
+                                    class='absolute inset-x-0 bottom-0 rounded-t-sm bg-[#E0EFFF] transition-all duration-500'
                                     style='height: {(totalVal / maxValue) * 100}%'
                                 ></div>
                                 <!-- Approved (Medium) -->
                                 <div
-                                    class='absolute inset-x-0 bottom-0 rounded-sm bg-[#59A8FF] transition-all duration-500'
+                                    class='absolute inset-x-0 bottom-0 rounded-t-sm bg-[#59A8FF] transition-all duration-500'
                                     style='height: {((d.rejected + d.approved) / maxValue) * 100}%'
                                 ></div>
                                 <!-- Rejected (Darkest) -->
                                 <div
-                                    class='absolute inset-x-0 bottom-0 rounded-sm bg-[#2069C1] transition-all duration-500'
+                                    class='absolute inset-x-0 bottom-0 rounded-t-sm bg-[#2069C1] transition-all duration-500'
                                     style='height: {(d.rejected / maxValue) * 100}%'
                                 ></div>
                             </div>
