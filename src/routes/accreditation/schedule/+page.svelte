@@ -1,6 +1,6 @@
 <script lang='ts'>
-    import ScheduleContent from '$lib/accreditation/features/evaluations/components/ScheduleContent.svelte';
     import { getSimulationState } from '$lib/accreditation/context/simulation.svelte';
+    import ScheduleContent from '$lib/accreditation/features/evaluations/components/ScheduleContent.svelte';
     import PageContainer from '$lib/components/accreditation/layout/PageContainer.svelte';
     import EvaluationsSubNav from '$lib/components/accreditation/navigation/EvaluationsSubNav.svelte';
     import DateRangePicker from '$lib/components/accreditation/ui/DateRangePicker.svelte';
