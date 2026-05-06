@@ -663,7 +663,7 @@
 
                                 <div class='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                                     <div>
-                                        <label for='equipment-quantity' class='mb-2 block text-sm font-medium text-slate-700'>Quantity <span class='text-red-500'>*</span></label>
+                                        <span class='mb-2 block text-sm font-medium text-slate-700'>Quantity <span class='text-red-500'>*</span></span>
                                         <div class='flex items-center justify-between rounded-sm border border-slate-200 bg-white px-3 py-2'>
                                             <div class='flex items-center gap-2'>
                                                 <Briefcase size={14} class='text-slate-400' />
@@ -862,11 +862,12 @@
                             <div class='grid grid-cols-1 gap-6 md:grid-cols-2'>
                                 <!-- Qualification -->
                                 <div class='space-y-2'>
-                                    <label class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
+                                    <label for='staff-qualification' class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
                                         Qualification <span class='text-red-500'>*</span>
                                     </label>
                                     <div class='relative'>
                                         <select
+                                            id='staff-qualification'
                                             bind:value={staffQualification}
                                             class='w-full appearance-none rounded-sm border border-slate-200 bg-slate-50/30 px-4 py-3 text-[14px] text-slate-500 focus:border-[#2069C1] focus:outline-none transition-colors'
                                         >
@@ -882,11 +883,12 @@
 
                                 <!-- Position -->
                                 <div class='space-y-2'>
-                                    <label class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
+                                    <label for='staff-position' class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
                                         Position <span class='text-red-500'>*</span>
                                     </label>
                                     <div class='relative'>
                                         <select
+                                            id='staff-position'
                                             bind:value={staffPosition}
                                             class='w-full appearance-none rounded-sm border border-slate-200 bg-slate-50/30 px-4 py-3 text-[14px] text-slate-500 focus:border-[#2069C1] focus:outline-none transition-colors'
                                         >
@@ -902,9 +904,9 @@
 
                                 <!-- Number -->
                                 <div class='space-y-2'>
-                                    <label class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
+                                    <span class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
                                         Number <span class='text-red-500'>*</span>
-                                    </label>
+                                    </span>
                                     <div class='flex items-center overflow-hidden rounded-sm border border-slate-200'>
                                         <div class='flex-1 px-4 py-3 text-[14px] text-slate-500 bg-white'>
                                             {staffCount}
@@ -928,11 +930,12 @@
 
                                 <!-- Availability Status -->
                                 <div class='space-y-2'>
-                                    <label class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
+                                    <label for='staff-availability' class='text-[13px] font-semibold text-slate-700 flex items-center gap-1'>
                                         Availability Status <span class='text-red-500'>*</span>
                                     </label>
                                     <div class='relative'>
                                         <select
+                                            id='staff-availability'
                                             bind:value={staffAvailability}
                                             class='w-full appearance-none rounded-sm border border-slate-200 bg-slate-50/30 px-4 py-3 text-[14px] text-slate-500 focus:border-[#2069C1] focus:outline-none transition-colors'
                                         >
