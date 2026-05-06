@@ -41,9 +41,9 @@
         <button
             type='button'
             onclick={() => onSelect(opt.key)}
-            class={`group relative flex items-start gap-4 rounded-sm border px-5 py-4 text-left transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#336cb2]/30 active:scale-[0.99] ${
+            class={`group relative flex items-start gap-4 rounded-sm border px-5 py-4 text-left transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2069C1]/30 active:scale-[0.99] ${
                 isSelected
-                    ? 'border-[#336cb2] bg-[#336cb2]/10 ring-1 ring-[#336cb2]/20'
+                    ? 'border-[#2069C1] bg-[#2069C1]/10 ring-1 ring-[#2069C1]/20'
                     : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60'
             }`}
         >
@@ -51,7 +51,7 @@
             <span
                 class={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border transition-colors ${
                     isSelected
-                        ? 'border-[#336cb2]/30 bg-[#336cb2]/15 text-[#336cb2]'
+                        ? 'border-[#2069C1]/30 bg-[#2069C1]/15 text-[#2069C1]'
                         : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-slate-300 group-hover:text-slate-600'
                 }`}
             >
@@ -62,28 +62,28 @@
             <div class='flex-1 min-w-0'>
                 <div class='flex items-center gap-2 mb-0.5'>
                     <span
-                        class={`text-[14.5px] font-semibold leading-tight transition-colors ${isSelected ? 'text-[#2a5a96]' : 'text-slate-800'}`}
+                        class={`text-[14.5px] font-semibold leading-tight transition-colors ${isSelected ? 'text-[#1a56a0]' : 'text-slate-800'}`}
                     >
                         {opt.label}
                     </span>
                     <span
                         class={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full transition-colors ${
                             isSelected
-                                ? 'bg-[#336cb2]/15 text-[#336cb2]'
+                                ? 'bg-[#2069C1]/15 text-[#2069C1]'
                                 : 'bg-slate-100 text-slate-400'
                         }`}
                     >
                         {opt.badge}
                     </span>
                 </div>
-                <p class={`text-[12.5px] leading-relaxed transition-colors ${isSelected ? 'text-[#336cb2]/80' : 'text-slate-500'}`}>
+                <p class={`text-[12.5px] leading-relaxed transition-colors ${isSelected ? 'text-[#2069C1]/80' : 'text-slate-500'}`}>
                     {opt.description}
                 </p>
             </div>
 
             <!-- Check indicator -->
             <span class='mt-0.5 shrink-0 transition-opacity {isSelected ? 'opacity-100' : 'opacity-0'}'>
-                <CheckCircle2 class='h-5 w-5 text-[#336cb2]' />
+                <CheckCircle2 class='h-5 w-5 text-[#2069C1]' />
             </span>
         </button>
     {/each}

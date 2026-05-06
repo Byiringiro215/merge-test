@@ -86,7 +86,7 @@
 <div class='space-y-5'>
     <!-- National ID Search -->
     <div class='flex flex-col gap-1.5'>
-        <label for='national-id' class='text-[13px] font-medium text-slate-700'>
+        <label for='national-id' class='text-sm font-medium text-slate-700'>
             National ID <span class='text-red-500'>*</span>
         </label>
         <div class='relative'>
@@ -100,12 +100,12 @@
                 oninput={e => handleIdInput(e.currentTarget.value)}
                 placeholder='Enter 16-digit national ID'
                 maxlength={20}
-                class={`w-full rounded-sm border py-2.5 pl-9 pr-10 text-sm text-slate-700 outline-none placeholder:text-slate-400 transition-colors bg-white ${
+                class={`w-full rounded-sm border py-2.5 pl-9 pr-12 text-sm text-slate-700 outline-none placeholder:text-slate-400 transition-colors bg-white ${
                     lookupState === 'found'
                         ? 'border-emerald-400 focus:ring-2 focus:ring-emerald-400/20'
                         : lookupState === 'not-found'
                         ? 'border-red-400 focus:ring-2 focus:ring-red-400/20'
-                        : 'border-slate-200 focus:border-[#336cb2] focus:ring-2 focus:ring-[#336cb2]/20'
+                        : 'border-slate-200 focus:border-[#2069C1] focus:ring-2 focus:ring-[#2069C1]/20'
                 }`}
             />
             <span class='absolute inset-y-0 right-3 flex items-center'>
@@ -210,7 +210,7 @@
                 type='button'
                 onclick={handleAdd}
                 disabled={!canAdd}
-                class='mt-1 flex items-center gap-2 rounded-sm bg-[#336cb2] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2a5a96] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer'
+                class='mt-1 flex items-center gap-2 rounded-sm bg-[#2069C1] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1a56a0] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer'
             >
                 <UserPlus class='h-4 w-4' />
                 {isEditing ? 'Update Representative' : 'Add Representative'}
@@ -226,10 +226,10 @@
             </p>
             {#each legalReps as rep, idx (idx)}
                 <div
-                    class={`flex items-start gap-3 rounded-sm border bg-white p-4 transition-colors ${editingIdx === idx ? 'border-[#336cb2]/50 ring-1 ring-[#336cb2]/30' : 'border-slate-200'}`}
+                    class={`flex items-start gap-3 rounded-sm border bg-white p-4 transition-colors ${editingIdx === idx ? 'border-[#2069C1]/50 ring-1 ring-[#2069C1]/30' : 'border-slate-200'}`}
                 >
                     <!-- Avatar -->
-                    <div class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#336cb2]/10 text-[14px] font-semibold text-[#336cb2] uppercase'>
+                    <div class='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2069C1]/10 text-[14px] font-semibold text-[#2069C1] uppercase'>
                         {rep.firstName?.[0] ?? '?'}{rep.lastName?.[0] ?? '?'}
                     </div>
 
@@ -250,7 +250,7 @@
                         <button
                             type='button'
                             onclick={() => handleEdit(idx)}
-                            class='text-slate-400 hover:text-[#336cb2] transition-colors cursor-pointer'
+                            class='text-slate-400 hover:text-[#2069C1] transition-colors cursor-pointer'
                             title='Edit'
                         >
                             <Pencil class='h-4 w-4' />

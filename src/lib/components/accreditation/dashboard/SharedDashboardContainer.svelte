@@ -1,5 +1,6 @@
 <script lang='ts'>
     import { AlertTriangle, CheckCheck, ClipboardClock, NotepadText } from '@lucide/svelte';
+    import { getMockStatsByRole } from '$lib/accreditation/utils/application-utils';
     import ApplicationsByTradeChart from './ApplicationsByTradeChart.svelte';
     import DashboardEmptyState from './DashboardEmptyState.svelte';
     import MostRequestedModules from './MostRequestedModules.svelte';
@@ -9,12 +10,19 @@
 
     const { role, userName } = $props<{ role: string; userName?: string }>();
 
-    const stats = [
-        { label: 'Applications', value: '24', icon: NotepadText, iconColor: '#0A77FF' },
-        { label: 'Pending', value: '8', icon: ClipboardClock, iconColor: '#FF8D28' },
-        { label: 'Evaluated', value: '5', icon: CheckCheck, iconColor: '#34C759' },
-        { label: 'Rejected', value: '11', icon: AlertTriangle, iconColor: '#FF383C' },
-    ];
+    // Icon mapping for stats
+    const iconMap: Record<string, any> = {
+        NotepadText,
+        ClipboardClock,
+        CheckCheck,
+        AlertTriangle,
+    };
+
+    // Dynamic stats based on role
+    const stats = $derived(getMockStatsByRole(role).map(s => ({
+        ...s,
+        icon: iconMap[s.icon] || NotepadText
+    })));
 
     const chartData = {
         '12 Months': [
@@ -78,5 +86,7 @@
         </div>
     {/if}
 
-    <RecentApplicationsTable {role} />
+    {#if role !== 'applicant'}
+        <RecentApplicationsTable {role} />
+    {/if}
 </div>

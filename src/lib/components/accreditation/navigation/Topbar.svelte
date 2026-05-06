@@ -69,7 +69,7 @@
                     onclick={() => simulationOpen = !simulationOpen}
                     class='flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 border border-slate-200 transition-colors hover:bg-slate-100 cursor-pointer'
                 >
-                    <ShieldCheck class='h-3.5 w-3.5 text-primary' />
+                    <ShieldCheck class='h-3.5 w-3.5 text-[#2069C1]' />
                     <span>Mode: <span class='text-slate-900 capitalize'>{role}</span></span>
                     <ChevronDown class='h-3 w-3 transition-transform {simulationOpen ? 'rotate-180' : ''}' />
                 </button>
@@ -80,7 +80,7 @@
                             <button
                                 type='button'
                                 onclick={() => selectRole(r.id)}
-                                class='flex w-full items-center px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-slate-50 rounded-sm {role === r.id ? 'text-primary bg-blue-50/50' : 'text-slate-600'}'
+                                class='flex w-full items-center px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-slate-50 rounded-sm {role === r.id ? 'text-[#2069C1] bg-blue-50/50' : 'text-slate-600'}'
                             >
                                 {r.label.replace(' (All)', '')}
                             </button>
@@ -113,14 +113,14 @@
 
                 {#if open}
                     <div
-                        class='absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden -sm bg-white p-1 shadow-lg ring-1 ring-slate-200'
+                        class='absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-sm bg-white p-1 shadow-lg ring-1 ring-slate-200'
                         onmouseenter={handleOpen}
                         onmouseleave={handleClose}
                         role='menu'
                         tabindex='0'
                     >
                         <a
-                            href='/accreditation/applicant/profile'
+                            href='/accreditation/profile'
                             class='flex w-full items-center gap-2 rounded-sm px-3 py-2 text-sm text-slate-700 hover:bg-slate-50'
                             onclick={() => (open = false)}
                         >
@@ -149,7 +149,7 @@
                     <div>
                         <h1 class='text-[18px] font-semibold leading-tight text-[#101828]'>{pageHeader.title}</h1>
                         {#if pageHeader.description}
-                            <p class='mt-1 text-[13px] text-[#64748B]'>{pageHeader.description}</p>
+                            <p class='mt-1 text-sm text-[#64748B]'>{pageHeader.description}</p>
                         {/if}
                     </div>
                     {#if pageHeader.action}
@@ -159,8 +159,8 @@
             {:else}
                 <div class='flex w-full items-center justify-between gap-10'>
                     <div class='space-y-2 py-2'>
-                        <div class='h-5 w-[240px] animate-pulse -sm bg-slate-100'></div>
-                        <div class='h-3 w-[320px] animate-pulse -sm bg-slate-50'></div>
+                        <div class='h-5 w-[240px] animate-pulse rounded-sm bg-slate-100'></div>
+                        <div class='h-3 w-[320px] animate-pulse rounded-sm bg-slate-50'></div>
                     </div>
                 </div>
             {/if}
